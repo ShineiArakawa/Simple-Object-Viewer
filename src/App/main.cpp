@@ -8,7 +8,8 @@ pModel model = nullptr;
 static int WIN_WIDTH = 1000;
 static int WIN_HEIGHT = 1000;
 static const char* WIN_TITLE = "Renderer";
-static const float CAMERA_MOVE_STEP = 0.01f;
+static const float CAMERA_MOVE_STEP = 1.0f;
+static const float MODEL_ROTATE_STEP = 0.01f;
 
 bool isDragging = false;
 bool isMaskMode = false;
@@ -24,21 +25,16 @@ int arcballMode = ARCBALL_MODE_NONE;
 float acScale = 1.0f;
 
 void resizeGL(GLFWwindow* window, int width, int height) {
-  // Update user-managed window size
   WIN_WIDTH = width;
   WIN_HEIGHT = height;
 
-  // Update GLFW-managed window size
   glfwSetWindowSize(window, WIN_WIDTH, WIN_HEIGHT);
 
-  // Get actual window size by pixels
   int renderBufferWidth, renderBufferHeight;
   glfwGetFramebufferSize(window, &renderBufferWidth, &renderBufferHeight);
 
-  // Update viewport transform
   glViewport(0, 0, renderBufferWidth, renderBufferHeight);
 
-  // Update projection matrix
   renderer->resizeGL();
 }
 
@@ -164,34 +160,20 @@ void wheelEvent(GLFWwindow* window, double xoffset, double yoffset) {
 }
 
 void keyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
-  if (action == GLFW_PRESS) {
-    printf("Keyboard: Press\n");
-  } else if (action == GLFW_RELEASE) {
-    printf("Keyboard: Release\n");
-  } else if (action == GLFW_REPEAT) {
-    printf("Keyboard: Repeat\n");
-  } else {
-    printf("Unknown press/release event!!\n");
-  }
-
-  if (key >= 0 && key < 127) {
-    // ASCII文字は127未満の整数
-    printf("Key: %c (%d)\n", (char)key, key);
-  }
-
-  // 特殊キーが押されているかの判定
-  int specialKeys[] = {GLFW_MOD_SHIFT, GLFW_MOD_CONTROL, GLFW_MOD_ALT, GLFW_MOD_SUPER};
-  const char* specialKeyNames[] = {"Shift", "Ctrl", "Alt", "Super"};
-
-  if (action == GLFW_RELEASE) {
+  if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+    auto cameraDirection = glm::normalize(cameraLookAt - cameraPos);
     if (key == GLFW_KEY_W) {
-      cameraPos += glm::normalize(cameraLookAt) * CAMERA_MOVE_STEP;
+      cameraPos += cameraDirection * CAMERA_MOVE_STEP;
     } else if (key == GLFW_KEY_A) {
-      cameraPos += glm::normalize(cameraLookAt) * CAMERA_MOVE_STEP;
+      glm::vec3 moveVec = glm::cross(cameraUp, cameraDirection) * CAMERA_MOVE_STEP;
+      cameraPos += moveVec;
+      cameraLookAt += moveVec;
     } else if (key == GLFW_KEY_S) {
-      cameraPos += -glm::normalize(cameraLookAt) * CAMERA_MOVE_STEP;
+      cameraPos += -cameraDirection * CAMERA_MOVE_STEP;
     } else if (key == GLFW_KEY_D) {
-      cameraPos += glm::normalize(cameraLookAt) * CAMERA_MOVE_STEP;
+      glm::vec3 moveVec = glm::cross(cameraDirection, cameraUp) * CAMERA_MOVE_STEP;
+      cameraPos += moveVec;
+      cameraLookAt += moveVec;
     }
     renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
 
@@ -209,6 +191,10 @@ void keyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mo
     } else if (key == GLFW_KEY_R) {
       model->resetRenderType();
       isMaskMode = false;
+    } else if (key == GLFW_KEY_Q) {
+      renderer->rotateModel(MODEL_ROTATE_STEP, cameraUp);
+    } else if (key == GLFW_KEY_E) {
+      renderer->rotateModel(MODEL_ROTATE_STEP, cameraUp);
     }
 
     model->setMaskMode(isMaskMode);
@@ -256,14 +242,14 @@ std::shared_ptr<Model> createModel() {
   }
 
   {
-    // std::string filePathBackground = "../../../data/m0000002_H_12_Diffuse.png";
-    // std::shared_ptr<Background> background = std::make_shared<Background>(filePathBackground);
-    // background->setShader(shaderID);
-    // model->setBackground(background);
+      // std::string filePathBackground = "../../../data/m0000002_H_12_Diffuse.png";
+      // std::shared_ptr<Background> background = std::make_shared<Background>(filePathBackground);
+      // background->setShader(shaderID);
+      // model->setBackground(background);
   }
 
   {
-      // std::string filePathTerrain = "../../../data/terrain.png";
+      // std::string filePathTerrain = "../../../../data/terrain.png";
       // std::shared_ptr<Primitives> terrain = std::make_shared<Terrain>(filePathTerrain, 0.0f, 0.0f, 0.0f);
       // terrain->setShader(shaderID);
       // terrain->setDefaultRenderType(Primitives::RenderType::NORMAL);
@@ -271,8 +257,8 @@ std::shared_ptr<Model> createModel() {
   }
 
   {
-    std::string filePathFace = "../../../data/m0000002_cleanup.obj";
-    std::string filePathFaceTexture = "../../../data/m0000002_H_12_Diffuse.png";
+    std::string filePathFace = "../../../../data/m0000002_cleanup.obj";
+    std::string filePathFaceTexture = "../../../../data/m0000002_H_12_Diffuse.png";
     std::shared_ptr<Object> face = std::make_shared<Object>(filePathFace, 0.0f, 0.0f, 0.0f, 0.01f);
     face->setShader(shaderID);
     face->loadTexture(filePathFaceTexture);
@@ -316,6 +302,7 @@ int main(int argc, char** argv) {
   std::cout << "Load OpenGL " << glfwGetVersionString() << std::endl;
 
   model = createModel();
+  ModelParser::parse("C:/Users/araka/Projects/OpenGLTemplate/data/sample.json", model);
   model->setMaskMode(isMaskMode);
 
   renderer = std::make_shared<Renderer>(&WIN_WIDTH, &WIN_HEIGHT, model);

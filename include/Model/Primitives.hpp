@@ -44,7 +44,7 @@ class Primitives {
   void setMaskMode(bool maskMode) { _maskMode = maskMode; };
   void setShader(GLuint shaderID) { _shaderID = shaderID; };
   void setDefaultRenderType(Primitives::RenderType renderType) {
-    _defaultRenderType = _defaultRenderType;
+    _defaultRenderType = renderType;
     _renderType = renderType;
   };
   void resetRenderType() { _renderType = _defaultRenderType; };

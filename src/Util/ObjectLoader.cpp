@@ -71,8 +71,8 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
     }
   }
 
-  std::cout << "### (x_min, y_min, z_min) = (" << minCoords.x << ", " << minCoords.y << ", " << minCoords.z << ")" << std::endl;
-  std::cout << "### (x_max, y_max, z_max) = (" << maxCoords.x << ", " << maxCoords.y << ", " << maxCoords.z << ")" << std::endl;
+  std::cout << "(x_min, y_min, z_min) = (" << minCoords.x << ", " << minCoords.y << ", " << minCoords.z << ")" << std::endl;
+  std::cout << "(x_max, y_max, z_max) = (" << maxCoords.x << ", " << maxCoords.y << ", " << maxCoords.z << ")" << std::endl;
 
   ObjectLoader::moveToOrigin(vertices);
   ObjectLoader::move(vertices, offsetX, offsetY, offsetZ);
@@ -122,8 +122,8 @@ void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, co
   }
 
   std::cout << "### Obj is scaled" << std::endl;
-  std::cout << "### (x_min, y_min, z_min) = (" << afterMinCoords.x << ", " << afterMinCoords.y << ", " << afterMinCoords.z << ")" << std::endl;
-  std::cout << "### (x_max, y_max, z_max) = (" << afterMaxCoords.x << ", " << afterMaxCoords.y << ", " << afterMaxCoords.z << ")" << std::endl;
+  std::cout << "(x_min, y_min, z_min) = (" << afterMinCoords.x << ", " << afterMinCoords.y << ", " << afterMinCoords.z << ")" << std::endl;
+  std::cout << "(x_max, y_max, z_max) = (" << afterMaxCoords.x << ", " << afterMaxCoords.y << ", " << afterMaxCoords.z << ")" << std::endl;
 }
 
 void ObjectLoader::moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices) {
@@ -164,8 +164,8 @@ void ObjectLoader::moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices) {
   }
 
   std::cout << "### Obj is moved to the origin" << std::endl;
-  std::cout << "### (x_min, y_min, z_min) = (" << afterMinCoords.x << ", " << afterMinCoords.y << ", " << afterMinCoords.z << ")" << std::endl;
-  std::cout << "### (x_max, y_max, z_max) = (" << afterMaxCoords.x << ", " << afterMaxCoords.y << ", " << afterMaxCoords.z << ")" << std::endl;
+  std::cout << "(x_min, y_min, z_min) = (" << afterMinCoords.x << ", " << afterMinCoords.y << ", " << afterMinCoords.z << ")" << std::endl;
+  std::cout << "(x_max, y_max, z_max) = (" << afterMaxCoords.x << ", " << afterMaxCoords.y << ", " << afterMaxCoords.z << ")" << std::endl;
 }
 
 void ObjectLoader::move(std::shared_ptr<std::vector<Vertex>> vertices, const float offsetX, const float offsetY, const float offsetZ) {

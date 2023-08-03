@@ -12,6 +12,7 @@
 #include <Model/Terrain.hpp>
 #include <OpenGL.hpp>
 #include <Renderer/Renderer.hpp>
+#include <Util/ModelParser.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>

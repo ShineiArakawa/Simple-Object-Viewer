@@ -1,0 +1,25 @@
+{
+    "Background": {
+        "Color": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ]
+    },
+    "Model": {
+        "Object": {
+            "Face": {
+                "ObjPath": "../../../../data/m0000002_cleanup.obj",
+                "TexturePath": "../../../../data/m0000002_H_12_Diffuse.png",
+                "DefaultRenderType": "NORMAL",
+                "Scale": 0.01,
+                "Offset": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        }
+    }
+}

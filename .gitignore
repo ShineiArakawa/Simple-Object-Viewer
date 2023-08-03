@@ -3,5 +3,7 @@
 **/*.obj
 **/*.png
 **/*.mtl
+**/*.zip
+**/*.7z
 out
 build
