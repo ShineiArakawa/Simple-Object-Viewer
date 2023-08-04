@@ -4,16 +4,16 @@
             0.0,
             0.0,
             0.0,
-            0.0
+            1.0
         ]
     },
     "Model": {
         "Object": {
             "Face": {
-                "ObjPath": "../../../../data/m0000002_cleanup.obj",
-                "TexturePath": "../../../../data/m0000002_H_12_Diffuse.png",
-                "DefaultRenderType": "NORMAL",
-                "Scale": 0.01,
+                "ObjPath": "C:/Users/PC_Arakawa/Projects/OpenGLTemplate/data/m0000002_cleanup.obj",
+                "TexturePath": "C:/Users/PC_Arakawa/Projects/OpenGLTemplate/data/m0000002_H_12_Diffuse.png",
+                "DefaultRenderType": "TEXTURE",
+                "Scale": 0.001,
                 "Offset": [
                     0.0,
                     0.0,
@@ -21,5 +21,9 @@
                 ]
             }
         }
+    },
+    "Shader": {
+        "VertShaderPath": "C:/Users/PC_Arakawa/Projects/OpenGLTemplate/src/Shaders/render.vert",
+        "FragShaderPath": "C:/Users/PC_Arakawa/Projects/OpenGLTemplate/src/Shaders/render.frag"
     }
 }

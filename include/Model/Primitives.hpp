@@ -10,7 +10,8 @@
 #include <vector>
 
 struct Vertex {
-  Vertex(const glm::vec3& position_, const glm::vec3& color_, const glm::vec3& normal_, const glm::vec2& uv_, const float id_)
+  Vertex(const glm::vec3& position_, const glm::vec3& color_,
+         const glm::vec3& normal_, const glm::vec2& uv_, const float id_)
       : position(position_), color(color_), normal(normal_), uv(uv_), id(id_) {}
 
   glm::vec3 position;
@@ -23,6 +24,18 @@ struct Vertex {
 class Primitives {
  public:
   enum class RenderType { NORMAL, COLOR, TEXTURE };
+  static RenderType getRenderType(std::string string) {
+    RenderType renderType = RenderType::NORMAL;
+    if (string == "NORMAL") {
+      renderType = RenderType::NORMAL;
+    } else if (string == "COLOR") {
+      renderType = RenderType::COLOR;
+    } else if (string == "TEXTURE") {
+      renderType = RenderType::TEXTURE;
+    }
+
+    return renderType;
+  }
 
  private:
   // nothing
@@ -48,7 +61,9 @@ class Primitives {
     _renderType = renderType;
   };
   void resetRenderType() { _renderType = _defaultRenderType; };
-  void setRenderType(Primitives::RenderType renderType) { _renderType = renderType; };
+  void setRenderType(Primitives::RenderType renderType) {
+    _renderType = renderType;
+  };
   float getRenderType() {
     float renderType = 0.0f;
 
