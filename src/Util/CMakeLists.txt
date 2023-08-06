@@ -7,6 +7,7 @@ add_library(
     "Texture.cpp"
     "ObjectLoader.cpp"
     "ModelParser.cpp"
+    "FileUtil.cpp"
 )
 
 # =========================================================

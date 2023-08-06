@@ -25,5 +25,7 @@ void main() {
         out_color = vec4(color, 1.0);
     } else if(u_toUseTexture > -2.5 && u_toUseTexture < -1.5) {
         out_color = vec4(1.0, 1.0, 1.0, 1.0);
+    } else if(u_toUseTexture > -3.5 && u_toUseTexture < -2.5) {
+        out_color = vec4(f_normal, 1.0);
     }
 }

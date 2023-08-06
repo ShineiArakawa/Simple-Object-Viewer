@@ -13,10 +13,9 @@
     "Model": {
         "Object": {
             "Face": {
-                "ObjPath": "data/m0000002_cleanup.obj",
-                "TexturePath": "data/m0000002_H_12_Diffuse.png",
-                "DefaultRenderType": "TEXTURE",
-                "Scale": 0.001,
+                "ObjPath": "data/bunny.obj",
+                "DefaultRenderType": "NORMAL",
+                "Scale": 1.0,
                 "Offset": [
                     0.0,
                     0.0,

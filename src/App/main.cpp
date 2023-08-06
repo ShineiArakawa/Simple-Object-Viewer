@@ -7,6 +7,7 @@ pModel model = nullptr;
 
 static int WIN_WIDTH = 1000;
 static int WIN_HEIGHT = 1000;
+static const double FPS = 120.0;
 static const char* WIN_TITLE = "Renderer";
 static const float CAMERA_MOVE_STEP = 1.0f;
 static const float MODEL_ROTATE_STEP = 0.01f;
@@ -20,12 +21,7 @@ glm::vec3 cameraPos(20.0f, 0.0f, 0.0f);
 glm::vec3 cameraLookAt(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp(0.0f, 1.0f, 0.0f);
 
-enum ArcballMode {
-  ARCBALL_MODE_NONE = 0x00,
-  ARCBALL_MODE_TRANSLATE = 0x01,
-  ARCBALL_MODE_ROTATE = 0x02,
-  ARCBALL_MODE_SCALE = 0x04
-};
+enum ArcballMode { ARCBALL_MODE_NONE = 0x00, ARCBALL_MODE_TRANSLATE = 0x01, ARCBALL_MODE_ROTATE = 0x02, ARCBALL_MODE_SCALE = 0x04 };
 int arcballMode = ARCBALL_MODE_NONE;
 float acScale = 1.0f;
 
@@ -77,8 +73,7 @@ void mouseEvent(GLFWwindow* window, int button, int action, int mods) {
 glm::vec3 getVector(double x, double y) {
   // Assume a circle contacts internally with longer edges
   const int shortSide = std::min(WIN_WIDTH, WIN_HEIGHT);
-  glm::vec3 pt(2.0f * x / (float)shortSide - 1.0f,
-               -2.0f * y / (float)shortSide + 1.0f, 0.0f);
+  glm::vec3 pt(2.0f * x / (float)shortSide - 1.0f, -2.0f * y / (float)shortSide + 1.0f, 0.0f);
 
   // Calculate Z coordinate
   const double xySquared = pt.x * pt.x + pt.y * pt.y;
@@ -113,12 +108,8 @@ void updateTranslate() {
 
   // Calculate the start and end points of mouse motion, which depend Z
   // coordinate in screen space
-  glm::vec4 newPosScreenSpace(2.0f * newPos.x / WIN_WIDTH - 1.0f,
-                              -2.0f * newPos.y / WIN_HEIGHT + 1.0f,
-                              originScreenSpace.z, 1.0f);
-  glm::vec4 oldPosScreenSpace(2.0f * oldPos.x / WIN_WIDTH - 1.0f,
-                              -2.0f * oldPos.y / WIN_HEIGHT + 1.0f,
-                              originScreenSpace.z, 1.0f);
+  glm::vec4 newPosScreenSpace(2.0f * newPos.x / WIN_WIDTH - 1.0f, -2.0f * newPos.y / WIN_HEIGHT + 1.0f, originScreenSpace.z, 1.0f);
+  glm::vec4 oldPosScreenSpace(2.0f * oldPos.x / WIN_WIDTH - 1.0f, -2.0f * oldPos.y / WIN_HEIGHT + 1.0f, originScreenSpace.z, 1.0f);
 
   renderer->updateTranslate(newPosScreenSpace, oldPosScreenSpace);
 }
@@ -172,22 +163,19 @@ void wheelEvent(GLFWwindow* window, double xoffset, double yoffset) {
   updateScale();
 }
 
-void keyboardEvent(GLFWwindow* window, int key, int scancode, int action,
-                   int mods) {
+void keyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
   if (action == GLFW_PRESS || action == GLFW_REPEAT) {
     auto cameraDirection = glm::normalize(cameraLookAt - cameraPos);
     if (key == GLFW_KEY_W) {
       cameraPos += cameraDirection * CAMERA_MOVE_STEP;
     } else if (key == GLFW_KEY_A) {
-      glm::vec3 moveVec =
-          glm::cross(cameraUp, cameraDirection) * CAMERA_MOVE_STEP;
+      glm::vec3 moveVec = glm::cross(cameraUp, cameraDirection) * CAMERA_MOVE_STEP;
       cameraPos += moveVec;
       cameraLookAt += moveVec;
     } else if (key == GLFW_KEY_S) {
       cameraPos += -cameraDirection * CAMERA_MOVE_STEP;
     } else if (key == GLFW_KEY_D) {
-      glm::vec3 moveVec =
-          glm::cross(cameraDirection, cameraUp) * CAMERA_MOVE_STEP;
+      glm::vec3 moveVec = glm::cross(cameraDirection, cameraUp) * CAMERA_MOVE_STEP;
       cameraPos += moveVec;
       cameraLookAt += moveVec;
     }
@@ -203,6 +191,9 @@ void keyboardEvent(GLFWwindow* window, int key, int scancode, int action,
       isMaskMode = false;
     } else if (key == GLFW_KEY_T) {
       model->setRenderType(Primitives::RenderType::TEXTURE);
+      isMaskMode = false;
+    } else if (key == GLFW_KEY_V) {
+      model->setRenderType(Primitives::RenderType::VERT_NORMAL);
       isMaskMode = false;
     } else if (key == GLFW_KEY_R) {
       model->resetRenderType();
@@ -234,39 +225,32 @@ int main(int argc, char** argv) {
     std::exit(1);
   }
 
-  // OpenGL initialization
   if (glfwInit() == GLFW_FALSE) {
     fprintf(stderr, "Initialization failed!\n");
     return 1;
   }
 
-  // Specify OpenGL version (mandatory for Mac)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   // Create a window
-  GLFWwindow* window =
-      glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WIN_TITLE, NULL, NULL);
+  GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WIN_TITLE, NULL, NULL);
   if (window == NULL) {
     glfwTerminate();
     fprintf(stderr, "Window creation failed!\n");
     return 1;
   }
 
-  // Specify window as an OpenGL context
   glfwMakeContextCurrent(window);
 
   if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
     std::cerr << "Failed to initialize GLAD" << std::endl;
     return -1;
   }
-
-  // Check OpenGL version
   std::cout << "Load OpenGL " << glfwGetVersionString() << std::endl;
 
-  // model = createModel();
   model = std::make_shared<Model>();
   ModelParser::parse(configFilePath, model);
   model->setMaskMode(isMaskMode);
@@ -280,19 +264,28 @@ int main(int argc, char** argv) {
   glfwSetScrollCallback(window, wheelEvent);
   glfwSetKeyCallback(window, keyboardEvent);
 
-  // User-specified initialization
   renderer->initializeGL();
 
+  double prevTime = glfwGetTime();
   while (glfwWindowShouldClose(window) == GLFW_FALSE) {
-    // Draw
-    renderer->paintGL();
+    double currentTime = glfwGetTime();
 
-    // Swap drawing target buffers
+    // if (currentTime - prevTime >= 1.0 / FPS) {
+    {
+      double fps = 1.0 / (currentTime - prevTime);
+      char winTitle[256];
+      sprintf_s(winTitle, "%s (FPS: %.3f)", WIN_TITLE, fps);
+      glfwSetWindowTitle(window, winTitle);
+    }
+
+    renderer->paintGL();
     glfwSwapBuffers(window);
     glfwPollEvents();
+    // }
+
+    prevTime = currentTime;
   }
 
-  // Postprocess
   glfwDestroyWindow(window);
   glfwTerminate();
 }

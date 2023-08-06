@@ -5,6 +5,7 @@
 #include <Model/Model.hpp>
 #include <Model/Object.hpp>
 #include <Model/ShaderCompiler.hpp>
+#include <Util/FileUtil.hpp>
 #include <memory>
 #include <string>
 
@@ -16,6 +17,9 @@
 class ModelParser {
  private:
   // clang-format off
+  inline static const std::string KEY_COMMON                              = "Common";
+  inline static const std::string KEY_COMMON_ROOT_DIR                     = "RootDir";
+
   inline static const std::string KEY_BACKGROUND                          = "Background";
   inline static const std::string KEY_BACKGROUND_COLOR                    = "Color";
 
@@ -40,29 +44,27 @@ class ModelParser {
   // clang-format on
 
  public:
-  static void parse(std::string filePath, std::shared_ptr<Model> model);
+  using pValue = std::shared_ptr<picojson::value>;
+  using pModel = std::shared_ptr<Model>;
+  using pString = std::shared_ptr<std::string>;
 
-  static void parseShader(
-      const std::shared_ptr<picojson::value> jsonValueShader, GLuint& shaderID);
+ private:
+  static void autoCompPath(const pString path, const pString rootDirPath);
 
-  static void parseBackgroundColor(
-      const std::shared_ptr<picojson::value> jsonValueBackground,
-      std::shared_ptr<Model> model);
+ public:
+  static void parse(std::string filePath, pModel model);
 
-  static void parseModel(const std::shared_ptr<picojson::value> jsonValueModel,
-                         std::shared_ptr<Model> model, const GLuint& shaderID);
-  static void parseModelBackground(
-      const std::shared_ptr<picojson::value> jsonValueModelBackground,
-      std::shared_ptr<Model> model, const GLuint& shaderID);
-  static void parseModelBox(
-      const std::shared_ptr<picojson::value> jsonValueModelBox,
-      std::shared_ptr<Model> model, const GLuint& shaderID);
-  static void parseModelObject(
-      const std::shared_ptr<picojson::value> jsonValueModelObject,
-      std::shared_ptr<Model> model, const GLuint& shaderID);
-  static void parseModelTerrain(
-      const std::shared_ptr<picojson::value> jsonValueModelTerrain,
-      std::shared_ptr<Model> model, const GLuint& shaderID);
+  static void parseCommon(const pValue jsonValueCommon, pString rootDirPath);
+
+  static void parseShader(const pValue jsonValueShader, GLuint& shaderID, const pString rootDirPath);
+
+  static void parseBackgroundColor(const pValue jsonValueBackground, pModel model, const pString rootDirPath);
+
+  static void parseModel(const pValue jsonValueModel, pModel model, const GLuint& shaderID, const pString rootDirPath);
+  static void parseModelBackground(const pValue jsonValueModelBackground, pModel model, const GLuint& shaderID, const pString rootDirPath);
+  static void parseModelBox(const pValue jsonValueModelBox, pModel model, const GLuint& shaderID, const pString rootDirPath);
+  static void parseModelObject(const pValue jsonValueModelObject, pModel model, const GLuint& shaderID, const pString rootDirPath);
+  static void parseModelTerrain(const pValue jsonValueModelTerrain, pModel model, const GLuint& shaderID, const pString rootDirPath);
 };
 
 #endif

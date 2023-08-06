@@ -35,7 +35,10 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
   for (int s = 0; s < shapes.size(); s++) {
     const tinyobj::mesh_t &mesh = shapes[s].mesh;
 
-    for (int i = 0; i < mesh.indices.size(); i++) {
+    int nVertices = mesh.indices.size();
+    // std::array<std::vector<int>, nVertices> verticesArray;
+
+    for (int i = 0; i < nVertices; i++) {
       const tinyobj::index_t &index = mesh.indices[i];
 
       glm::vec3 position, normal;
