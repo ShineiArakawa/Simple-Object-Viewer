@@ -2,13 +2,12 @@
 
 Background::Background(const std::string& filePath) {
   Texture::loadTexture(filePath, _textureId);
-  _renderType = RenderType::TEXTURE;
+  setDefaultRenderType(RenderType::TEXTURE);
 }
 
 Background::~Background() {}
 
 void Background::initVAO() {
-  std::cout << "Background::initVAO called." << std::endl;
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
   int idx = 0;

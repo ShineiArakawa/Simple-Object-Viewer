@@ -37,6 +37,7 @@ class Renderer {
   Renderer(int* windowWidth, int* windowHeight, std::shared_ptr<Model> models);
   ~Renderer();
 
+  void initMatrices();
   void initVAO();
   void initializeGL();
 

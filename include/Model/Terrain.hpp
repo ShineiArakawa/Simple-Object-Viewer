@@ -4,6 +4,7 @@
 
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
+#include <Util/ObjectLoader.hpp>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -16,6 +17,9 @@ class Terrain : public Primitives {
   float _offsetX;
   float _offsetY;
   float _offsetZ;
+  float _scaleX;
+  float _scaleY;
+  float _scaleH;
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;
@@ -44,16 +48,14 @@ class Terrain : public Primitives {
  protected:
   // nothing
  public:
-  inline static const float TERRAIN_HEIGHT = 10.0f;
-  inline static const float TERRAIN_WIDTH = 10.0f;
-  inline static const float TERRAIN_HEIGHT_SCALE = 2.0f;
-
+  // nothing
  private:
   // nothing
  protected:
   // nothing
  public:
-  Terrain(const std::string& filePath, const float offsetX, const float offsetY, const float offsetZ);
+  Terrain(const std::string& filePath, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY,
+          const float scaleH);
   ~Terrain();
 
   void update(){};

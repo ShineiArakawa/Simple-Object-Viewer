@@ -5,7 +5,6 @@ Model::Model(/* args */) {}
 Model::~Model() {}
 
 void Model::initVAO() {
-  std::cout << "Model::initVAO called." << std::endl;
   if (_background != nullptr) {
     _background->initVAO();
   }

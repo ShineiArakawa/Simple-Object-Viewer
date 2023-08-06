@@ -1,38 +1,44 @@
 #include <Model/Box.hpp>
 #include <iostream>
 
-Box::Box(const float offsetX, const float offsetY, const float offsetZ) {
+Box::Box(const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ) {
   _offsetX = offsetX;
   _offsetY = offsetY;
   _offsetZ = offsetZ;
+  _scaleX = scaleX;
+  _scaleY = scaleY;
+  _scaleZ = scaleZ;
 }
 
 Box::~Box() {}
 
 void Box::initVAO() {
   // Create vertex array
-  std::vector<Vertex> vertices;
+  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
   std::vector<unsigned int> indices;
   int idx = 0;
-  glm::vec3 offset(_offsetX, _offsetY, _offsetZ);
 
   for (int i = 0; i < 6; i++) {
     for (int j = 0; j < 3; j++) {
       glm::vec3 pos = positions[faces[i * 2 + 0][j]];
 
-      Vertex v(pos + offset, colors[i], colors[i], textureCoords[faces[i * 2 + 0][j]], 0.0f);
-      vertices.push_back(v);
+      Vertex v(pos, colors[i], colors[i], textureCoords[faces[i * 2 + 0][j]], 0.0f);
+      vertices->push_back(v);
       indices.push_back(idx++);
     }
 
     for (int j = 0; j < 3; j++) {
       glm::vec3 pos = positions[faces[i * 2 + 1][j]];
 
-      Vertex v(pos + offset, colors[i], colors[i], textureCoords[faces[i * 2 + 0][j]], 0.0f);
-      vertices.push_back(v);
+      Vertex v(pos, colors[i], colors[i], textureCoords[faces[i * 2 + 0][j]], 0.0f);
+      vertices->push_back(v);
       indices.push_back(idx++);
     }
   }
+
+  ObjectLoader::moveToOrigin(vertices);
+  ObjectLoader::scaleObject(vertices, _scaleX / 2.0f, _scaleY / 2.0f, _scaleZ / 2.0f);
+  ObjectLoader::move(vertices, _offsetX, _offsetY, _offsetZ);
 
   // Create VAO
   glGenVertexArrays(1, &_vaoId);
@@ -41,7 +47,7 @@ void Box::initVAO() {
   // Create vertex buffer object
   glGenBuffers(1, &_vertexBufferId);
   glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferId);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices->size(), vertices->data(), GL_STATIC_DRAW);
 
   // Setup attributes for vertex buffer object
   glEnableVertexAttribArray(0);

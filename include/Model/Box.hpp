@@ -4,6 +4,7 @@
 
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
+#include <Util/ObjectLoader.hpp>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -14,6 +15,9 @@ class Box : public Primitives {
   float _offsetX;
   float _offsetY;
   float _offsetZ;
+  float _scaleX;
+  float _scaleY;
+  float _scaleZ;
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;
@@ -64,7 +68,7 @@ class Box : public Primitives {
  protected:
   // nothing
  public:
-  Box(const float offsetX, const float offsetY, const float offsetZ);
+  Box(const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ);
   ~Box();
 
   void update(){};

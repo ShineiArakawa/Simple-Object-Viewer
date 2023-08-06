@@ -1,29 +1,60 @@
 #include <App/main.hpp>
 
+// ========================================================================
+// Default Variables ======================================================
+// ========================================================================
+static int WIN_WIDTH = 1000;
+static int WIN_HEIGHT = 1000;
+static const double FPS = 60.0;
+static const char* WIN_TITLE = "Renderer";
+static const float CAMERA_MOVE_STEP = 1.0f;
+static const float MODEL_ROTATE_STEP = 0.01f;
+inline static const glm::vec3 DEFAULT_CAMERA_POS(20.0f, 0.0f, 0.0f);
+inline static const glm::vec3 DEFAULT_CAMERA_LOOK_AT(0.0f, 0.0f, 0.0f);
+inline static const glm::vec3 DEFAULT_CAMERA_UP(0.0f, 1.0f, 0.0f);
+static const float DEFAULT_AC_SCALE = 1.0f;
+static const float ROTATE_ANIMATION_ANGLE = glm::radians(1.0f);
+enum ArcballMode { ARCBALL_MODE_NONE = 0x00, ARCBALL_MODE_TRANSLATE = 0x01, ARCBALL_MODE_ROTATE = 0x02, ARCBALL_MODE_SCALE = 0x04 };
+// ========================================================================
+// ========================================================================
+// ========================================================================
+
+// ========================================================================
+// Global Variables =======================================================
+// ========================================================================
 typedef std::shared_ptr<Renderer> pRenderer;
 typedef std::shared_ptr<Model> pModel;
 pRenderer renderer = nullptr;
 pModel model = nullptr;
 
-static int WIN_WIDTH = 1000;
-static int WIN_HEIGHT = 1000;
-static const double FPS = 120.0;
-static const char* WIN_TITLE = "Renderer";
-static const float CAMERA_MOVE_STEP = 1.0f;
-static const float MODEL_ROTATE_STEP = 0.01f;
-
 bool isDragging = false;
 bool isMaskMode = false;
 
+bool enabledRotationgMode = false;
+
 glm::ivec2 oldPos;
 glm::ivec2 newPos;
-glm::vec3 cameraPos(20.0f, 0.0f, 0.0f);
-glm::vec3 cameraLookAt(0.0f, 0.0f, 0.0f);
-glm::vec3 cameraUp(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraPos = DEFAULT_CAMERA_POS;
+glm::vec3 cameraLookAt = DEFAULT_CAMERA_LOOK_AT;
+glm::vec3 cameraUp = DEFAULT_CAMERA_UP;
 
-enum ArcballMode { ARCBALL_MODE_NONE = 0x00, ARCBALL_MODE_TRANSLATE = 0x01, ARCBALL_MODE_ROTATE = 0x02, ARCBALL_MODE_SCALE = 0x04 };
 int arcballMode = ARCBALL_MODE_NONE;
-float acScale = 1.0f;
+float acScale = DEFAULT_AC_SCALE;
+// ========================================================================
+// ========================================================================
+// ========================================================================
+
+void resetCameraPose() {
+  cameraPos = DEFAULT_CAMERA_POS;
+  cameraLookAt = DEFAULT_CAMERA_LOOK_AT;
+  cameraUp = DEFAULT_CAMERA_UP;
+  acScale = DEFAULT_AC_SCALE;
+
+  if (renderer != nullptr) {
+    renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
+    renderer->initMatrices();
+  }
+}
 
 void resizeGL(GLFWwindow* window, int width, int height) {
   WIN_WIDTH = width;
@@ -39,9 +70,7 @@ void resizeGL(GLFWwindow* window, int width, int height) {
   renderer->resizeGL();
 }
 
-// Callback for mouse click events
 void mouseEvent(GLFWwindow* window, int button, int action, int mods) {
-  // Switch following operation depending on a clicked button
   if (button == GLFW_MOUSE_BUTTON_LEFT) {
     arcballMode = ARCBALL_MODE_ROTATE;
   } else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
@@ -50,11 +79,9 @@ void mouseEvent(GLFWwindow* window, int button, int action, int mods) {
     arcballMode = ARCBALL_MODE_TRANSLATE;
   }
 
-  // Acquire a click position
   double px, py;
   glfwGetCursorPos(window, &px, &py);
 
-  // Update state of mouse dragging
   if (action == GLFW_PRESS) {
     if (!isDragging) {
       isDragging = true;
@@ -89,7 +116,6 @@ glm::vec3 getVector(double x, double y) {
   return pt;
 }
 
-// Update rotation matrix
 void updateRotate() {
   const glm::vec3 u = getVector(oldPos.x, oldPos.y);
   const glm::vec3 v = getVector(newPos.x, newPos.y);
@@ -97,7 +123,6 @@ void updateRotate() {
   renderer->updateRotate(u, v);
 }
 
-// Update translation matrix
 void updateTranslate() {
   // NOTE:
   // This function assumes the object locates near to the world-space origin and
@@ -114,10 +139,8 @@ void updateTranslate() {
   renderer->updateTranslate(newPosScreenSpace, oldPosScreenSpace);
 }
 
-// Update object scale
 void updateScale() { renderer->updateScale(acScale); }
 
-// Update transformation matrices, depending on type of mouse interaction
 void updateTransform() {
   switch (arcballMode) {
     case ARCBALL_MODE_ROTATE:
@@ -135,13 +158,10 @@ void updateTransform() {
   }
 }
 
-// Callback for mouse move events
 void motionEvent(GLFWwindow* window, double xpos, double ypos) {
   if (isDragging) {
-    // Update current mouse position
     newPos = glm::ivec2(xpos, ypos);
 
-    // Update transform only when mouse moves sufficiently
     const double dx = newPos.x - oldPos.x;
     const double dy = newPos.y - oldPos.y;
     const double length = dx * dx + dy * dy;
@@ -154,7 +174,6 @@ void motionEvent(GLFWwindow* window, double xpos, double ypos) {
   }
 }
 
-// Callback for mouse wheel event
 void wheelEvent(GLFWwindow* window, double xoffset, double yoffset) {
   acScale += (float)yoffset / 10.0f;
   if (acScale < 0) {
@@ -166,22 +185,24 @@ void wheelEvent(GLFWwindow* window, double xoffset, double yoffset) {
 void keyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
   if (action == GLFW_PRESS || action == GLFW_REPEAT) {
     auto cameraDirection = glm::normalize(cameraLookAt - cameraPos);
+
     if (key == GLFW_KEY_W) {
       cameraPos += cameraDirection * CAMERA_MOVE_STEP;
+      renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
     } else if (key == GLFW_KEY_A) {
       glm::vec3 moveVec = glm::cross(cameraUp, cameraDirection) * CAMERA_MOVE_STEP;
       cameraPos += moveVec;
       cameraLookAt += moveVec;
+      renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
     } else if (key == GLFW_KEY_S) {
       cameraPos += -cameraDirection * CAMERA_MOVE_STEP;
+      renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
     } else if (key == GLFW_KEY_D) {
       glm::vec3 moveVec = glm::cross(cameraDirection, cameraUp) * CAMERA_MOVE_STEP;
       cameraPos += moveVec;
       cameraLookAt += moveVec;
-    }
-    renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
-
-    if (key == GLFW_KEY_M) {
+      renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
+    } else if (key == GLFW_KEY_M) {
       isMaskMode = !isMaskMode;
     } else if (key == GLFW_KEY_N) {
       model->setRenderType(Primitives::RenderType::NORMAL);
@@ -201,7 +222,11 @@ void keyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mo
     } else if (key == GLFW_KEY_Q) {
       renderer->rotateModel(MODEL_ROTATE_STEP, cameraUp);
     } else if (key == GLFW_KEY_E) {
-      renderer->rotateModel(MODEL_ROTATE_STEP, cameraUp);
+      renderer->rotateModel(-MODEL_ROTATE_STEP, cameraUp);
+    } else if (key == GLFW_KEY_HOME) {
+      resetCameraPose();
+    } else if (key == GLFW_KEY_X) {
+      enabledRotationgMode = !enabledRotationgMode;
     }
 
     model->setMaskMode(isMaskMode);
@@ -249,14 +274,14 @@ int main(int argc, char** argv) {
     std::cerr << "Failed to initialize GLAD" << std::endl;
     return -1;
   }
-  std::cout << "Load OpenGL " << glfwGetVersionString() << std::endl;
+  std::cout << std::endl << "Load OpenGL " << glfwGetVersionString() << std::endl;
 
   model = std::make_shared<Model>();
   ModelParser::parse(configFilePath, model);
   model->setMaskMode(isMaskMode);
 
   renderer = std::make_shared<Renderer>(&WIN_WIDTH, &WIN_HEIGHT, model);
-  renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
+  resetCameraPose();
 
   glfwSetWindowSizeCallback(window, resizeGL);
   glfwSetMouseButtonCallback(window, mouseEvent);
@@ -264,26 +289,37 @@ int main(int argc, char** argv) {
   glfwSetScrollCallback(window, wheelEvent);
   glfwSetKeyCallback(window, keyboardEvent);
 
-  renderer->initializeGL();
+  {
+    std::cout << std::endl << "### Start initilizing models ..." << std::endl;
+    auto start = std::chrono::system_clock::now();
+    renderer->initializeGL();
+    auto end = std::chrono::system_clock::now();
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+    std::cout << "### Finish initilizing models. Elapsed time is " << elapsedTime << " [sec]." << std::endl;
+  }
 
   double prevTime = glfwGetTime();
   while (glfwWindowShouldClose(window) == GLFW_FALSE) {
     double currentTime = glfwGetTime();
 
-    // if (currentTime - prevTime >= 1.0 / FPS) {
-    {
-      double fps = 1.0 / (currentTime - prevTime);
-      char winTitle[256];
-      sprintf_s(winTitle, "%s (FPS: %.3f)", WIN_TITLE, fps);
-      glfwSetWindowTitle(window, winTitle);
+    if (currentTime - prevTime >= 1.0 / FPS) {
+      {
+        double fps = 1.0 / (currentTime - prevTime);
+        char winTitle[256];
+        sprintf_s(winTitle, "%s (FPS: %.3f)", WIN_TITLE, fps);
+        glfwSetWindowTitle(window, winTitle);
+      }
+
+      if (enabledRotationgMode) {
+        renderer->rotateModel(ROTATE_ANIMATION_ANGLE, cameraUp);
+      }
+
+      renderer->paintGL();
+      glfwSwapBuffers(window);
+      glfwPollEvents();
+
+      prevTime = currentTime;
     }
-
-    renderer->paintGL();
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-    // }
-
-    prevTime = currentTime;
   }
 
   glfwDestroyWindow(window);

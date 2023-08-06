@@ -4,7 +4,7 @@ project(OpenGLExample CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 if (MSVC)
-  # add_compile_options("/O2")
+  add_compile_options("/O2")
 else ()
   add_compile_options("-O3 -Wall")
 endif ()

@@ -23,6 +23,50 @@
                     0.0
                 ]
             }
+        },
+        "Background": {
+            "Path": "data/lena.png"
+        },
+        "Box": {
+            "Box0": {
+                "Center": [
+                    5,
+                    0,
+                    0
+                ],
+                "Scale": [
+                    2,
+                    2,
+                    2
+                ]
+            },
+            "Box1": {
+                "Center": [
+                    -5,
+                    0,
+                    0
+                ],
+                "Scale": [
+                    2,
+                    2,
+                    2
+                ]
+            }
+        },
+        "Terrain": {
+            "Terrain0": {
+                "HeightMapPath": "data/terrain.png",
+                "Center": [
+                    0,
+                    -10,
+                    0
+                ],
+                "ScaleXY": [
+                    50,
+                    50
+                ],
+                "ScaleH": 5.0
+            }
         }
     },
     "Shader": {

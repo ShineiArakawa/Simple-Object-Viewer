@@ -14,6 +14,7 @@
 #include <Renderer/Renderer.hpp>
 #include <Util/ModelParser.hpp>
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <fstream>

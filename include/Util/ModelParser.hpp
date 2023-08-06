@@ -2,9 +2,11 @@
 #ifndef _MODEL_PARSER_H_
 #define _MODEL_PARSER_H_
 
+#include <Model/Box.hpp>
 #include <Model/Model.hpp>
 #include <Model/Object.hpp>
 #include <Model/ShaderCompiler.hpp>
+#include <Model/Terrain.hpp>
 #include <Util/FileUtil.hpp>
 #include <memory>
 #include <string>
@@ -33,11 +35,18 @@ class ModelParser {
   inline static const std::string KEY_MODEL_OBJECT_OFFSET                 = "Offset";
 
   inline static const std::string KEY_MODEL_BACKGROUND                    = "Background";
+  inline static const std::string KEY_MODEL_BACKGROUND_PATH               = "Path";
 
   inline static const std::string KEY_MODEL_BOX                           = "Box";
+  inline static const std::string KEY_MODEL_BOX_CENTER                    = "Center";
+  inline static const std::string KEY_MODEL_BOX_SCALE                     = "Scale";
 
   inline static const std::string KEY_MODEL_TERRAIN                       = "Terrain";
-  
+  inline static const std::string KEY_MODEL_TERRAIN_HEIGHT_MAP_PATH       = "HeightMapPath";
+  inline static const std::string KEY_MODEL_TERRAIN_CENTER                = "Center";
+  inline static const std::string KEY_MODEL_TERRAIN_SCALE_XY              = "ScaleXY";
+  inline static const std::string KEY_MODEL_TERRAIN_SCALE_H               = "ScaleH";
+
   inline static const std::string KEY_SHADER                              = "Shader";
   inline static const std::string KEY_SHADER_VERT_SHADER_PATH             = "VertShaderPath";
   inline static const std::string KEY_SHADER_FRAG_SHADER_PATH             = "FragShaderPath";

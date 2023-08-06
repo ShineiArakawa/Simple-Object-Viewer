@@ -1,11 +1,15 @@
 #include <Model/Terrain.hpp>
 #include <Util/Texture.hpp>
 
-Terrain::Terrain(const std::string &filePath, const float offsetX, const float offsetY, const float offsetZ) {
+Terrain::Terrain(const std::string &filePath, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY,
+                 const float scaleH) {
   _filePath = filePath;
   _offsetX = offsetX;
   _offsetY = offsetY;
   _offsetZ = offsetZ;
+  _scaleX = scaleX;
+  _scaleY = scaleY;
+  _scaleH = scaleH;
 }
 
 Terrain::~Terrain() {}
@@ -18,18 +22,13 @@ void Terrain::initVAO() {
   int width = (*heightMap)[0]->size();
   int nChannels = (*(*heightMap)[0])[0]->size();
 
-  float diffH = TERRAIN_HEIGHT / (float)height;
-  float diffW = TERRAIN_WIDTH / (float)width;
+  float diffH = 1.0f / (float)height;
+  float diffW = 1.0f / (float)width;
 
   // Create vertex array
-  std::vector<Vertex> vertices;
+  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
   std::vector<unsigned int> indices;
   int idx = 0;
-
-  // Offset
-  glm::vec3 offset(_offsetX, _offsetY, _offsetZ);
-  offset.x -= TERRAIN_HEIGHT / 2.0f;
-  offset.z -= TERRAIN_WIDTH / 2.0f;
 
   for (int h_texture = 0; h_texture < height - 1; h_texture++) {
     for (int w_texture = 0; w_texture < width - 1; w_texture++) {
@@ -44,11 +43,11 @@ void Terrain::initVAO() {
 
         glm::vec3 pos(0.0f);
         pos.x = positions[i_vert].x * diffH + (float)h_texture * diffH;
-        pos.y = (float)(*(*(*heightMap)[h_texture + h_texture_offset])[w_texture + w_texture_offset])[0] / 255.0f * TERRAIN_HEIGHT_SCALE;
+        pos.y = (float)(*(*(*heightMap)[h_texture + h_texture_offset])[w_texture + w_texture_offset])[0] / 255.0f;
         pos.z = positions[i_vert].z * diffW + (float)w_texture * diffW;
 
-        Vertex v(pos + offset, colors[i_vert], colors[i_vert], textureCoords[i_vert], 0.0f);
-        vertices.push_back(v);
+        Vertex v(pos, colors[i_vert], colors[i_vert], textureCoords[i_vert], 0.0f);
+        vertices->push_back(v);
         indices.push_back(idx++);
       }
 
@@ -66,15 +65,21 @@ void Terrain::initVAO() {
 
         glm::vec3 pos(0.0f);
         pos.x = positions[i_vert].x * diffH + (float)h_texture * diffH;
-        pos.y = (float)(*(*(*heightMap)[h_texture + h_texture_offset])[w_texture + w_texture_offset])[0] / 255.0f * TERRAIN_HEIGHT_SCALE;
+        pos.y = (float)(*(*(*heightMap)[h_texture + h_texture_offset])[w_texture + w_texture_offset])[0] / 255.0f;
         pos.z = positions[i_vert].z * diffW + (float)w_texture * diffW;
 
-        Vertex v(pos + offset, colors[i_vert], colors[i_vert], textureCoords[i_vert], 0.0f);
-        vertices.push_back(v);
+        Vertex v(pos, colors[i_vert], colors[i_vert], textureCoords[i_vert], 0.0f);
+        vertices->push_back(v);
         indices.push_back(idx++);
       }
     }
   }
+
+  std::cout << "### Initialized terrain with " << vertices->size() / 3 << " polygons" << std::endl;
+
+  ObjectLoader::moveToOrigin(vertices);
+  ObjectLoader::scaleObject(vertices, _scaleX, _scaleH, _scaleY);
+  ObjectLoader::move(vertices, _offsetX, _offsetY, _offsetZ);
 
   // Create VAO
   glGenVertexArrays(1, &_vaoId);
@@ -83,7 +88,7 @@ void Terrain::initVAO() {
   // Create vertex buffer object
   glGenBuffers(1, &_vertexBufferId);
   glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferId);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices->size(), vertices->data(), GL_STATIC_DRAW);
 
   // Setup attributes for vertex buffer object
   glEnableVertexAttribArray(0);
