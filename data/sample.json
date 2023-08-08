@@ -1,6 +1,6 @@
 {
     "Common": {
-        "RootDir": "C:/Users/araka/Projects/OpenGLTemplate"
+        "RootDir": "D:/GitHub/OpenGLTemplate"
     },
     "Background": {
         "Color": [
@@ -23,9 +23,6 @@
                     0.0
                 ]
             }
-        },
-        "Background": {
-            "Path": "data/lena.png"
         },
         "Box": {
             "Box0": {
@@ -51,21 +48,69 @@
                     2,
                     2
                 ]
+            },
+            "Box2": {
+                "Center": [
+                    0,
+                    5,
+                    0
+                ],
+                "Scale": [
+                    2,
+                    2,
+                    2
+                ]
+            },
+            "Box3": {
+                "Center": [
+                    0,
+                    -5,
+                    0
+                ],
+                "Scale": [
+                    2,
+                    2,
+                    2
+                ]
+            },
+            "Box4": {
+                "Center": [
+                    0,
+                    0,
+                    5
+                ],
+                "Scale": [
+                    2,
+                    2,
+                    2
+                ]
+            },
+            "Box5": {
+                "Center": [
+                    0,
+                    0,
+                    -5
+                ],
+                "Scale": [
+                    2,
+                    2,
+                    2
+                ]
             }
         },
         "Terrain": {
             "Terrain0": {
-                "HeightMapPath": "data/terrain.png",
+                "HeightMapPath": "data/terrain_large.png",
                 "Center": [
                     0,
                     -10,
                     0
                 ],
                 "ScaleXY": [
-                    50,
-                    50
+                    1000,
+                    1000
                 ],
-                "ScaleH": 5.0
+                "ScaleH": 50.0
             }
         }
     },
