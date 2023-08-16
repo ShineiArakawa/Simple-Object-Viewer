@@ -76,13 +76,14 @@ void Box::initVAO() {
 
 void Box::paintGL(const glm::mat4 &mvpMat) {
   GLuint uid;
+  glm::mat4 mvptMat = mvpMat * glm::translate(_position);
 
   // Enable shader program
   glUseProgram(_shaderID);
 
   // Transfer uniform variables
   GLuint mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
-  glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvpMat));
+  glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvptMat));
 
   uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
   glUniform1f(uid, getRenderType());

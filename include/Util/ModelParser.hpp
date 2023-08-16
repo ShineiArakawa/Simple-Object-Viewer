@@ -27,6 +27,7 @@ class ModelParser {
 
   inline static const std::string KEY_MODEL                               = "Model";
   inline static const std::string KEY_MODEL_OBJECT                        = "Object";
+  inline static const std::string KEY_MODEL_NAME                          = "Name";
 
   inline static const std::string KEY_MODEL_OBJECT_OBJ_PATH               = "ObjPath";
   inline static const std::string KEY_MODEL_OBJECT_TEXTURE_PATH           = "TexturePath";

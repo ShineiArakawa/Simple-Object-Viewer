@@ -1,35 +1,6 @@
 #include <Model/Model.hpp>
 
-Model::Model(/* args */) {}
-
 Model::~Model() {}
-
-void Model::initVAO() {
-  if (_background != nullptr) {
-    _background->initVAO();
-  }
-
-  int nModels = getNumObjects();
-  for (int iModel = 0; iModel < nModels; iModel++) {
-    getObject(iModel)->initVAO();
-
-    if (iModel % 10000 == 0 || iModel == nModels - 1) {
-      std::cout << "Initialized " << iModel + 1 << " models." << std::endl;
-    }
-  }
-}
-
-void Model::paintGL(const glm::mat4& mvpMat) {
-  if (_background != nullptr) {
-    _background->update();
-    _background->paintGL(mvpMat);
-  }
-
-  for (int iModel = 0; iModel < getNumObjects(); iModel++) {
-    getObject(iModel)->update();
-    getObject(iModel)->paintGL(mvpMat);
-  }
-}
 
 void Model::setMaskMode(const bool maskMode) {
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {

@@ -159,14 +159,22 @@ void ModelParser::parseBackgroundColor(const std::shared_ptr<picojson::value> js
 
 void ModelParser::parseModelBackground(const std::shared_ptr<picojson::value> jsonValueModelBackground, std::shared_ptr<Model> model,
                                        const GLuint &shaderID, const pString rootDirPath) {
-  if (jsonValueModelBackground->contains(KEY_MODEL_BACKGROUND_PATH)) {
-    ModelParser::pString filePath = GetValueHelpers::getScalarValue<std::string>(KEY_MODEL_BACKGROUND_PATH, *jsonValueModelBackground);
+  picojson::object jsonObject = jsonValueModelBackground->get<picojson::object>();
 
-    if (filePath != nullptr) {
-      ModelParser::autoCompPath(filePath, rootDirPath);
-      std::shared_ptr<Background> background = std::make_shared<Background>(*filePath);
-      background->setShader(shaderID);
-      model->setBackground(std::move(background));
+  for (picojson::object::const_iterator iter = jsonObject.begin(); iter != jsonObject.end(); ++iter) {
+    std::string objectName = iter->first;
+    picojson::value objectValue = iter->second;
+
+    if (objectValue.contains(KEY_MODEL_BACKGROUND_PATH)) {
+      ModelParser::pString filePath = GetValueHelpers::getScalarValue<std::string>(KEY_MODEL_BACKGROUND_PATH, objectValue);
+
+      if (filePath != nullptr) {
+        ModelParser::autoCompPath(filePath, rootDirPath);
+        std::shared_ptr<Background> background = std::make_shared<Background>(*filePath);
+        background->setShader(shaderID);
+        background->setName(objectName);
+        model->addBackground(std::move(background));
+      }
     }
   }
 }
@@ -210,6 +218,7 @@ void ModelParser::parseModelBox(const std::shared_ptr<picojson::value> jsonValue
       std::shared_ptr<Box> box =
           std::make_shared<Box>((float)*offset[0], (float)*offset[1], (float)*offset[2], (float)*scale[0], (float)*scale[1], (float)*scale[2]);
       box->setShader(shaderID);
+      box->setName(objectName);
       model->addObject(std::move(box));
     } else {
       std::cerr << "Failed to parse Box model: " << objectName << std::endl;
@@ -277,6 +286,7 @@ void ModelParser::parseModelObject(const std::shared_ptr<picojson::value> jsonVa
       object->setDefaultRenderType(Primitives::getRenderType(*defaultRenderType));
     }
 
+    object->setName(objectName);
     model->addObject(std::move(object));
   }
 }
@@ -374,8 +384,8 @@ void ModelParser::parse(std::string filePath, std::shared_ptr<Model> model) {
   if (fs) {
     fs >> (*jsonValue);
   } else {
-    std::cerr << "Failed to open parameters file: " + filePath << std::endl;
-    throw std::runtime_error("Failed to open parameters file: " + filePath);
+    std::cerr << "Failed to open config file: " + FileUtil::absPath(filePath) << std::endl;
+    throw std::runtime_error("Failed to open config file: " + FileUtil::absPath(filePath));
   }
   fs.close();
 
