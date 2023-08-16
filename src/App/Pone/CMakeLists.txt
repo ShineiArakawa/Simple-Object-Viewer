@@ -33,3 +33,8 @@ target_link_libraries(
 #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}"/../Shaders/" $<TARGET_FILE_DIR:${PROJECT_NAME}>"/../Shaders/"
 #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}"/../Shaders/" $<TARGET_FILE_DIR:${PROJECT_NAME}>"/../Shaders/"
 # )
+
+add_custom_command(
+  TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_SOURCE_DIR}/
+)
