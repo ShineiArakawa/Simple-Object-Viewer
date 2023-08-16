@@ -1,6 +1,6 @@
 {
     "Common": {
-        "RootDir": "D:/GitHub/OpenGLTemplate"
+        "RootDir": "C:/Users/araka/Projects/Pone"
     },
     "Background": {
         "Color": [
@@ -11,12 +11,19 @@
         ]
     },
     "Model": {
+        "Background": {
+            "Start": {
+                "Path": "data/start.png"
+            },
+            "GameOver": {
+                "Path": "data/gameOver.png"
+            }
+        },
         "Object": {
-            "Face": {
-                "ObjPath": "data/m0000002_cleanup.obj",
-                "TexturePath": "data/m0000002_H_12_Diffuse.png",
-                "DefaultRenderType": "TEXTURE",
-                "Scale": 0.001,
+            "Sphere": {
+                "ObjPath": "data/sphere.obj",
+                "DefaultRenderType": "NORMAL",
+                "Scale": 0.3,
                 "Offset": [
                     0.0,
                     0.0,
@@ -25,92 +32,65 @@
             }
         },
         "Box": {
-            "Box0": {
+            "Left": {
                 "Center": [
-                    5,
                     0,
+                    0,
+                    -10
+                ],
+                "Scale": [
+                    1,
+                    20,
+                    1
+                ]
+            },
+            "Upper": {
+                "Center": [
+                    0,
+                    10,
                     0
                 ],
                 "Scale": [
-                    2,
-                    2,
-                    2
+                    1,
+                    1,
+                    20
                 ]
             },
-            "Box1": {
-                "Center": [
-                    -5,
-                    0,
-                    0
-                ],
-                "Scale": [
-                    2,
-                    2,
-                    2
-                ]
-            },
-            "Box2": {
-                "Center": [
-                    0,
-                    5,
-                    0
-                ],
-                "Scale": [
-                    2,
-                    2,
-                    2
-                ]
-            },
-            "Box3": {
-                "Center": [
-                    0,
-                    -5,
-                    0
-                ],
-                "Scale": [
-                    2,
-                    2,
-                    2
-                ]
-            },
-            "Box4": {
+            "Right": {
                 "Center": [
                     0,
                     0,
-                    5
+                    10
                 ],
                 "Scale": [
-                    2,
-                    2,
-                    2
+                    1,
+                    20,
+                    1
                 ]
             },
-            "Box5": {
-                "Center": [
-                    0,
-                    0,
-                    -5
-                ],
-                "Scale": [
-                    2,
-                    2,
-                    2
-                ]
-            }
-        },
-        "Terrain": {
-            "Terrain0": {
-                "HeightMapPath": "data/terrain_large.png",
+            "Bottom": {
                 "Center": [
                     0,
                     -10,
                     0
                 ],
-                "ScaleXY": [
-                    1000,
-                    1000
+                "Scale": [
+                    1,
+                    1,
+                    20
+                ]
+            },
+            "Paddle": {
+                "Center": [
+                    0,
+                    -8,
+                    0
                 ],
-                "ScaleH": 50.0
+                "Scale": [
+                    0.5,
+                    0.5,
+                    3
+                ]
             }
         }
     },
