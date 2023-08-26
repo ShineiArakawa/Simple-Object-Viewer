@@ -3,12 +3,6 @@
 namespace GetValueHelpers {
 
 template <class Type>
-std::shared_ptr<Type> getValueFromJsonObject(picojson::object jsonObject) {
-  picojson::value jsonValue = picojson::value(jsonObject);
-  return getValueFromJsonValue<Type>(jsonValue);
-}
-
-template <class Type>
 inline std::shared_ptr<Type> getValueFromJsonValue(picojson::value jsonValue) {
   return nullptr;
 }
@@ -53,6 +47,12 @@ inline std::shared_ptr<double> getValueFromJsonValue<double>(picojson::value jso
     *value = doubleValue;
   }
   return value;
+}
+
+template <class Type>
+std::shared_ptr<Type> getValueFromJsonObject(picojson::object jsonObject) {
+  picojson::value jsonValue = picojson::value(jsonObject);
+  return getValueFromJsonValue<Type>(jsonValue);
 }
 
 template <class Type>

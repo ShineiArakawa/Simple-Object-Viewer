@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 if (MSVC)
   add_compile_options("/O2")
 else ()
-  add_compile_options("-O3 -Wall")
+  add_compile_options("-O3")
 endif ()
 
 include_directories(lib/glad/include)

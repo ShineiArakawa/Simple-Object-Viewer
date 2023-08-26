@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
       {
         double fps = 1.0 / (currentTime - prevTime);
         char winTitle[256];
-        sprintf_s(winTitle, "%s (FPS: %.3f)", WIN_TITLE, fps);
+        sprintf(winTitle, "%s (FPS: %.3f)", WIN_TITLE, fps);
         glfwSetWindowTitle(window, winTitle);
       }
 
