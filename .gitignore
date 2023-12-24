@@ -1,6 +1,5 @@
 .vs
 .vscode
-**/*.obj
 **/*.png
 **/*.mtl
 **/*.zip
