@@ -7,6 +7,4 @@
 static const char* WIN_TITLE = "Viewer";
 static pViewerModel model = nullptr;
 
-void keyboardEventViewer(GLFWwindow* window, int key, int scancode, int action, int mods);
-
 #endif

@@ -7,6 +7,4 @@
 static const char* WIN_TITLE = "Pone";
 static pPoneModel model = nullptr;
 
-void keyboardEventPone(GLFWwindow* window, int key, int scancode, int action, int mods);
-
 #endif

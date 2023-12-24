@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE on)
 
 # add_compile_options("-Wall")
-if(MSVC)
+if(MSVC AND(CMAKE_BUILD_TYPE EQUAL "Release"))
   add_compile_options("/O2")
-else()
+elseif(UNIX)
   add_compile_options("-O3")
 endif()
 
