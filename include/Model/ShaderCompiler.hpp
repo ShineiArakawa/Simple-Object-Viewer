@@ -4,6 +4,7 @@
 
 #include <OpenGL.hpp>
 #include <fstream>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,9 +15,7 @@ class ShaderCompiler {
  protected:
   // nothing
  public:
-  inline static const std::string SHADER_ROOT_DIRECTORY = "../Shaders/";
-  inline const static std::string VERT_SHADER_FILE = SHADER_ROOT_DIRECTORY + "render.vert";
-  inline const static std::string FRAG_SHADER_FILE = SHADER_ROOT_DIRECTORY + "render.frag";
+  // nothing
 
  private:
   // nothing
@@ -24,7 +23,9 @@ class ShaderCompiler {
   // nothing
 
  public:
-  static GLuint compile(const std::string& filename, GLuint type);
-  static GLuint buildShaderProgram(const std::string& vShaderFile, const std::string& fShaderFile);
+  static std::string readCodesFromFIle(const std::string& filename);
+  static GLuint compile(const std::string& code, GLuint type);
+  static GLuint buildShaderProgram(const std::string& vertexShaderCode,
+                                   const std::string& fragmentShaderCode);
 };
 #endif

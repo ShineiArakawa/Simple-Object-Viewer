@@ -10,7 +10,8 @@ void ViewerModel::initVAO() {
     getBackground(iBackground)->initVAO();
 
     if (iBackground % 10000 == 0 || iBackground == nBackgrounds - 1) {
-      std::cout << "Initialized " << iBackground + 1 << " backgrounds." << std::endl;
+      std::cout << "Initialized " << iBackground + 1 << " backgrounds."
+                << std::endl;
     }
   }
 

@@ -5,7 +5,6 @@
 #include <Model/Box.hpp>
 #include <Model/Model.hpp>
 #include <Model/Object.hpp>
-#include <Model/ShaderCompiler.hpp>
 #include <Model/Terrain.hpp>
 #include <Util/FileUtil.hpp>
 #include <memory>
@@ -66,15 +65,15 @@ class ModelParser {
 
   static void parseCommon(const pValue jsonValueCommon, pString rootDirPath);
 
-  static void parseShader(const pValue jsonValueShader, GLuint& shaderID, const pString rootDirPath);
+  static void parseShader(const pValue jsonValueShader, pModel model, const pString rootDirPath);
 
   static void parseBackgroundColor(const pValue jsonValueBackground, pModel model, const pString rootDirPath);
 
-  static void parseModel(const pValue jsonValueModel, pModel model, const GLuint& shaderID, const pString rootDirPath);
-  static void parseModelBackground(const pValue jsonValueModelBackground, pModel model, const GLuint& shaderID, const pString rootDirPath);
-  static void parseModelBox(const pValue jsonValueModelBox, pModel model, const GLuint& shaderID, const pString rootDirPath);
-  static void parseModelObject(const pValue jsonValueModelObject, pModel model, const GLuint& shaderID, const pString rootDirPath);
-  static void parseModelTerrain(const pValue jsonValueModelTerrain, pModel model, const GLuint& shaderID, const pString rootDirPath);
+  static void parseModel(const pValue jsonValueModel, pModel model, const pString rootDirPath);
+  static void parseModelBackground(const pValue jsonValueModelBackground, pModel model, const pString rootDirPath);
+  static void parseModelBox(const pValue jsonValueModelBox, pModel model, const pString rootDirPath);
+  static void parseModelObject(const pValue jsonValueModelObject, pModel model, const pString rootDirPath);
+  static void parseModelTerrain(const pValue jsonValueModelTerrain, pModel model, const pString rootDirPath);
 };
 
 #endif

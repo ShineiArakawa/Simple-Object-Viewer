@@ -1,6 +1,8 @@
-#include <App/PoneMain.hpp>
+#include <pybind11/pybind11.h>
 
-void keyboardEventPone(GLFWwindow* window, int key, int scancode, int action, int mods) {
+#include <App/ViewerMain.hpp>
+
+void keyboardEventViewer(GLFWwindow* window, int key, int scancode, int action, int mods) {
   if (action == GLFW_PRESS || action == GLFW_REPEAT) {
     auto cameraDirection = glm::normalize(Window::cameraLookAt - Window::cameraPos);
 
@@ -45,45 +47,13 @@ void keyboardEventPone(GLFWwindow* window, int key, int scancode, int action, in
       Window::resetCameraPose();
     } else if (key == GLFW_KEY_X) {
       Window::enabledRotationgMode = !Window::enabledRotationgMode;
-    } else if (key == GLFW_KEY_ENTER) {
-      PoneModel::GamePhase currentPhase = model->getPhase();
-      if (currentPhase == PoneModel::GamePhase::START) {
-        model->setPhase(PoneModel::GamePhase::PLAYING);
-      } else if (currentPhase == PoneModel::GamePhase::GAME_OVER) {
-        model->setPhase(PoneModel::GamePhase::START);
-        model->reset();
-      }
-    } else if (key == GLFW_KEY_LEFT) {
-      model->paddleMoveLeft();
-    } else if (key == GLFW_KEY_RIGHT) {
-      model->paddleMoveRight();
-    } else if (key == GLFW_KEY_ESCAPE) {
-      model->setPhase(PoneModel::GamePhase::START);
-      model->reset();
     }
 
     model->setMaskMode(Window::isMaskMode);
   }
 }
 
-int main(int argc, char** argv) {
-  // Parse args
-  int nArgs = argc - 1;
-  std::cout << "Number of arguments : " + std::to_string(nArgs) << std::endl;
-  for (int iArg = 0; iArg < nArgs; iArg++) {
-    std::cout << "args[" << iArg << "]=" << argv[iArg + 1] << std::endl;
-  }
-
-  // Parse config file path
-  std::string configFilePath;
-  if (nArgs > 0) {
-    configFilePath = argv[1];
-  } else {
-    std::cout << "The config file path was not specified. Continue with the default config path: " << FileUtil::absPath(DEFAULT_CONFIG_PATH)
-              << std::endl;
-    configFilePath = DEFAULT_CONFIG_PATH;
-  }
-
+int launchViewerWindow(std::string configFilePath) {
   // Check config file
   if (!FileUtil::exists(configFilePath)) {
     std::cerr << "Failed to open the config file. Please check the arguments." << std::endl;
@@ -118,7 +88,7 @@ int main(int argc, char** argv) {
   std::cout << std::endl
             << "Load OpenGL " << glfwGetVersionString() << std::endl;
 
-  model = std::make_shared<PoneModel>();
+  pViewerModel model = std::make_shared<ViewerModel>();
   ModelParser::parse(configFilePath, model);
   model->compileShaders();
   model->setMaskMode(Window::isMaskMode);
@@ -130,7 +100,7 @@ int main(int argc, char** argv) {
   glfwSetMouseButtonCallback(window, Window::mouseEvent);
   glfwSetCursorPosCallback(window, Window::motionEvent);
   glfwSetScrollCallback(window, Window::wheelEvent);
-  glfwSetKeyCallback(window, keyboardEventPone);
+  glfwSetKeyCallback(window, keyboardEventViewer);
 
   {
     std::cout << std::endl
@@ -168,4 +138,11 @@ int main(int argc, char** argv) {
 
   glfwDestroyWindow(window);
   glfwTerminate();
+
+  return 0;
+}
+
+PYBIND11_MODULE(ViewerPythonBinding, module) {
+  module.doc() = "Python binding for the simple object viewer.";
+  module.def("launchViewerWindow", &launchViewerWindow, "Launch viewer window", pybind11::arg("configFilePath"));
 }

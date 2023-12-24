@@ -1,9 +1,6 @@
 #include <Model/ShaderCompiler.hpp>
 
-GLuint ShaderCompiler::compile(const std::string& filename, GLuint type) {
-  // Create a shader
-  GLuint shaderId = glCreateShader(type);
-
+std::string ShaderCompiler::readCodesFromFIle(const std::string& filename) {
   // Load source file
   std::ifstream reader;
   std::string code;
@@ -26,11 +23,19 @@ GLuint ShaderCompiler::compile(const std::string& filename, GLuint type) {
     reader.seekg(0, std::ios::beg);
 
     // Load entire file and copy to "code" variable
-    code.assign(std::istreambuf_iterator<char>(reader), std::istreambuf_iterator<char>());
+    code.assign(std::istreambuf_iterator<char>(reader),
+                std::istreambuf_iterator<char>());
   }
 
   // Close file
   reader.close();
+
+  return code;
+}
+
+GLuint ShaderCompiler::compile(const std::string& code, GLuint type) {
+  // Create a shader
+  GLuint shaderId = glCreateShader(type);
 
   // Compile a source code
   const char* codeChars = code.c_str();
@@ -64,10 +69,11 @@ GLuint ShaderCompiler::compile(const std::string& filename, GLuint type) {
   return shaderId;
 }
 
-GLuint ShaderCompiler::buildShaderProgram(const std::string& vShaderFile, const std::string& fShaderFile) {
+GLuint ShaderCompiler::buildShaderProgram(const std::string& vertexShaderCode,
+                                          const std::string& fragmentShaderCode) {
   // Compile shader files
-  GLuint vertShaderId = ShaderCompiler::compile(vShaderFile, GL_VERTEX_SHADER);
-  GLuint fragShaderId = ShaderCompiler::compile(fShaderFile, GL_FRAGMENT_SHADER);
+  GLuint vertShaderId = ShaderCompiler::compile(vertexShaderCode, GL_VERTEX_SHADER);
+  GLuint fragShaderId = ShaderCompiler::compile(fragmentShaderCode, GL_FRAGMENT_SHADER);
 
   // Link shader objects to the program
   GLuint programId = glCreateProgram();

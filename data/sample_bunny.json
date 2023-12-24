@@ -1,6 +1,6 @@
 {
     "Common": {
-        "RootDir": "C:/Users/araka/Projects/OpenGLTemplate"
+        "RootDir": "D:/GitHub/OpenGLTemplate"
     },
     "Background": {
         "Color": [
@@ -23,9 +23,5 @@
                 ]
             }
         }
-    },
-    "Shader": {
-        "VertShaderPath": "src/Shaders/render.vert",
-        "FragShaderPath": "src/Shaders/render.frag"
     }
 }

@@ -1,9 +1,6 @@
-#include <App/main.hpp>
+#include <App/ViewerMain.hpp>
 
-static pViewerModel model = nullptr;
-static const char* WIN_TITLE = "Viewer";
-
-void keyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void keyboardEventViewer(GLFWwindow* window, int key, int scancode, int action, int mods) {
   if (action == GLFW_PRESS || action == GLFW_REPEAT) {
     auto cameraDirection = glm::normalize(Window::cameraLookAt - Window::cameraPos);
 
@@ -103,10 +100,12 @@ int main(int argc, char** argv) {
     std::cerr << "Failed to initialize GLAD" << std::endl;
     return -1;
   }
-  std::cout << std::endl << "Load OpenGL " << glfwGetVersionString() << std::endl;
+  std::cout << std::endl
+            << "Load OpenGL " << glfwGetVersionString() << std::endl;
 
   model = std::make_shared<ViewerModel>();
   ModelParser::parse(configFilePath, model);
+  model->compileShaders();
   model->setMaskMode(Window::isMaskMode);
 
   Window::renderer = std::make_shared<Renderer>(&Window::WIN_WIDTH, &Window::WIN_HEIGHT, model);
@@ -116,10 +115,11 @@ int main(int argc, char** argv) {
   glfwSetMouseButtonCallback(window, Window::mouseEvent);
   glfwSetCursorPosCallback(window, Window::motionEvent);
   glfwSetScrollCallback(window, Window::wheelEvent);
-  glfwSetKeyCallback(window, keyboardEvent);
+  glfwSetKeyCallback(window, keyboardEventViewer);
 
   {
-    std::cout << std::endl << "### Start initilizing models ..." << std::endl;
+    std::cout << std::endl
+              << "### Start initilizing models ..." << std::endl;
     auto start = std::chrono::system_clock::now();
     Window::renderer->initializeGL();
     auto end = std::chrono::system_clock::now();

@@ -17,7 +17,9 @@
 
 class PoneModel : public Model {
  public:
-  enum class GamePhase { START, PLAYING, GAME_OVER };
+  enum class GamePhase { START,
+                         PLAYING,
+                         GAME_OVER };
   inline static const float DELTA_T = 0.3f;
   inline static const float DELTA_Z = 0.7f;
   inline static const float BALL_RADIUS = 0.3f;
