@@ -11,6 +11,8 @@ std::string FileUtil::dirPath(const std::string path) { return generic_fs::absol
 
 std::string FileUtil::baseName(const std::string path) { return generic_fs::absolute(tPath(path)).filename().string(); }
 
+std::string FileUtil::cwd() { return generic_fs::current_path().string(); }
+
 void FileUtil::mkdirs(const std::string path) {
   tPath path_basePath = generic_fs::absolute(tPath(path));
   generic_fs::create_directories(path_basePath);

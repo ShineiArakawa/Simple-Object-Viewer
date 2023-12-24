@@ -112,12 +112,8 @@ std::vector<Type *> getValue(std::string key, picojson::value jsonValue) {
 void ModelParser::parseCommon(const pValue jsonValueCommon, pString rootDirPath) {
   auto tmp_rootDirPath = GetValueHelpers::getScalarValue<std::string>(KEY_COMMON_ROOT_DIR, *jsonValueCommon);
 
-  if (tmp_rootDirPath != nullptr) {
+  if (tmp_rootDirPath == nullptr) {
     *rootDirPath = *tmp_rootDirPath;
-    std::cout << "### RootDirPath=" << *rootDirPath << std::endl;
-  } else {
-    rootDirPath.reset();
-    rootDirPath = nullptr;
   }
 }
 
@@ -384,12 +380,17 @@ void ModelParser::parse(std::string filePath, std::shared_ptr<Model> model) {
   }
   fs.close();
 
-  pString rootDirPath = std::make_shared<std::string>();
+  pString rootDirPath = nullptr;
 
   if (jsonValue->contains(KEY_COMMON)) {
     auto jsonValueCommon = std::make_shared<picojson::value>(jsonValue->get(KEY_COMMON));
     ModelParser::parseCommon(jsonValueCommon, rootDirPath);
   }
+
+  if (rootDirPath == nullptr) {
+    rootDirPath = std::make_shared<std::string>(FileUtil::dirPath(filePath));
+  }
+  std::cout << "### RootDirPath=" << *rootDirPath << std::endl;
 
   if (jsonValue->contains(KEY_SHADER)) {
     auto jsonValueShader = std::make_shared<picojson::value>(jsonValue->get(KEY_SHADER));

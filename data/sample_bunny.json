@@ -1,7 +1,4 @@
 {
-    "Common": {
-        "RootDir": "D:/GitHub/OpenGLTemplate"
-    },
     "Background": {
         "Color": [
             0.0,
@@ -13,7 +10,7 @@
     "Model": {
         "Object": {
             "Face": {
-                "ObjPath": "data/bunny.obj",
+                "ObjPath": "bunny.obj",
                 "DefaultRenderType": "NORMAL",
                 "Scale": 1.0,
                 "Offset": [
