@@ -10,3 +10,6 @@
 [submodule "lib/picojson"]
 	path = lib/picojson
 	url = https://github.com/kazuho/picojson.git
+[submodule "lib/stb"]
+	path = lib/stb
+	url = https://github.com/nothings/stb.git
