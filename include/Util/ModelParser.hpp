@@ -12,7 +12,7 @@
 
 #ifndef PICOJSON_IMPLEMENTATION
 #define PICOJSON_IMPLEMENTATION
-#include <picojson.hpp>
+#include <picojson.h>
 #endif
 
 class ModelParser {
