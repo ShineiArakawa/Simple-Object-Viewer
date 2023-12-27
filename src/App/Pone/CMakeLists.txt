@@ -9,12 +9,18 @@ add_executable(
 # =========================================================
 # Set Libraries ===========================================
 # =========================================================
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/lib/glad/include)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/lib/glfw/include)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/lib/glm)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/lib/picojson)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include)
-
+target_include_directories(
+  ${PROJECT_NAME}
+  PUBLIC
+  ${CMAKE_SOURCE_DIR}/lib/eigen
+  ${CMAKE_SOURCE_DIR}/lib/glad/include
+  ${CMAKE_SOURCE_DIR}/lib/glfw/include
+  ${CMAKE_SOURCE_DIR}/lib/glm
+  ${CMAKE_SOURCE_DIR}/lib/picojson
+  ${CMAKE_SOURCE_DIR}/lib/stb
+  ${CMAKE_SOURCE_DIR}/lib/tinyobjloader
+  ${CMAKE_SOURCE_DIR}/include
+)
 
 target_link_libraries(
   ${PROJECT_NAME}
@@ -26,6 +32,7 @@ target_link_libraries(
   $<TARGET_OBJECTS:Window_object>
   ${CMAKE_DL_LIBS}
 )
+
 
 # add_custom_command(
 #   TARGET ${PROJECT_NAME} POST_BUILD
