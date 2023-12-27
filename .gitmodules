@@ -22,3 +22,6 @@
 [submodule "lib/eigen"]
 	path = lib/eigen
 	url = https://gitlab.com/libeigen/eigen.git
+[submodule "lib/--force"]
+	path = lib/--force
+	url = https://gitlab.com/libeigen/eigen.git
