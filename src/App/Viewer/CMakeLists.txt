@@ -12,15 +12,16 @@ add_executable(
 target_include_directories(
   ${PROJECT_NAME}
   PUBLIC
-  ${CMAKE_SOURCE_DIR}/lib/eigen
-  ${CMAKE_SOURCE_DIR}/lib/glad/include
-  ${CMAKE_SOURCE_DIR}/lib/glfw/include
-  ${CMAKE_SOURCE_DIR}/lib/glm
-  ${CMAKE_SOURCE_DIR}/lib/picojson
-  ${CMAKE_SOURCE_DIR}/lib/stb
-  ${CMAKE_SOURCE_DIR}/lib/tinyobjloader
-  ${CMAKE_SOURCE_DIR}/include
+  ${EIGEN_INCLUDE_DIR}
+  ${GLAD_INCLUDE_DIR}
+  ${GLFW_INCLUDE_DIR}
+  ${GLM_INCLUDE_DIR}
+  ${PICOJSON_INCLUDE_DIR}
+  ${STB_INCLUDE_DIR}
+  ${TINYOBJLOADER_INCLUDE_DIR}
+  ${PROJECT_INCLUDE_DIR}
 )
+
 
 target_link_libraries(
   ${PROJECT_NAME}

@@ -25,3 +25,6 @@
 [submodule "lib/--force"]
 	path = lib/--force
 	url = https://gitlab.com/libeigen/eigen.git
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/ocornut/imgui.git

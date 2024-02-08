@@ -2,7 +2,11 @@
 
 // clang-format off
 #ifndef _INCLUDE_GL_
-#include <glad/glad.h>a
+
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/glad.h>
+
+#define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 
 #define GLM_FORCE_RADIANS

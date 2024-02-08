@@ -93,9 +93,5 @@
                 ]
             }
         }
-    },
-    "Shader": {
-        "VertShaderPath": "src/Shaders/render.vert",
-        "FragShaderPath": "src/Shaders/render.frag"
     }
 }
