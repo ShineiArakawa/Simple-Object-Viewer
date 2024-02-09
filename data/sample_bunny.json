@@ -10,9 +10,9 @@
     "Model": {
         "Object": {
             "Face": {
-                "ObjPath": "bunny.obj",
+                "ObjPath": "m0000002_cleanup.obj",
                 "DefaultRenderType": "NORMAL",
-                "Scale": 1.0,
+                "Scale": 0.1,
                 "Offset": [
                     0.0,
                     0.0,
