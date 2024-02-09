@@ -5,3 +5,7 @@ add_subdirectory(
 add_subdirectory(
   Viewer
 )
+
+add_subdirectory(
+  ViewerGUI
+)

@@ -14,7 +14,6 @@
 #include <OpenGL.hpp>
 #include <Renderer/Renderer.hpp>
 #include <Util/ModelParser.hpp>
-#include <Window/Window.hpp>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -28,6 +27,5 @@
 typedef std::shared_ptr<Model> pModel;
 typedef std::shared_ptr<ViewerModel> pViewerModel;
 typedef std::shared_ptr<PoneModel> pPoneModel;
-static const std::string DEFAULT_CONFIG_PATH = "data/sample.json";
 
 #endif  // _COMMON_H_
