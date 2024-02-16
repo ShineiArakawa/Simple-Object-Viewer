@@ -29,17 +29,13 @@ FrameBuffer::FrameBuffer(float width, float height) {
   _height = height;
 }
 
-FrameBuffer::~FrameBuffer() {
-  glDeleteFramebuffers(1, &_fbo);
-  glDeleteTextures(1, &_texture);
-  glDeleteRenderbuffers(1, &_rbo);
-}
+FrameBuffer::~FrameBuffer() {}
 
 unsigned int FrameBuffer::getFrameTexture() {
   return _texture;
 }
 
-void FrameBuffer::RescaleFrameBuffer(float width, float height) {
+void FrameBuffer::rescaleFrameBuffer(float width, float height) {
   glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
 
   glBindTexture(GL_TEXTURE_2D, _texture);

@@ -21,7 +21,7 @@ class FrameBuffer {
   FrameBuffer(float width, float height);
   ~FrameBuffer();
   unsigned int getFrameTexture();
-  void RescaleFrameBuffer(float width, float height);
+  void rescaleFrameBuffer(float width, float height);
   void Bind() const;
   void Unbind() const;
   float _width;
