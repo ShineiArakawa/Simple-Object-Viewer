@@ -1,0 +1,277 @@
+#include <App/ViewerGUIMain.hpp>
+
+void keyboardEventViewer(int key, int action) {
+  if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+    auto cameraDirection = glm::normalize(ImGuiWindowHandler::cameraLookAt - ImGuiWindowHandler::cameraPos);
+
+    if (key == GLFW_KEY_W) {
+      ImGuiWindowHandler::cameraPos += cameraDirection * ImGuiWindowHandler::CAMERA_MOVE_STEP;
+      ImGuiWindowHandler::renderer->setViewMat(glm::lookAt(ImGuiWindowHandler::cameraPos, ImGuiWindowHandler::cameraLookAt, ImGuiWindowHandler::cameraUp));
+    } else if (key == GLFW_KEY_A) {
+      glm::vec3 moveVec = glm::cross(ImGuiWindowHandler::cameraUp, cameraDirection) * ImGuiWindowHandler::CAMERA_MOVE_STEP;
+      ImGuiWindowHandler::cameraPos += moveVec;
+      ImGuiWindowHandler::cameraLookAt += moveVec;
+      ImGuiWindowHandler::renderer->setViewMat(glm::lookAt(ImGuiWindowHandler::cameraPos, ImGuiWindowHandler::cameraLookAt, ImGuiWindowHandler::cameraUp));
+    } else if (key == GLFW_KEY_S) {
+      ImGuiWindowHandler::cameraPos += -cameraDirection * ImGuiWindowHandler::CAMERA_MOVE_STEP;
+      ImGuiWindowHandler::renderer->setViewMat(glm::lookAt(ImGuiWindowHandler::cameraPos, ImGuiWindowHandler::cameraLookAt, ImGuiWindowHandler::cameraUp));
+    } else if (key == GLFW_KEY_D) {
+      glm::vec3 moveVec = glm::cross(cameraDirection, ImGuiWindowHandler::cameraUp) * ImGuiWindowHandler::CAMERA_MOVE_STEP;
+      ImGuiWindowHandler::cameraPos += moveVec;
+      ImGuiWindowHandler::cameraLookAt += moveVec;
+      ImGuiWindowHandler::renderer->setViewMat(glm::lookAt(ImGuiWindowHandler::cameraPos, ImGuiWindowHandler::cameraLookAt, ImGuiWindowHandler::cameraUp));
+    } else if (key == GLFW_KEY_M) {
+      ImGuiWindowHandler::isMaskMode = !ImGuiWindowHandler::isMaskMode;
+    } else if (key == GLFW_KEY_N) {
+      model->setRenderType(Primitives::RenderType::NORMAL);
+      ImGuiWindowHandler::isMaskMode = false;
+    } else if (key == GLFW_KEY_C) {
+      model->setRenderType(Primitives::RenderType::COLOR);
+      ImGuiWindowHandler::isMaskMode = false;
+    } else if (key == GLFW_KEY_T) {
+      model->setRenderType(Primitives::RenderType::TEXTURE);
+      ImGuiWindowHandler::isMaskMode = false;
+    } else if (key == GLFW_KEY_V) {
+      model->setRenderType(Primitives::RenderType::VERT_NORMAL);
+      ImGuiWindowHandler::isMaskMode = false;
+    } else if (key == GLFW_KEY_R) {
+      model->resetRenderType();
+      ImGuiWindowHandler::isMaskMode = false;
+    } else if (key == GLFW_KEY_Q) {
+      ImGuiWindowHandler::renderer->rotateModel(ImGuiWindowHandler::MODEL_ROTATE_STEP, ImGuiWindowHandler::cameraUp);
+    } else if (key == GLFW_KEY_E) {
+      ImGuiWindowHandler::renderer->rotateModel(-ImGuiWindowHandler::MODEL_ROTATE_STEP, ImGuiWindowHandler::cameraUp);
+    } else if (key == GLFW_KEY_HOME) {
+      ImGuiWindowHandler::resetCameraPose();
+    } else if (key == GLFW_KEY_X) {
+      ImGuiWindowHandler::enabledRotationgMode = !ImGuiWindowHandler::enabledRotationgMode;
+    }
+
+    model->setMaskMode(ImGuiWindowHandler::isMaskMode);
+  }
+}
+
+int main(int argc, char** argv) {
+  // #########################################################
+  // Parse args
+  // #########################################################
+  int nArgs = argc - 1;
+  std::cout << "Number of arguments : " + std::to_string(nArgs) << std::endl;
+  for (int iArg = 0; iArg < nArgs; iArg++) {
+    std::cout << "args[" << iArg << "]=" << argv[iArg + 1] << std::endl;
+  }
+
+  // Parse config file path
+  std::string configFilePath;
+  if (nArgs > 0) {
+    configFilePath = argv[1];
+  } else {
+    std::cout << "The config file path was not specified. Continue with the default config path: " << FileUtil::absPath(DEFAULT_CONFIG_PATH)
+              << std::endl;
+    configFilePath = DEFAULT_CONFIG_PATH;
+  }
+
+  // Check config file
+  if (!FileUtil::exists(configFilePath)) {
+    std::cerr << "Failed to open the config file. Please check the arguments." << std::endl;
+    std::cerr << "args: {config_file}" << std::endl;
+    std::exit(1);
+  }
+
+  if (glfwInit() == GLFW_FALSE) {
+    fprintf(stderr, "Initialization failed!\n");
+    return 1;
+  }
+
+  // #########################################################
+  // Initialize GLFW
+  // #########################################################
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+  // Create a window
+  GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WIN_TITLE, NULL, NULL);
+  if (window == NULL) {
+    glfwTerminate();
+    fprintf(stderr, "Window creation failed!\n");
+    return 1;
+  }
+
+  glfwMakeContextCurrent(window);
+  glfwSwapInterval(1);  // Enable vsync
+
+  if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+    std::cout << "Load OpenGL " << glfwGetVersionString() << std::endl;
+  } else {
+    std::cerr << "Failed to initialize GLAD" << std::endl;
+    return -1;
+  }
+
+  // #########################################################
+  // Initialize ImGui
+  // #########################################################
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO();
+  io.IniFilename = NULL;
+  io.LogFilename = NULL;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+
+  ImGui::StyleColorsDark();
+
+  // Setup Platform/Renderer backends
+  // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplOpenGL3_Init();
+
+  // #########################################################
+  // Initialize Model
+  // #########################################################
+  model = std::make_shared<ViewerModel>();
+  ModelParser::parse(configFilePath, model);
+  model->compileShaders();
+  model->setMaskMode(ImGuiWindowHandler::isMaskMode);
+
+  ImGuiWindowHandler::renderer = std::make_shared<Renderer>(&ImGuiWindowHandler::WIN_WIDTH, &ImGuiWindowHandler::WIN_HEIGHT, model);
+  ImGuiWindowHandler::resetCameraPose();
+
+  {
+    std::cout << std::endl
+              << "### Start initilizing models ..." << std::endl;
+    auto start = std::chrono::system_clock::now();
+    ImGuiWindowHandler::renderer->initializeGL();
+    auto end = std::chrono::system_clock::now();
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+    std::cout << "### Finish initilizing models. Elapsed time is " << elapsedTime << " [sec]." << std::endl;
+  }
+
+  ImVec2 validImageSize;
+  ImVec2 validImageOrigin;
+  ImVec2 validImageCoordMin;
+  ImVec2 validImageCoordMax;
+
+  while (glfwWindowShouldClose(window) == GLFW_FALSE) {
+    glfwPollEvents();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    {
+      // Control window
+      if (ImGui::BeginViewportSideBar("Side bar", ImGui::GetWindowViewport(), ImGuiDir_::ImGuiDir_Left, SIDEBAR_WIDTH, true)) {
+        ImGui::BeginChild("Setting", ImVec2(0, SETTING_TAB_HEIGHT));
+        if (ImGui::BeginTabBar("Setting")) {
+          if (ImGui::BeginTabItem("Range")) {
+            //   ImGui::InputDouble("Min X", &mandelbrotModel->minY);
+            //   ImGui::InputDouble("Max X", &mandelbrotModel->maxY);
+            //   ImGui::InputDouble("Min Y", &mandelbrotModel->minX);
+            //   ImGui::InputDouble("Max Y", &mandelbrotModel->maxX);
+            ImGui::EndTabItem();
+          }
+
+          if (ImGui::BeginTabItem("Calculation")) {
+            //   ImGui::InputInt("Max Iter", &mandelbrotModel->maxIter);
+            //   ImGui::InputDouble("Threshold", &mandelbrotModel->threshold);
+            //   ImGui::InputDouble("Alpha Coeff", &mandelbrotModel->alphaCoeff);
+            ImGui::EndTabItem();
+          }
+
+          if (ImGui::BeginTabItem("Render")) {
+            //   ImGui::Checkbox("Smoothing", &mandelbrotModel->isEnabledSmoothing);
+            //   ImGui::Checkbox("Sinusoidal Color", &mandelbrotModel->isEnabledSinuidalColor);
+            //   ImGui::InputDouble("Density", &mandelbrotModel->density);
+            //   ImGui::Checkbox("Super Sample", &mandelbrotModel->isEnabledSuperSampling);
+            //   ImGui::InputInt("Super Sample Factor", &mandelbrotModel->superSampleFactor);
+            ImGui::EndTabItem();
+          }
+
+          ImGui::EndTabBar();
+        }
+        ImGui::EndChild();
+
+        ImGui::BeginChild("Setting2");
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::EndChild();
+
+        ImGui::End();
+      }
+    }
+
+    {
+      // Image window
+      ImVec2 viewportPos = ImGui::GetWindowViewport()->Pos;
+      ImGui::SetNextWindowPos(ImVec2(viewportPos.x + SIDEBAR_WIDTH, viewportPos.y));
+      ImVec2 windowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - SIDEBAR_WIDTH, ImGui::GetWindowViewport()->Size.y);
+      ImGui::SetNextWindowSizeConstraints(windowSize, windowSize);
+
+      ImGui::Begin("View");
+      {
+        const float window_width = ImGui::GetContentRegionAvail().x;
+        const float window_height = ImGui::GetContentRegionAvail().y;
+        const float image_width = ImGuiWindowHandler::WIN_WIDTH;
+        const float image_height = ImGuiWindowHandler::WIN_HEIGHT;
+        // std::cout << "(window_width, window_height) = (" << window_width << ", " << window_height << ")" << std::endl;
+        // std::cout << "(image_width, image_height) = (" << image_width << ", " << image_height << ")" << std::endl;
+
+        if (window_width < window_height) {
+          validImageSize.x = window_width;
+          validImageSize.y = image_height / image_width * window_width;
+          validImageOrigin.x = 0.0;
+          validImageOrigin.y = (window_height - validImageSize.y) / 2.0;
+        } else {
+          validImageSize.x = image_width / image_height * window_height;
+          validImageSize.y = window_height;
+          validImageOrigin.x = (window_width - validImageSize.x) / 2.0;
+          validImageOrigin.y = 0.0;
+        }
+
+        ImVec2 pos = ImGui::GetCursorScreenPos();
+        validImageCoordMin.x = pos.x + validImageOrigin.x;
+        validImageCoordMin.y = pos.y + validImageOrigin.y;
+        validImageCoordMax.x = pos.x + validImageOrigin.x + validImageSize.x;
+        validImageCoordMax.y = pos.y + validImageOrigin.y + validImageSize.y;
+
+        ImGui::GetWindowDrawList()->AddImage(
+            (void*)ImGuiWindowHandler::textureBufferID,
+            validImageCoordMin,
+            validImageCoordMax,
+            ImVec2(0, 0),
+            ImVec2(1, 1));
+      }
+      ImGui::End();
+    }
+
+    {
+      // Paint GL
+      ImGuiWindowHandler::bindBuffer();
+      ImGuiWindowHandler::renderer->paintGL();
+      ImGuiWindowHandler::unbindBuffer();
+    }
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+      GLFWwindow* backup_current_context = glfwGetCurrentContext();
+      ImGui::UpdatePlatformWindows();
+      ImGui::RenderPlatformWindowsDefault();
+      glfwMakeContextCurrent(backup_current_context);
+    }
+
+    glfwSwapBuffers(window);
+  }
+
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+
+  glfwDestroyWindow(window);
+  glfwTerminate();
+
+  return 0;
+}

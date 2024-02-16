@@ -25,7 +25,6 @@ class ShaderCompiler {
  public:
   static std::string readCodesFromFIle(const std::string& filename);
   static GLuint compile(const std::string& code, GLuint type);
-  static GLuint buildShaderProgram(const std::string& vertexShaderCode,
-                                   const std::string& fragmentShaderCode);
+  static GLuint buildShaderProgram(const std::string& vertexShaderCode,const std::string& fragmentShaderCode);
 };
 #endif

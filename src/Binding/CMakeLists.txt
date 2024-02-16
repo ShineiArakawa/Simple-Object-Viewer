@@ -29,18 +29,6 @@ target_include_directories(
   ${PROJECT_INCLUDE_DIR}
 )
 
-
-# target_link_libraries(
-# ${BINDING_MODULE_NAME}
-# PRIVATE
-# glad
-# glfw
-# $<TARGET_OBJECTS:Renderer_object>
-# $<TARGET_OBJECTS:Model_object>
-# $<TARGET_OBJECTS:Util_object>
-# $<TARGET_OBJECTS:Window_object>
-# ${CMAKE_DL_LIBS}
-# )
 target_link_libraries(
   ${BINDING_MODULE_NAME}
   PRIVATE

@@ -2,16 +2,16 @@
 project(Model_object CXX)
 
 add_library(
-    ${PROJECT_NAME}
-    OBJECT
-    "Box.cpp"
-    "ShaderCompiler.cpp"
-    "Object.cpp"
-    "Background.cpp"
-    "Terrain.cpp"
-    "ViewerModel.cpp"
-    "Model.cpp"
-    "PoneModel.cpp"
+  ${PROJECT_NAME}
+  OBJECT
+  "Box.cpp"
+  "ShaderCompiler.cpp"
+  "Object.cpp"
+  "Background.cpp"
+  "Terrain.cpp"
+  "ViewerModel.cpp"
+  "Model.cpp"
+  "PoneModel.cpp"
 )
 
 # =========================================================

@@ -22,8 +22,8 @@ class Renderer {
   glm::mat4 _acTransMat;
   glm::mat4 _acScaleMat;
 
-  int* _windowWidth = nullptr;
-  int* _windowHeight = nullptr;
+  const int* _windowWidth = nullptr;
+  const int* _windowHeight = nullptr;
 
  protected:
   // nothing
@@ -34,7 +34,7 @@ class Renderer {
  protected:
   // nothing
  public:
-  Renderer(int* windowWidth, int* windowHeight, std::shared_ptr<Model> models);
+  Renderer(const int* windowWidth, const int* windowHeight, std::shared_ptr<Model> models);
   ~Renderer();
 
   void initMatrices();

@@ -4,6 +4,7 @@ add_library(
   ${PROJECT_NAME}
   OBJECT
   "Window.cpp"
+  "ImGuiWindow.cpp"
 )
 
 # =========================================================
@@ -20,4 +21,5 @@ target_include_directories(
   ${STB_INCLUDE_DIR}
   ${TINYOBJLOADER_INCLUDE_DIR}
   ${PROJECT_INCLUDE_DIR}
+  ${IMGUI_INCLUDE_DIR}
 )

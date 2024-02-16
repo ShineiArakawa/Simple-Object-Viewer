@@ -2,9 +2,9 @@
 project(Renderer_object CXX)
 
 add_library(
-    ${PROJECT_NAME}
-    OBJECT
-    "Renderer.cpp"
+  ${PROJECT_NAME}
+  OBJECT
+  "Renderer.cpp"
 )
 
 # =========================================================

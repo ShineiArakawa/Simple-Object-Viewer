@@ -2,12 +2,12 @@
 project(Util_object CXX)
 
 add_library(
-    ${PROJECT_NAME}
-    OBJECT
-    "Texture.cpp"
-    "ObjectLoader.cpp"
-    "ModelParser.cpp"
-    "FileUtil.cpp"
+  ${PROJECT_NAME}
+  OBJECT
+  "Texture.cpp"
+  "ObjectLoader.cpp"
+  "ModelParser.cpp"
+  "FileUtil.cpp"
 )
 
 # =========================================================

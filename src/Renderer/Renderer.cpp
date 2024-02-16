@@ -1,7 +1,7 @@
 #include <Renderer/Renderer.hpp>
 #include <iostream>
 
-Renderer::Renderer(int* windowWidth, int* windowHeight, std::shared_ptr<Model> models) {
+Renderer::Renderer(const int* windowWidth, const int* windowHeight, std::shared_ptr<Model> models) {
   _windowWidth = windowWidth;
   _windowHeight = windowHeight;
   _models = models;
