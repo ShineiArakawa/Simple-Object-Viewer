@@ -6,7 +6,7 @@ project(OpenGLExample CXX)
 # #################################################
 set(CMAKE_CXX_STANDARD 17)
 
-# set(CMAKE_POSITION_INDEPENDENT_CODE on)
+set(CMAKE_POSITION_INDEPENDENT_CODE on)
 if(MSVC)
   set(CMAKE_CXX_FLAGS_RELEASE "/O2")
 elseif(UNIX)
