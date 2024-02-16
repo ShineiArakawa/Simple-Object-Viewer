@@ -41,9 +41,6 @@ set(GLAD_INCLUDE_DIR ${PROJECT_LIB_DIR}/glad/include)
 # #### GLFW
 set(GLFW_INCLUDE_DIR ${PROJECT_LIB_DIR}/glfw/include)
 
-# #### GLEW
-set(GLEW_INCLUDE_DIR ${PROJECT_LIB_DIR}/glew-2.1.0/include)
-
 # #### GLM
 set(GLM_INCLUDE_DIR ${PROJECT_LIB_DIR}/glm)
 
@@ -102,7 +99,6 @@ message("#    PROJECT_LIB_DIR           : ${PROJECT_LIB_DIR}")
 message("# ")
 message("#    GLAD_INCLUDE_DIR          : ${GLAD_INCLUDE_DIR}")
 message("#    GLFW_INCLUDE_DIR          : ${GLFW_INCLUDE_DIR}")
-message("#    GLEW_INCLUDE_DIR          : ${GLEW_INCLUDE_DIR}")
 message("#    GLM_INCLUDE_DIR           : ${GLM_INCLUDE_DIR}")
 message("#    PICOJSON_INCLUDE_DIR      : ${PICOJSON_INCLUDE_DIR}")
 message("#    STB_INCLUDE_DIR           : ${STB_INCLUDE_DIR}")

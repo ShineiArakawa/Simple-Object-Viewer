@@ -1,222 +1,109 @@
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include <ImGui.hpp>
+#include <App/ImGui.hpp>
+#include <Model/ViewerModel.hpp>
+#include <OpenGL.hpp>
+#include <Util/FileUtil.hpp>
+#include <Util/ModelParser.hpp>
+#include <Window/Window.hpp>
 #include <iostream>
-#include <string>
+#include <memory>
 
-const GLint WIDTH = 800;
-const GLint HEIGHT = 600;
-
-GLuint VAO;
-GLuint VBO;
-GLuint FBO;
-GLuint RBO;
-GLuint texture_id;
-GLuint shader;
-
-const char* vertex_shader_code = R"*(
-#version 330
-
-layout (location = 0) in vec3 pos;
-
-void main()
-{
-	gl_Position = vec4(0.9*pos.x, 0.9*pos.y, 0.5*pos.z, 1.0);
-}
-)*";
-
-const char* fragment_shader_code = R"*(
-#version 330
-
-out vec4 color;
-
-void main()
-{
-	color = vec4(0.0, 1.0, 0.0, 1.0);
-}
-)*";
-
-void create_triangle() {
-  GLfloat vertices[] = {
-      -1.0f, -1.0f, 0.0f,  // 1. vertex x, y, z
-      1.0f,  -1.0f, 0.0f,  // 2. vertex ...
-      0.0f,  1.0f,  0.0f   // etc...
+class SceneBuffer {
+ public:
+  inline static std::shared_ptr<gui::FrameBuffer> frameBuffer;
+  inline static void setFrameBuffer(float width, float height) { SceneBuffer::frameBuffer = std::make_shared<gui::FrameBuffer>(width, height); };
+  inline static void windowSizeCallback(GLFWwindow* window, int width, int height) {
+    SceneBuffer::frameBuffer->rescaleFrameBuffer(width, height);
+    glViewport(0, 0, width, height);
   };
+};
 
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(0);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
-}
-
-void add_shader(GLuint program, const char* shader_code, GLenum type) {
-  GLuint current_shader = glCreateShader(type);
-
-  const GLchar* code[1];
-  code[0] = shader_code;
-
-  GLint code_length[1];
-  code_length[0] = strlen(shader_code);
-
-  glShaderSource(current_shader, 1, code, code_length);
-  glCompileShader(current_shader);
-
-  GLint result = 0;
-  GLchar log[1024] = {0};
-
-  glGetShaderiv(current_shader, GL_COMPILE_STATUS, &result);
-  if (!result) {
-    glGetShaderInfoLog(current_shader, sizeof(log), NULL, log);
-    std::cout << "Error compiling " << type << " shader: " << log << "\n";
-    return;
+int main(int argc, char** argv) {
+  // Parse args
+  int nArgs = argc - 1;
+  std::cout << "Number of arguments : " + std::to_string(nArgs) << std::endl;
+  for (int iArg = 0; iArg < nArgs; iArg++) {
+    std::cout << "args[" << iArg << "]=" << argv[iArg + 1] << std::endl;
   }
 
-  glAttachShader(program, current_shader);
-}
-
-void create_shaders() {
-  shader = glCreateProgram();
-  if (!shader) {
-    std::cout << "Error creating shader program!\n";
-    exit(1);
+  // Parse config file path
+  std::string configFilePath;
+  if (nArgs > 0) {
+    configFilePath = argv[1];
+  } else {
+    std::cout << "The config file path was not specified. Continue with the default config path: " << FileUtil::absPath("data/sample.json")
+              << std::endl;
+    configFilePath = "data/sample.json";
   }
 
-  add_shader(shader, vertex_shader_code, GL_VERTEX_SHADER);
-  add_shader(shader, fragment_shader_code, GL_FRAGMENT_SHADER);
-
-  GLint result = 0;
-  GLchar log[1024] = {0};
-
-  glLinkProgram(shader);
-  glGetProgramiv(shader, GL_LINK_STATUS, &result);
-  if (!result) {
-    glGetProgramInfoLog(shader, sizeof(log), NULL, log);
-    std::cout << "Error linking program:\n" << log << '\n';
-    return;
+  // Check config file
+  if (!FileUtil::exists(configFilePath)) {
+    std::cerr << "Failed to open the config file. Please check the arguments." << std::endl;
+    std::cerr << "args: {config_file}" << std::endl;
+    std::exit(1);
   }
 
-  glValidateProgram(shader);
-  glGetProgramiv(shader, GL_VALIDATE_STATUS, &result);
-  if (!result) {
-    glGetProgramInfoLog(shader, sizeof(log), NULL, log);
-    std::cout << "Error validating program:\n" << log << '\n';
-    return;
+  if (glfwInit() == GLFW_FALSE) {
+    fprintf(stderr, "Initialization failed!\n");
+    return 1;
   }
-}
 
-void create_framebuffer() {
-  glGenFramebuffers(1, &FBO);
-  glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+  GLFWwindow* window = glfwCreateWindow(Window::WIN_WIDTH, Window::WIN_HEIGHT, "test", NULL, NULL);
 
-  glGenTextures(1, &texture_id);
-  glBindTexture(GL_TEXTURE_2D, texture_id);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB,
-               GL_UNSIGNED_BYTE, NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                         texture_id, 0);
-
-  glGenRenderbuffers(1, &RBO);
-  glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
-                            GL_RENDERBUFFER, RBO);
-
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n";
-
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
-}
-
-void bind_framebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, FBO); }
-
-void unbind_framebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
-
-void rescale_framebuffer(float width, float height) {
-  glBindTexture(GL_TEXTURE_2D, texture_id);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
-               GL_UNSIGNED_BYTE, NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                         texture_id, 0);
-
-  glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
-                            GL_RENDERBUFFER, RBO);
-}
-
-int main() {
-  if (!glfwInit()) {
-    std::cout << "GLFW initialisation failed!\n";
+  if (window == NULL) {
     glfwTerminate();
+    fprintf(stderr, "Window creation failed!\n");
     return 1;
   }
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-  // Create the window
-  GLFWwindow* mainWindow =
-      glfwCreateWindow(WIDTH, HEIGHT, "My Window", NULL, NULL);
-  if (!mainWindow) {
-    std::cout << "GLFW creation failed!\n";
-    glfwTerminate();
-    return 1;
-  }
 
   int bufferWidth, bufferHeight;
-  glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
-  glfwMakeContextCurrent(mainWindow);
-  glewExperimental = GL_TRUE;
+  glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
+  std::cout << "bufferWidth=" << bufferWidth << std::endl;
+  std::cout << "bufferHeight=" << bufferHeight << std::endl;
 
-  if (glewInit() != GLEW_OK) {
-    std::cout << "glew initialisation failed!\n";
-    glfwDestroyWindow(mainWindow);
-    glfwTerminate();
+  glfwMakeContextCurrent(window);
+  glfwSwapInterval(1);
+
+  if (gladLoadGL() == 0) {
+    fprintf(stderr, "Failed to load OpenGL 3.x/4.x libraries!\n");
     return 1;
   }
 
   glViewport(0, 0, bufferWidth, bufferHeight);
 
-  create_triangle();
-  create_shaders();
-  create_framebuffer();
+  std::shared_ptr<ViewerModel> model = std::make_shared<ViewerModel>();
+  ModelParser::parse(configFilePath, model);
+  model->compileShaders();
+  model->setMaskMode(Window::isMaskMode);
 
+  Window::renderer = std::make_shared<Renderer>(&Window::WIN_WIDTH, &Window::WIN_HEIGHT, model);
+  Window::resetCameraPose();
+  SceneBuffer::setFrameBuffer(Window::WIN_WIDTH, Window::WIN_HEIGHT);
+  Window::resizeGL(window, Window::WIN_WIDTH, Window::WIN_HEIGHT);
+  Window::renderer->initializeGL();
+
+  // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
-  (void)io;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
   io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  io.IniFilename = nullptr;
 
+  // Setup Dear ImGui style
   ImGui::StyleColorsDark();
-  ImGuiStyle& style = ImGui::GetStyle();
-  if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-    style.WindowRounding = 0.0f;
-    style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-  }
 
-  ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
+  // Setup Platform/Renderer bindings
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init("#version 330");
 
-  while (!glfwWindowShouldClose(mainWindow)) {
+  std::cout << "Start window loop !" << std::endl;
+  while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -230,29 +117,29 @@ int main() {
 
     const float window_width = ImGui::GetContentRegionAvail().x;
     const float window_height = ImGui::GetContentRegionAvail().y;
-
-    rescale_framebuffer(window_width, window_height);
+    SceneBuffer::frameBuffer->rescaleFrameBuffer(window_width, window_height);
+    Window::resizeGL(window, window_width, window_height);
     glViewport(0, 0, window_width, window_height);
 
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
     ImGui::GetWindowDrawList()->AddImage(
-        (void*)texture_id, ImVec2(pos.x, pos.y),
-        ImVec2(pos.x + window_width, pos.y + window_height), ImVec2(0, 1),
+        (void*)SceneBuffer::frameBuffer->getFrameTexture(),
+        ImVec2(pos.x, pos.y),
+        ImVec2(pos.x + window_width, pos.y + window_height),
+        ImVec2(0, 1),
         ImVec2(1, 0));
 
     ImGui::End();
     ImGui::Render();
 
-    bind_framebuffer();
-
-    glUseProgram(shader);
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindVertexArray(0);
-    glUseProgram(0);
-
-    unbind_framebuffer();
+    // OpenGL Rendering
+    SceneBuffer::frameBuffer->Bind();
+    if (Window::enabledRotationgMode) {
+      Window::renderer->rotateModel(Window::ROTATE_ANIMATION_ANGLE, Window::cameraUp);
+    }
+    Window::renderer->paintGL();
+    SceneBuffer::frameBuffer->Unbind();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -262,18 +149,15 @@ int main() {
       glfwMakeContextCurrent(backup_current_context);
     }
 
-    glfwSwapBuffers(mainWindow);
+    glfwSwapBuffers(window);
   }
 
+  // Cleanup
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
 
-  glDeleteFramebuffers(1, &FBO);
-  glDeleteTextures(1, &texture_id);
-  glDeleteRenderbuffers(1, &RBO);
-
-  glfwDestroyWindow(mainWindow);
+  glfwDestroyWindow(window);
   glfwTerminate();
 
   return 0;

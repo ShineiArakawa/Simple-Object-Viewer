@@ -3,6 +3,7 @@ project(TestGUI CXX)
 add_executable(
   ${PROJECT_NAME}
   "main.cpp"
+  "ImGui.cpp"
   ${IMGUI_SOURCE_FILES}
 )
 
@@ -16,7 +17,6 @@ target_include_directories(
   ${EIGEN_INCLUDE_DIR}
   ${GLAD_INCLUDE_DIR}
   ${GLFW_INCLUDE_DIR}
-  ${GLEW_INCLUDE_DIR}
   ${GLM_INCLUDE_DIR}
   ${PICOJSON_INCLUDE_DIR}
   ${STB_INCLUDE_DIR}
@@ -28,8 +28,12 @@ target_include_directories(
 
 target_link_libraries(
   ${PROJECT_NAME}
+  glad
   glfw
-  glew
+  $<TARGET_OBJECTS:Renderer_object>
+  $<TARGET_OBJECTS:Model_object>
+  $<TARGET_OBJECTS:Util_object>
+  $<TARGET_OBJECTS:Window_object>
   ${CMAKE_DL_LIBS}
 )
 

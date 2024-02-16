@@ -7,9 +7,6 @@
 #include <iostream>
 #include <memory>
 
-GLuint indexBufferId;
-GLuint vertexBufferId;
-
 class SceneBuffer {
  public:
   inline static std::shared_ptr<gui::FrameBuffer> frameBuffer;
@@ -50,7 +47,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  GLFWwindow* window = glfwCreateWindow(1200, 900, "test", NULL, NULL);
+  GLFWwindow* window = glfwCreateWindow(Window::WIN_WIDTH, Window::WIN_HEIGHT, "test", NULL, NULL);
 
   if (window == NULL) {
     glfwTerminate();
@@ -58,18 +55,25 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+  int bufferWidth, bufferHeight;
+  glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
+  std::cout << "bufferWidth=" << bufferWidth << std::endl;
+  std::cout << "bufferHeight=" << bufferHeight << std::endl;
+
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);
 
-  // OpenGL 3.x/4.xの関数をロードする (glfwMakeContextCurrentの後でないといけない)
-  const int version = gladLoadGL();
-  if (version == 0) {
+  if (gladLoadGL() == 0) {
     fprintf(stderr, "Failed to load OpenGL 3.x/4.x libraries!\n");
     return 1;
   }
+
+  glViewport(0, 0, bufferWidth, bufferHeight);
 
   std::shared_ptr<ViewerModel> model = std::make_shared<ViewerModel>();
   ModelParser::parse(configFilePath, model);
@@ -78,12 +82,17 @@ int main(int argc, char** argv) {
 
   Window::renderer = std::make_shared<Renderer>(&Window::WIN_WIDTH, &Window::WIN_HEIGHT, model);
   Window::resetCameraPose();
+  SceneBuffer::setFrameBuffer(Window::WIN_WIDTH, Window::WIN_HEIGHT);
+  Window::resizeGL(window, Window::WIN_WIDTH, Window::WIN_HEIGHT);
+  Window::renderer->initializeGL();
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.IniFilename = nullptr;
 
   // Setup Dear ImGui style
@@ -91,79 +100,56 @@ int main(int argc, char** argv) {
 
   // Setup Platform/Renderer bindings
   ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init();
-
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_TEXTURE_2D);
-
-  SceneBuffer::setFrameBuffer(640, 480);
+  ImGui_ImplOpenGL3_Init("#version 330");
 
   std::cout << "Start window loop !" << std::endl;
   while (!glfwWindowShouldClose(window)) {
-    glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
+    glfwPollEvents();
 
-    {
-      // OpenGL Rendering
-      SceneBuffer::frameBuffer->Bind();
-      if (Window::enabledRotationgMode) {
-        Window::renderer->rotateModel(Window::ROTATE_ANIMATION_ANGLE, Window::cameraUp);
-      }
-
-      Window::renderer->paintGL();
-
-      SceneBuffer::frameBuffer->Unbind();
-    }
-
-    // feed inputs to dear imgui, start new frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     ImGui::NewFrame();
+    ImGui::Begin("My Scene");
 
-    {
-      // Side Bar
-      if (ImGui::BeginViewportSideBar("Demo window", ImGui::GetWindowViewport(), ImGuiDir_::ImGuiDir_Left, 200.0, true)) {
-        ImGui::Button("Hello!");
-        ImGui::End();
-      }
-    }
+    const float window_width = ImGui::GetContentRegionAvail().x;
+    const float window_height = ImGui::GetContentRegionAvail().y;
+    SceneBuffer::frameBuffer->rescaleFrameBuffer(window_width, window_height);
+    Window::resizeGL(window, window_width, window_height);
+    glViewport(0, 0, window_width, window_height);
 
-    {
-      // Render OpenGL buffer
-      ImVec2 viewportPos = ImGui::GetWindowViewport()->Pos;
-      ImGui::SetNextWindowPos(ImVec2(viewportPos.x + 200.0, viewportPos.y));
-      ImVec2 windowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - 200.0, ImGui::GetWindowViewport()->Size.y);
-      ImGui::SetNextWindowSizeConstraints(windowSize, windowSize);
+    ImVec2 pos = ImGui::GetCursorScreenPos();
 
-      ImGui::Begin("My Scene");
-      Window::WIN_WIDTH = ImGui::GetContentRegionAvail().x;
-      Window::WIN_HEIGHT = ImGui::GetContentRegionAvail().y;
+    ImGui::GetWindowDrawList()->AddImage(
+        (void*)SceneBuffer::frameBuffer->getFrameTexture(),
+        ImVec2(pos.x, pos.y),
+        ImVec2(pos.x + window_width, pos.y + window_height),
+        ImVec2(0, 1),
+        ImVec2(1, 0));
 
-      SceneBuffer::windowSizeCallback(window, Window::WIN_WIDTH, Window::WIN_HEIGHT);
-      glViewport(0, 0, Window::WIN_WIDTH, Window::WIN_HEIGHT);
-
-      ImVec2 pos = ImGui::GetCursorScreenPos();
-
-      ImGui::GetWindowDrawList()->AddImage(
-          (void*)SceneBuffer::frameBuffer->getFrameTexture(),
-          ImVec2(pos.x, pos.y),
-          ImVec2(pos.x + Window::WIN_WIDTH, pos.y + Window::WIN_HEIGHT),
-          ImVec2(0, 1),
-          ImVec2(1, 0));
-
-      ImGui::End();
-    }
-
-    // Render dear imgui into screen
+    ImGui::End();
     ImGui::Render();
 
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    // OpenGL Rendering
+    SceneBuffer::frameBuffer->Bind();
+    if (Window::enabledRotationgMode) {
+      Window::renderer->rotateModel(Window::ROTATE_ANIMATION_ANGLE, Window::cameraUp);
+    }
+    Window::renderer->paintGL();
+    SceneBuffer::frameBuffer->Unbind();
 
-    int display_w, display_h;
-    glfwGetFramebufferSize(window, &display_w, &display_h);
-    glViewport(0, 0, display_w, display_h);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+      GLFWwindow* backup_current_context = glfwGetCurrentContext();
+      ImGui::UpdatePlatformWindows();
+      ImGui::RenderPlatformWindowsDefault();
+      glfwMakeContextCurrent(backup_current_context);
+    }
+
     glfwSwapBuffers(window);
-    glfwPollEvents();
   }
 
   // Cleanup
