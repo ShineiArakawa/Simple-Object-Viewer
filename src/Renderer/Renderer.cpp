@@ -31,6 +31,9 @@ void Renderer::initializeGL() {
 void Renderer::paintGL() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  const auto& RGBA = _models->getBackgroundColor();
+  glClearColor(RGBA[0], RGBA[1], RGBA[2], RGBA[3]);
+
   glm::mat4 modelMat = _acTransMat * _acRotMat * _acScaleMat;
   glm::mat4 mvpMat = _projMat * _viewMat * modelMat;
 
@@ -61,7 +64,9 @@ void Renderer::updateRotate(const glm::vec3& u, const glm::vec3& v) {
   rotateModel((float)(1.0 * angle), rotAxisWorldSpace);
 }
 
-void Renderer::resizeGL() { _projMat = glm::perspective(glm::radians(45.0f), (float)*_windowWidth / (float)*_windowHeight, 0.1f, 1000.0f); }
+void Renderer::resizeGL() {
+  _projMat = glm::perspective(glm::radians(45.0f), (float)*_windowWidth / (float)*_windowHeight, 0.1f, 1000.0f);
+}
 
 void Renderer::rotateModel(const float angle, const glm::vec3 rotAxisWorldSpace) { _acRotMat = glm::rotate(angle, rotAxisWorldSpace) * _acRotMat; }
 

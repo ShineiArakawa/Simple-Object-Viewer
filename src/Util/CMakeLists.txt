@@ -8,6 +8,7 @@ add_library(
   "ObjectLoader.cpp"
   "ModelParser.cpp"
   "FileUtil.cpp"
+  "StbAdapter.cpp"
 )
 
 # =========================================================

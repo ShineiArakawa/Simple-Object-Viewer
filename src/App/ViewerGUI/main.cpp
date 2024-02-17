@@ -1,24 +1,9 @@
-#include <App/ImGui.hpp>
-#include <Model/ViewerModel.hpp>
-#include <OpenGL.hpp>
-#include <Util/FileUtil.hpp>
-#include <Util/ModelParser.hpp>
-#include <Window/Window.hpp>
-#include <iostream>
-#include <memory>
-
-class SceneBuffer {
- public:
-  inline static std::shared_ptr<gui::FrameBuffer> frameBuffer;
-  inline static void setFrameBuffer(float width, float height) { SceneBuffer::frameBuffer = std::make_shared<gui::FrameBuffer>(width, height); };
-  inline static void windowSizeCallback(GLFWwindow* window, int width, int height) {
-    SceneBuffer::frameBuffer->rescaleFrameBuffer(width, height);
-    glViewport(0, 0, width, height);
-  };
-};
+#include <App/ViewerGUIMain.hpp>
 
 int main(int argc, char** argv) {
-  // Parse args
+  // ====================================================================
+  // Parse arguments
+  // ====================================================================
   int nArgs = argc - 1;
   std::cout << "Number of arguments : " + std::to_string(nArgs) << std::endl;
   for (int iArg = 0; iArg < nArgs; iArg++) {
@@ -30,9 +15,8 @@ int main(int argc, char** argv) {
   if (nArgs > 0) {
     configFilePath = argv[1];
   } else {
-    std::cout << "The config file path was not specified. Continue with the default config path: " << FileUtil::absPath("data/sample.json")
-              << std::endl;
-    configFilePath = "data/sample.json";
+    configFilePath = FileUtil::absPath(DEFAULT_CONFIG_PATH);
+    std::cout << "The config file path was not specified. Continue with the default config path: " << configFilePath << std::endl;
   }
 
   // Check config file
@@ -42,12 +26,15 @@ int main(int argc, char** argv) {
     std::exit(1);
   }
 
+  // ====================================================================
+  // Initialize GLFW window
+  // ====================================================================
   if (glfwInit() == GLFW_FALSE) {
     fprintf(stderr, "Initialization failed!\n");
     return 1;
   }
 
-  GLFWwindow* window = glfwCreateWindow(Window::WIN_WIDTH, Window::WIN_HEIGHT, "test", NULL, NULL);
+  GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
 
   if (window == NULL) {
     glfwTerminate();
@@ -60,33 +47,47 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  int bufferWidth, bufferHeight;
-  glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
-  std::cout << "bufferWidth=" << bufferWidth << std::endl;
-  std::cout << "bufferHeight=" << bufferHeight << std::endl;
-
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);
 
+  // ====================================================================
+  // Initialize GLAD
+  // ====================================================================
+  if (glfwInit() == GLFW_FALSE) {
+    fprintf(stderr, "Initialization failed!\n");
+    return 1;
+  }
   if (gladLoadGL() == 0) {
     fprintf(stderr, "Failed to load OpenGL 3.x/4.x libraries!\n");
     return 1;
   }
 
-  glViewport(0, 0, bufferWidth, bufferHeight);
-
-  std::shared_ptr<ViewerModel> model = std::make_shared<ViewerModel>();
+  // ====================================================================
+  // Initialize Model
+  // ====================================================================
+  model = std::make_shared<ViewerModel>();
   ModelParser::parse(configFilePath, model);
   model->compileShaders();
-  model->setMaskMode(Window::isMaskMode);
+  model->setMaskMode(ImGuiSceneWindow::isMaskMode);
 
-  Window::renderer = std::make_shared<Renderer>(&Window::WIN_WIDTH, &Window::WIN_HEIGHT, model);
-  Window::resetCameraPose();
-  SceneBuffer::setFrameBuffer(Window::WIN_WIDTH, Window::WIN_HEIGHT);
-  Window::resizeGL(window, Window::WIN_WIDTH, Window::WIN_HEIGHT);
-  Window::renderer->initializeGL();
+  // ====================================================================
+  // Initialize Renderer
+  // ====================================================================
+  renderer = std::make_shared<Renderer>(&ImGuiSceneWindow::WIN_WIDTH, &ImGuiSceneWindow::WIN_HEIGHT, model);
 
-  // Setup Dear ImGui context
+  // ====================================================================
+  // Initialize scene window
+  // ====================================================================
+  scene = std::make_shared<ImGuiSceneWindow>(window, renderer);
+
+  // ====================================================================
+  // Initialize popup
+  // ====================================================================
+  auto objectAddPopup = std::make_shared<gui::ObjectAddPopup>(model);
+
+  // ====================================================================
+  // Initialize ImGui
+  // ====================================================================
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
@@ -95,52 +96,160 @@ int main(int argc, char** argv) {
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.IniFilename = nullptr;
 
-  // Setup Dear ImGui style
   ImGui::StyleColorsDark();
 
-  // Setup Platform/Renderer bindings
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init("#version 330");
 
-  std::cout << "Start window loop !" << std::endl;
-  while (!glfwWindowShouldClose(window)) {
-    glfwPollEvents();
+  static float menuBarHeight;
+  static bool isForcusedOnScene;
+  static float wheelOffset;
+  static ImVec2 sceneAreaMin;
+  static ImVec2 sceneAreaMax;
 
+  // ====================================================================
+  // Start main loop
+  // ====================================================================
+  while (!glfwWindowShouldClose(window)) {
+    glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
-
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
     ImGui::NewFrame();
-    ImGui::Begin("My Scene");
 
-    const float window_width = ImGui::GetContentRegionAvail().x;
-    const float window_height = ImGui::GetContentRegionAvail().y;
-    SceneBuffer::frameBuffer->rescaleFrameBuffer(window_width, window_height);
-    Window::resizeGL(window, window_width, window_height);
-    glViewport(0, 0, window_width, window_height);
+    // ====================================================================
+    // Generate main frame
+    // ====================================================================
+    {
+      // Menu Bar
+      if (ImGui::BeginMainMenuBar()) {
+        menuBarHeight = ImGui::GetWindowHeight();
+        if (ImGui::BeginMenu("File")) {
+          if (ImGui::MenuItem("Add object", "Ctrl+O")) {
+            objectAddPopup->setVisible();
+          }
+          if (ImGui::MenuItem("Quit")) {
+            std::cout << "Quit the program" << std::endl;
+            break;
+          }
+          ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+      }
 
-    ImVec2 pos = ImGui::GetCursorScreenPos();
+      // Popup
+      objectAddPopup->buildUI();
 
-    ImGui::GetWindowDrawList()->AddImage(
-        (void*)SceneBuffer::frameBuffer->getFrameTexture(),
-        ImVec2(pos.x, pos.y),
-        ImVec2(pos.x + window_width, pos.y + window_height),
-        ImVec2(0, 1),
-        ImVec2(1, 0));
+      // Side Bar
+      if (ImGui::BeginViewportSideBar("Demo window", ImGui::GetWindowViewport(), ImGuiDir_::ImGuiDir_Left, SIDEBAR_WIDTH, true)) {
+        // Background color
+        const auto& arrayBackgroundRGBA = model->getBackgroundColor();
+        float backgroundRGBA[4] = {arrayBackgroundRGBA[0], arrayBackgroundRGBA[1], arrayBackgroundRGBA[2], arrayBackgroundRGBA[3]};
+        ImGui::ColorEdit4("Background Color", &backgroundRGBA[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+        model->setBackgroundColor(backgroundRGBA[0], backgroundRGBA[1], backgroundRGBA[2], backgroundRGBA[3]);
 
-    ImGui::End();
+        // Render type
+        static int renderType;
+        static const char* renderTypeItems = "Normal\0Color\0Texture\0Vertex Normal\0";
+        ImGui::Combo("Render Type", &renderType, renderTypeItems);
+        model->setRenderType(static_cast<Primitives::RenderType>(renderType));
+
+        // Mask mode
+        ImGui::Checkbox("Mask mode", &scene->isMaskMode);
+        model->setMaskMode(scene->isMaskMode);
+
+        // Home position
+        if (ImGui::Button("Reset Camera Pose")) {
+          scene->resetCameraPose();
+        }
+
+        // Rotation mode
+        ImGui::Checkbox("Rotation mode", &scene->enabledRotationgMode);
+
+        ImGui::BeginChild("FPS");
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::EndChild();
+
+        ImGui::End();
+      }
+    }
+
+    {
+      // Render OpenGL buffer
+      const ImVec2 viewportPos = ImGui::GetWindowViewport()->Pos;
+      ImGui::SetNextWindowPos(ImVec2(viewportPos.x + SIDEBAR_WIDTH, viewportPos.y + menuBarHeight), ImGuiCond_Once);
+      const ImVec2 sceneWindowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - SIDEBAR_WIDTH, ImGui::GetWindowViewport()->Size.y - menuBarHeight);
+      ImGui::SetNextWindowSize(sceneWindowSize, ImGuiCond_Once);
+
+      ImGui::Begin("Scene");
+      {
+        isForcusedOnScene = ImGui::IsWindowFocused();
+        const ImVec2 sceneAreaSize = ImGui::GetContentRegionAvail();
+        scene->resizeGL(sceneAreaSize.x, sceneAreaSize.y);
+
+        const ImVec2 sceneAreaOrigin = ImGui::GetCursorScreenPos();
+        sceneAreaMin = ImVec2(sceneAreaOrigin.x, sceneAreaOrigin.y);
+        sceneAreaMax = ImVec2(sceneAreaOrigin.x + sceneAreaSize.x, sceneAreaOrigin.y + sceneAreaSize.y);
+
+        wheelOffset = io.MouseWheel;
+
+        ImGui::GetWindowDrawList()->AddImage(
+            (void*)scene->getFrameBuffer()->getFrameTexture(),
+            sceneAreaMin,
+            sceneAreaMax,
+            ImVec2(0, 1),
+            ImVec2(1, 0));
+      }
+      ImGui::End();
+    }
     ImGui::Render();
 
-    // OpenGL Rendering
-    SceneBuffer::frameBuffer->Bind();
-    if (Window::enabledRotationgMode) {
-      Window::renderer->rotateModel(Window::ROTATE_ANIMATION_ANGLE, Window::cameraUp);
-    }
-    Window::renderer->paintGL();
-    SceneBuffer::frameBuffer->Unbind();
+    // ====================================================================
+    // Event handling
+    // ====================================================================
+    {
+      // Mouse on Scene
+      const ImVec2 mousePos = ImGui::GetMousePos();
+      const bool isMouseOnScene = (sceneAreaMin.x <= mousePos.x) && (mousePos.x <= sceneAreaMax.x) && (sceneAreaMin.y <= mousePos.y) && (mousePos.y <= sceneAreaMax.y);
+      const ImVec2 relMousePos(mousePos.x - sceneAreaMin.x, mousePos.y - sceneAreaMin.y);
 
+      scene->mouseEvent(isMouseOnScene && isForcusedOnScene, relMousePos);
+      scene->wheelEvent(isMouseOnScene && isForcusedOnScene, wheelOffset);
+      scene->motionEvent(isMouseOnScene && isForcusedOnScene, relMousePos);
+    }
+
+    {
+      // Keyboard
+      const auto cameraDirection = glm::normalize(scene->cameraLookAt - scene->cameraPos);
+      if (ImGui::IsKeyPressed(ImGuiKey_W)) {
+        scene->cameraPos += cameraDirection * scene->CAMERA_MOVE_STEP;
+        renderer->setViewMat(glm::lookAt(scene->cameraPos, scene->cameraLookAt, scene->cameraUp));
+      } else if (ImGui::IsKeyPressed(ImGuiKey_A)) {
+        const glm::vec3 moveVec = glm::cross(scene->cameraUp, cameraDirection) * scene->CAMERA_MOVE_STEP;
+        scene->cameraPos += moveVec;
+        scene->cameraLookAt += moveVec;
+        renderer->setViewMat(glm::lookAt(scene->cameraPos, scene->cameraLookAt, scene->cameraUp));
+      } else if (ImGui::IsKeyPressed(ImGuiKey_S)) {
+        scene->cameraPos += -cameraDirection * scene->CAMERA_MOVE_STEP;
+        renderer->setViewMat(glm::lookAt(scene->cameraPos, scene->cameraLookAt, scene->cameraUp));
+      } else if (ImGui::IsKeyPressed(ImGuiKey_D)) {
+        const glm::vec3 moveVec = glm::cross(cameraDirection, scene->cameraUp) * scene->CAMERA_MOVE_STEP;
+        scene->cameraPos += moveVec;
+        scene->cameraLookAt += moveVec;
+        renderer->setViewMat(glm::lookAt(scene->cameraPos, scene->cameraLookAt, scene->cameraUp));
+      } else if (ImGui::IsKeyPressed(ImGuiKey_Q)) {
+        renderer->rotateModel(scene->MODEL_ROTATE_STEP, scene->cameraUp);
+      } else if (ImGui::IsKeyPressed(ImGuiKey_E)) {
+        renderer->rotateModel(-scene->MODEL_ROTATE_STEP, scene->cameraUp);
+      }
+    }
+    // ====================================================================
+    // Render OpenGL scene
+    // ====================================================================
+    scene->paintGL();
+
+    // ====================================================================
+    // Post process
+    // ====================================================================
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
       GLFWwindow* backup_current_context = glfwGetCurrentContext();
@@ -150,9 +259,12 @@ int main(int argc, char** argv) {
     }
 
     glfwSwapBuffers(window);
+    glfwPollEvents();
   }
 
-  // Cleanup
+  // ====================================================================
+  // Clean up
+  // ====================================================================
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

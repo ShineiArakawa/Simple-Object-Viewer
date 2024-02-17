@@ -9,7 +9,3 @@ add_subdirectory(
 add_subdirectory(
   ViewerGUI
 )
-
-add_subdirectory(
-  TestGUI
-)

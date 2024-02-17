@@ -16,7 +16,7 @@ void Window::resizeGL(GLFWwindow* window, int width, int height) {
   WIN_WIDTH = width;
   WIN_HEIGHT = height;
 
-  // glfwSetWindowSize(window, WIN_WIDTH, WIN_HEIGHT);
+  glfwSetWindowSize(window, WIN_WIDTH, WIN_HEIGHT);
 
   int renderBufferWidth, renderBufferHeight;
   glfwGetFramebufferSize(window, &renderBufferWidth, &renderBufferHeight);

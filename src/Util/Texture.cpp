@@ -1,14 +1,9 @@
 #include <Util/Texture.hpp>
 
-#ifndef STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-#endif
-
 void Texture::loadTexture(const std::string& filePath, GLuint& texID) {
   int texWidth, texHeight, channels;
   // Texture ============================================================================================
-  unsigned char* bytesTexture = stbi_load(filePath.c_str(), &texWidth, &texHeight, &channels, STBI_rgb_alpha);
+  unsigned char* bytesTexture = stb::api_stbi_load(filePath.c_str(), &texWidth, &texHeight, &channels, stb::api_STBI_rgb_alpha);
   if (!bytesTexture) {
     fprintf(stderr, "Failed to load image file: %s\n", filePath.c_str());
     exit(1);
@@ -25,7 +20,7 @@ void Texture::loadTexture(const std::string& filePath, GLuint& texID) {
   glGenerateMipmap(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  stbi_image_free(bytesTexture);
+  stb::api_stbi_image_free(bytesTexture);
 }
 
 void Texture::readTexture(const std::string& filePath, Texture::TextureArray texture) {
@@ -33,7 +28,7 @@ void Texture::readTexture(const std::string& filePath, Texture::TextureArray tex
   int texWidth, texHeight, nChannels;
 
   // Texture ============================================================================================
-  unsigned char* bytesTexture = stbi_load(filePath.c_str(), &texWidth, &texHeight, &nChannels, STBI_rgb_alpha);
+  unsigned char* bytesTexture = stb::api_stbi_load(filePath.c_str(), &texWidth, &texHeight, &nChannels, stb::api_STBI_rgb_alpha);
   if (!bytesTexture) {
     fprintf(stderr, "Failed to load image file: %s\n", filePath.c_str());
     exit(1);
@@ -54,5 +49,5 @@ void Texture::readTexture(const std::string& filePath, Texture::TextureArray tex
     }
   }
 
-  stbi_image_free(bytesTexture);
+  stb::api_stbi_image_free(bytesTexture);
 }
