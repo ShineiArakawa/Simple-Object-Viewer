@@ -3,7 +3,6 @@ project(ViewerGUI CXX)
 add_executable(
   ${PROJECT_NAME}
   "main.cpp"
-  "ObjectAddPopup.cpp"
   ${IMGUI_SOURCE_FILES}
 )
 

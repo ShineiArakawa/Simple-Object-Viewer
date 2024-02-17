@@ -6,6 +6,7 @@ add_library(
   "Window.cpp"
   "ImGuiSceneView.cpp"
   "ImGuiMainView.cpp"
+  "ObjectAddPopup.cpp"
 )
 
 # =========================================================
@@ -21,6 +22,7 @@ target_include_directories(
   ${PICOJSON_INCLUDE_DIR}
   ${STB_INCLUDE_DIR}
   ${TINYOBJLOADER_INCLUDE_DIR}
-  ${PROJECT_INCLUDE_DIR}
   ${IMGUI_INCLUDE_DIR}
+  ${IMGUI_FILEBROWSER_INCLUDE_DIR}
+  ${PROJECT_INCLUDE_DIR}
 )

@@ -4,6 +4,7 @@
 **/*.mtl
 **/*.zip
 **/*.7z
+**/imgui.ini
 out
 build
 

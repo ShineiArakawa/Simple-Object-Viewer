@@ -21,7 +21,7 @@ class Model {
 
   t_objects _objects = std::make_shared<std::vector<t_object>>();
   t_objects _backgrounds = std::make_shared<std::vector<t_object>>();
-  std::array<float, 4> _backgroundColor;
+  std::array<float, 4> _backgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
 
   t_string _vertShaderPath = nullptr;
   t_string _fragShaderPath = nullptr;
