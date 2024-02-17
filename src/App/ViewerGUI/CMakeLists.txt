@@ -4,7 +4,6 @@ add_executable(
   ${PROJECT_NAME}
   "main.cpp"
   "ObjectAddPopup.cpp"
-  "ImGuiFileBrowser.cpp"
   ${IMGUI_SOURCE_FILES}
 )
 
@@ -22,6 +21,7 @@ target_include_directories(
   ${STB_INCLUDE_DIR}
   ${TINYOBJLOADER_INCLUDE_DIR}
   ${IMGUI_INCLUDE_DIR}
+  ${IMGUI_FILEBROWSER_INCLUDE_DIR}
   ${PROJECT_INCLUDE_DIR}
 )
 
@@ -30,6 +30,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   glad
   glfw
+  imgui_filebrowser
   $<TARGET_OBJECTS:Renderer_object>
   $<TARGET_OBJECTS:Model_object>
   $<TARGET_OBJECTS:Util_object>

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <App/ImGuiFileBrowser.hpp>
+#include <FileBrowser/ImGuiFileBrowser.h>
+
 #include <ImGui.hpp>
 #include <Model/ViewerModel.hpp>
 #include <OpenGL.hpp>

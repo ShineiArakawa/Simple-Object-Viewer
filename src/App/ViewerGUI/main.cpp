@@ -68,17 +68,17 @@ int main(int argc, char** argv) {
   model = std::make_shared<ViewerModel>();
   ModelParser::parse(configFilePath, model);
   model->compileShaders();
-  model->setMaskMode(ImGuiSceneWindow::isMaskMode);
+  model->setMaskMode(ImGuiSceneView::isMaskMode);
 
   // ====================================================================
   // Initialize Renderer
   // ====================================================================
-  renderer = std::make_shared<Renderer>(&ImGuiSceneWindow::WIN_WIDTH, &ImGuiSceneWindow::WIN_HEIGHT, model);
+  renderer = std::make_shared<Renderer>(&ImGuiSceneView::WIN_WIDTH, &ImGuiSceneView::WIN_HEIGHT, model);
 
   // ====================================================================
   // Initialize scene window
   // ====================================================================
-  scene = std::make_shared<ImGuiSceneWindow>(window, renderer);
+  scene = std::make_shared<ImGuiSceneView>(window, renderer);
 
   // ====================================================================
   // Initialize popup

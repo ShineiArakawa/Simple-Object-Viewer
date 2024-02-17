@@ -32,3 +32,6 @@
 [submodule "lib/glew"]
 	path = lib/glew
 	url = https://github.com/nigels-com/glew.git
+[submodule "lib/ImGuiFileBrowser"]
+	path = lib/ImGuiFileBrowser
+	url = https://github.com/gallickgunner/ImGui-Addons.git

@@ -4,7 +4,8 @@ add_library(
   ${PROJECT_NAME}
   OBJECT
   "Window.cpp"
-  "ImGuiWindow.cpp"
+  "ImGuiSceneView.cpp"
+  "ImGuiMainView.cpp"
 )
 
 # =========================================================
