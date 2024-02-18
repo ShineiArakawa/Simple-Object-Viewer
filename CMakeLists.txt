@@ -71,7 +71,7 @@ set(
 )
 
 # #### ImGuiFileBrowser
-set(IMGUI_FILEBROWSER_INCLUDE_DIR ${PROJECT_LIB_DIR}/ImGuiFileBrowser)
+set(IMGUI_FILEBROWSER_INCLUDE_DIR ${PROJECT_LIB_DIR}/ImGuiFileBrowser/FileBrowser)
 
 # #### Add subdirectory
 add_subdirectory(pybind11)

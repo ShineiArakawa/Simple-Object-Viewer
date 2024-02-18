@@ -84,7 +84,7 @@ class Primitives {
   virtual void update() { std::cout << "Primitives::update" << std::endl; };
   virtual void initVAO() { std::cout << "Primitives::initVAO" << std::endl; };
   virtual void paintGL(const glm::mat4& mvpMat){};
-  virtual std::string getObjectType(){};
+  virtual std::string getObjectType() = 0;
 
   inline static float getRenderType(bool maskMode, enum Primitives::RenderType renderType) {
     float renderTypeValue = 0.0f;

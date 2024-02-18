@@ -6,11 +6,12 @@ set(CMAKE_POSITION_INDEPENDENT_CODE on)
 
 pybind11_add_module(
   ${BINDING_MODULE_NAME}
-  main.cpp
+  "main.cpp"
   $<TARGET_OBJECTS:Renderer_object>
   $<TARGET_OBJECTS:Model_object>
   $<TARGET_OBJECTS:Util_object>
   $<TARGET_OBJECTS:Window_object>
+  ${IMGUI_SOURCE_FILES}
 )
 
 # =========================================================
@@ -26,6 +27,7 @@ target_include_directories(
   ${PICOJSON_INCLUDE_DIR}
   ${STB_INCLUDE_DIR}
   ${TINYOBJLOADER_INCLUDE_DIR}
+  ${IMGUI_INCLUDE_DIR}
   ${IMGUI_FILEBROWSER_INCLUDE_DIR}
   ${PROJECT_INCLUDE_DIR}
 )
@@ -35,6 +37,11 @@ target_link_libraries(
   PRIVATE
   glad
   glfw
+  imgui_filebrowser
+  $<TARGET_OBJECTS:Renderer_object>
+  $<TARGET_OBJECTS:Model_object>
+  $<TARGET_OBJECTS:Util_object>
+  $<TARGET_OBJECTS:Window_object>
   ${CMAKE_DL_LIBS}
 )
 
