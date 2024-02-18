@@ -25,41 +25,53 @@ class Terrain : public Primitives {
   GLuint _indexBufferId;
 
   // clang-format off
-  inline static const glm::vec3 positions[4] = {
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(1.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 1.0f),
-      glm::vec3(1.0f, 0.0f, 1.0f)
-  };
-  inline static const glm::vec3 colors[4] = {
-      glm::vec3(4.0f / 255.0f, 200.0f / 255.0f, 3.0f / 255.0f), 
-      glm::vec3(4.0f / 255.0f, 200.0f / 255.0f, 3.0f / 255.0f), 
-      glm::vec3(4.0f / 255.0f, 200.0f / 255.0f, 3.0f / 255.0f), 
-      glm::vec3(4.0f / 255.0f, 200.0f / 255.0f, 3.0f / 255.0f) 
-  };
-  inline static const glm::vec3 textureCoords[4] = {
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f)
-  };
+    inline static const glm::vec3 positions[4] = {
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(1.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 0.0f, 1.0f),
+            glm::vec3(1.0f, 0.0f, 1.0f)
+    };
+    inline static const glm::vec3 colors[4] = {
+            glm::vec3(4.0f / 255.0f, 200.0f / 255.0f, 3.0f / 255.0f),
+            glm::vec3(4.0f / 255.0f, 200.0f / 255.0f, 3.0f / 255.0f),
+            glm::vec3(4.0f / 255.0f, 200.0f / 255.0f, 3.0f / 255.0f),
+            glm::vec3(4.0f / 255.0f, 200.0f / 255.0f, 3.0f / 255.0f)
+    };
+    inline static const glm::vec3 textureCoords[4] = {
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f)
+    };
   // clang-format on
 
  protected:
   // nothing
  public:
-  // nothing
+  inline static const std::string KEY_MODEL_TERRAIN = "Terrain";
+  inline static const std::string KEY_MODEL_TERRAIN_HEIGHT_MAP_PATH = "HeightMapPath";
+  inline static const std::string KEY_MODEL_TERRAIN_CENTER = "Center";
+  inline static const std::string KEY_MODEL_TERRAIN_SCALE_XY = "ScaleXY";
+  inline static const std::string KEY_MODEL_TERRAIN_SCALE_H = "ScaleH";
+
  private:
   // nothing
  protected:
   // nothing
  public:
-  Terrain(const std::string& filePath, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY,
-          const float scaleH);
+  Terrain(const std::string &filePath, float offsetX, float offsetY, float offsetZ,
+          float scaleX, float scaleY,
+          float scaleH);
+
   ~Terrain();
 
-  void update(){};
-  void initVAO();
-  void paintGL(const glm::mat4& mvpMat);
+  void update() override{};
+
+  void initVAO() override;
+
+  void paintGL(const glm::mat4 &mvpMat) override;
+
+  std::string getObjectType() override { return KEY_MODEL_TERRAIN; };
 };
+
 #endif

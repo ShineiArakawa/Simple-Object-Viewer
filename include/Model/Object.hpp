@@ -26,19 +26,32 @@ class Object : public Primitives {
  protected:
   // nothing
  public:
-  // nothing
+  inline static const std::string KEY_MODEL_OBJECT = "Object";
+  inline static const std::string KEY_MODEL_OBJECT_NAME = "Name";
+  inline static const std::string KEY_MODEL_OBJECT_OBJ_PATH = "ObjPath";
+  inline static const std::string KEY_MODEL_OBJECT_TEXTURE_PATH = "TexturePath";
+  inline static const std::string KEY_MODEL_OBJECT_DEFAULT_RENDER_TYPE = "DefaultRenderType";
+  inline static const std::string KEY_MODEL_OBJECT_SCALE = "Scale";
+  inline static const std::string KEY_MODEL_OBJECT_OFFSET = "Offset";
 
  private:
   // nothing
  protected:
   // nothing
  public:
-  Object(const std::string& filePath, const float offsetX, const float offsetY, const float offsetZ, const float scale = 1.0f);
+  Object(const std::string &filePath, float offsetX, float offsetY, float offsetZ, float scale = 1.0f);
+
   ~Object();
 
-  void loadTexture(const std::string& filePath);
-  void update(){};
-  void initVAO();
-  void paintGL(const glm::mat4& mvpMat);
+  void loadTexture(const std::string &filePath);
+
+  void update() override{};
+
+  void initVAO() override;
+
+  void paintGL(const glm::mat4 &mvpMat) override;
+
+  std::string getObjectType() override { return KEY_MODEL_OBJECT; };
 };
+
 #endif

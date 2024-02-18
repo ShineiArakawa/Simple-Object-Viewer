@@ -22,7 +22,10 @@ struct Vertex {
 
 class Primitives {
  public:
-  enum class RenderType { NORMAL, COLOR, TEXTURE, VERT_NORMAL };
+  enum class RenderType { NORMAL,
+                          COLOR,
+                          TEXTURE,
+                          VERT_NORMAL };
   static RenderType getRenderType(std::string string) {
     RenderType renderType = RenderType::NORMAL;
     if (string == "NORMAL") {
@@ -44,6 +47,7 @@ class Primitives {
   Primitives::RenderType _defaultRenderType = Primitives::RenderType::COLOR;
   Primitives::RenderType _renderType = Primitives::RenderType::COLOR;
   bool _maskMode = false;
+  bool _isVisible = true;
   glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
   glm::vec3 _vecocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -57,6 +61,7 @@ class Primitives {
 
  public:
   void setMaskMode(bool maskMode) { _maskMode = maskMode; };
+  void setVisible(bool isVisible) { _isVisible = isVisible; };
   void setName(std::string name) { _name = name; };
   void setShader(GLuint shaderID) { _shaderID = shaderID; };
   void setDefaultRenderType(Primitives::RenderType renderType) {
@@ -67,29 +72,36 @@ class Primitives {
   void setRenderType(Primitives::RenderType renderType) { _renderType = renderType; };
   std::string getName() { return _name; };
   float getRenderType() {
-    float renderType = 0.0f;
-
-    if (_maskMode) {
-      renderType = -2.0f;
-    } else if (_renderType == Primitives::RenderType::NORMAL) {
-      renderType = -1.0f;
-    } else if (_renderType == Primitives::RenderType::COLOR) {
-      renderType = 0.0f;
-    } else if (_renderType == Primitives::RenderType::TEXTURE) {
-      renderType = 1.0f;
-    } else if (_renderType == Primitives::RenderType::VERT_NORMAL) {
-      renderType = -3.0f;
-    }
-    return renderType;
+    return getRenderType(_maskMode, _renderType);
   };
   glm::vec3 getPosition() { return _position; };
   void setPosition(glm::vec3 position) { _position = position; };
   glm::vec3 getVecocity() { return _vecocity; };
   void setVecocity(glm::vec3 vecocity) { _vecocity = vecocity; };
   void forward(float deltaT) { _position = _position + deltaT * _vecocity; };
+  bool* getPointerToIsVisible() { return &_isVisible; };
 
   virtual void update() { std::cout << "Primitives::update" << std::endl; };
   virtual void initVAO() { std::cout << "Primitives::initVAO" << std::endl; };
   virtual void paintGL(const glm::mat4& mvpMat){};
+  virtual std::string getObjectType(){};
+
+  inline static float getRenderType(bool maskMode, enum Primitives::RenderType renderType) {
+    float renderTypeValue = 0.0f;
+
+    if (maskMode) {
+      renderTypeValue = -2.0f;
+    } else if (renderType == Primitives::RenderType::NORMAL) {
+      renderTypeValue = -1.0f;
+    } else if (renderType == Primitives::RenderType::COLOR) {
+      renderTypeValue = 0.0f;
+    } else if (renderType == Primitives::RenderType::TEXTURE) {
+      renderTypeValue = 1.0f;
+    } else if (renderType == Primitives::RenderType::VERT_NORMAL) {
+      renderTypeValue = -3.0f;
+    }
+
+    return renderTypeValue;
+  };
 };
 #endif

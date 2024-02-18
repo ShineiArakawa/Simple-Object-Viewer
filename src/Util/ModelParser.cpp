@@ -121,12 +121,12 @@ void ModelParser::parseShader(const pValue jsonValueShader, pModel model, const 
   pString vertShaderPath;
   pString fragShaderPath;
 
-  if (jsonValueShader->contains(KEY_SHADER_VERT_SHADER_PATH)) {
-    vertShaderPath = GetValueHelpers::getScalarValue<std::string>(KEY_SHADER_VERT_SHADER_PATH, *jsonValueShader);
+  if (jsonValueShader->contains(ShaderCompiler::KEY_SHADER_VERT_SHADER_PATH)) {
+    vertShaderPath = GetValueHelpers::getScalarValue<std::string>(ShaderCompiler::KEY_SHADER_VERT_SHADER_PATH, *jsonValueShader);
   }
 
-  if (jsonValueShader->contains(KEY_SHADER_FRAG_SHADER_PATH)) {
-    fragShaderPath = GetValueHelpers::getScalarValue<std::string>(KEY_SHADER_FRAG_SHADER_PATH, *jsonValueShader);
+  if (jsonValueShader->contains(ShaderCompiler::KEY_SHADER_FRAG_SHADER_PATH)) {
+    fragShaderPath = GetValueHelpers::getScalarValue<std::string>(ShaderCompiler::KEY_SHADER_FRAG_SHADER_PATH, *jsonValueShader);
   }
 
   if (vertShaderPath != nullptr) {
@@ -141,10 +141,9 @@ void ModelParser::parseShader(const pValue jsonValueShader, pModel model, const 
   model->setFragShaderPath(fragShaderPath);
 }
 
-void ModelParser::parseBackgroundColor(const std::shared_ptr<picojson::value> jsonValueBackground, std::shared_ptr<Model> model,
-                                       const pString rootDirPath) {
-  if (jsonValueBackground->contains(KEY_BACKGROUND_COLOR)) {
-    std::vector<double *> RGBA = GetValueHelpers::getValue<double>(KEY_BACKGROUND_COLOR, *jsonValueBackground);
+void ModelParser::parseBackgroundColor(const std::shared_ptr<picojson::value> jsonValueBackground, std::shared_ptr<Model> model, const pString rootDirPath) {
+  if (jsonValueBackground->contains(Model::KEY_BACKGROUND_COLOR)) {
+    std::vector<double *> RGBA = GetValueHelpers::getValue<double>(Model::KEY_BACKGROUND_COLOR, *jsonValueBackground);
 
     std::array<float, 4> rgba = {0.0f, 0.0f, 0.0f, 0.0f};
     for (int i = 0; i < RGBA.size(); i++) {
@@ -164,8 +163,8 @@ void ModelParser::parseModelBackground(const std::shared_ptr<picojson::value> js
     std::string objectName = iter->first;
     picojson::value objectValue = iter->second;
 
-    if (objectValue.contains(KEY_MODEL_BACKGROUND_PATH)) {
-      ModelParser::pString filePath = GetValueHelpers::getScalarValue<std::string>(KEY_MODEL_BACKGROUND_PATH, objectValue);
+    if (objectValue.contains(Background::KEY_MODEL_BACKGROUND_PATH)) {
+      ModelParser::pString filePath = GetValueHelpers::getScalarValue<std::string>(Background::KEY_MODEL_BACKGROUND_PATH, objectValue);
 
       if (filePath != nullptr) {
         ModelParser::autoCompPath(filePath, rootDirPath);
@@ -184,8 +183,8 @@ void ModelParser::parseModelBox(const std::shared_ptr<picojson::value> jsonValue
     std::string objectName = iter->first;
     picojson::value objectValue = iter->second;
 
-    auto offset = GetValueHelpers::getValue<double>(KEY_MODEL_BOX_CENTER, objectValue);
-    auto scale = GetValueHelpers::getValue<double>(KEY_MODEL_BOX_SCALE, objectValue);
+    auto offset = GetValueHelpers::getValue<double>(Box::KEY_MODEL_BOX_CENTER, objectValue);
+    auto scale = GetValueHelpers::getValue<double>(Box::KEY_MODEL_BOX_SCALE, objectValue);
 
     bool isValid = true;
 
@@ -212,8 +211,7 @@ void ModelParser::parseModelBox(const std::shared_ptr<picojson::value> jsonValue
     }
 
     if (isValid) {
-      std::shared_ptr<Box> box =
-          std::make_shared<Box>((float)*offset[0], (float)*offset[1], (float)*offset[2], (float)*scale[0], (float)*scale[1], (float)*scale[2]);
+      std::shared_ptr<Box> box = std::make_shared<Box>((float)*offset[0], (float)*offset[1], (float)*offset[2], (float)*scale[0], (float)*scale[1], (float)*scale[2]);
       box->setName(objectName);
       model->addObject(std::move(box));
     } else {
@@ -235,20 +233,20 @@ void ModelParser::parseModelObject(const std::shared_ptr<picojson::value> jsonVa
     std::shared_ptr<double> scale = nullptr;
     std::vector<double> offset;
 
-    if (objectValue.contains(KEY_MODEL_OBJECT_OBJ_PATH)) {
-      objPath = GetValueHelpers::getScalarValue<std::string>(KEY_MODEL_OBJECT_OBJ_PATH, objectValue);
+    if (objectValue.contains(Object::KEY_MODEL_OBJECT_OBJ_PATH)) {
+      objPath = GetValueHelpers::getScalarValue<std::string>(Object::KEY_MODEL_OBJECT_OBJ_PATH, objectValue);
     }
 
-    if (objectValue.contains(KEY_MODEL_OBJECT_TEXTURE_PATH)) {
-      texturePath = GetValueHelpers::getScalarValue<std::string>(KEY_MODEL_OBJECT_TEXTURE_PATH, objectValue);
+    if (objectValue.contains(Object::KEY_MODEL_OBJECT_TEXTURE_PATH)) {
+      texturePath = GetValueHelpers::getScalarValue<std::string>(Object::KEY_MODEL_OBJECT_TEXTURE_PATH, objectValue);
     }
 
-    if (objectValue.contains(KEY_MODEL_OBJECT_DEFAULT_RENDER_TYPE)) {
-      defaultRenderType = GetValueHelpers::getScalarValue<std::string>(KEY_MODEL_OBJECT_DEFAULT_RENDER_TYPE, objectValue);
+    if (objectValue.contains(Object::KEY_MODEL_OBJECT_DEFAULT_RENDER_TYPE)) {
+      defaultRenderType = GetValueHelpers::getScalarValue<std::string>(Object::KEY_MODEL_OBJECT_DEFAULT_RENDER_TYPE, objectValue);
     }
 
-    if (objectValue.contains(KEY_MODEL_OBJECT_SCALE)) {
-      scale = GetValueHelpers::getScalarValue<double>(KEY_MODEL_OBJECT_SCALE, objectValue);
+    if (objectValue.contains(Object::KEY_MODEL_OBJECT_SCALE)) {
+      scale = GetValueHelpers::getScalarValue<double>(Object::KEY_MODEL_OBJECT_SCALE, objectValue);
 
       if (scale == nullptr) {
         scale = std::make_shared<double>();
@@ -256,8 +254,8 @@ void ModelParser::parseModelObject(const std::shared_ptr<picojson::value> jsonVa
       }
     }
 
-    if (objectValue.contains(KEY_MODEL_OBJECT_OFFSET)) {
-      std::vector<double *> tmp_offset = GetValueHelpers::getValue<double>(KEY_MODEL_OBJECT_OFFSET, objectValue);
+    if (objectValue.contains(Object::KEY_MODEL_OBJECT_OFFSET)) {
+      std::vector<double *> tmp_offset = GetValueHelpers::getValue<double>(Object::KEY_MODEL_OBJECT_OFFSET, objectValue);
 
       for (int i = 0; i < 3; i++) {
         if (tmp_offset.size() > 2 && tmp_offset[0] != nullptr) {
@@ -292,10 +290,10 @@ void ModelParser::parseModelTerrain(const std::shared_ptr<picojson::value> jsonV
     std::string objectName = iter->first;
     picojson::value objectValue = iter->second;
 
-    auto heightMapPath = GetValueHelpers::getScalarValue<std::string>(KEY_MODEL_TERRAIN_HEIGHT_MAP_PATH, objectValue);
-    auto offset = GetValueHelpers::getValue<double>(KEY_MODEL_TERRAIN_CENTER, objectValue);
-    auto scaleXY = GetValueHelpers::getValue<double>(KEY_MODEL_TERRAIN_SCALE_XY, objectValue);
-    auto scaleH = GetValueHelpers::getScalarValue<double>(KEY_MODEL_TERRAIN_SCALE_H, objectValue);
+    auto heightMapPath = GetValueHelpers::getScalarValue<std::string>(Terrain::KEY_MODEL_TERRAIN_HEIGHT_MAP_PATH, objectValue);
+    auto offset = GetValueHelpers::getValue<double>(Terrain::KEY_MODEL_TERRAIN_CENTER, objectValue);
+    auto scaleXY = GetValueHelpers::getValue<double>(Terrain::KEY_MODEL_TERRAIN_SCALE_XY, objectValue);
+    auto scaleH = GetValueHelpers::getScalarValue<double>(Terrain::KEY_MODEL_TERRAIN_SCALE_H, objectValue);
 
     bool isValid = true;
 
@@ -331,8 +329,7 @@ void ModelParser::parseModelTerrain(const std::shared_ptr<picojson::value> jsonV
 
     if (isValid) {
       autoCompPath(heightMapPath, rootDirPath);
-      std::shared_ptr<Terrain> terrain = std::make_shared<Terrain>(*heightMapPath, (float)*offset[0], (float)*offset[1], (float)*offset[2],
-                                                                   (float)*scaleXY[0], (float)*scaleXY[1], (float)*scaleH);
+      std::shared_ptr<Terrain> terrain = std::make_shared<Terrain>(*heightMapPath, (float)*offset[0], (float)*offset[1], (float)*offset[2], (float)*scaleXY[0], (float)*scaleXY[1], (float)*scaleH);
       model->addObject(std::move(terrain));
     } else {
       std::cerr << "Failed to parse Box model: " << objectName << std::endl;
@@ -342,26 +339,26 @@ void ModelParser::parseModelTerrain(const std::shared_ptr<picojson::value> jsonV
 
 void ModelParser::parseModel(const std::shared_ptr<picojson::value> jsonValueModel, std::shared_ptr<Model> model, const pString rootDirPath) {
   // Object
-  if (jsonValueModel->contains(KEY_MODEL_OBJECT)) {
-    auto jsonValueModelObject = std::make_shared<picojson::value>(jsonValueModel->get(KEY_MODEL_OBJECT));
+  if (jsonValueModel->contains(Object::KEY_MODEL_OBJECT)) {
+    auto jsonValueModelObject = std::make_shared<picojson::value>(jsonValueModel->get(Object::KEY_MODEL_OBJECT));
 
     ModelParser::parseModelObject(jsonValueModelObject, model, rootDirPath);
   }
 
-  if (jsonValueModel->contains(KEY_MODEL_BACKGROUND)) {
-    auto jsonValueModelBackground = std::make_shared<picojson::value>(jsonValueModel->get(KEY_MODEL_BACKGROUND));
+  if (jsonValueModel->contains(Background::KEY_MODEL_BACKGROUND)) {
+    auto jsonValueModelBackground = std::make_shared<picojson::value>(jsonValueModel->get(Background::KEY_MODEL_BACKGROUND));
 
     ModelParser::parseModelBackground(jsonValueModelBackground, model, rootDirPath);
   }
 
-  if (jsonValueModel->contains(KEY_MODEL_BOX)) {
-    auto jsonValueModelBox = std::make_shared<picojson::value>(jsonValueModel->get(KEY_MODEL_BOX));
+  if (jsonValueModel->contains(Box::KEY_MODEL_BOX)) {
+    auto jsonValueModelBox = std::make_shared<picojson::value>(jsonValueModel->get(Box::KEY_MODEL_BOX));
 
     ModelParser::parseModelBox(jsonValueModelBox, model, rootDirPath);
   }
 
-  if (jsonValueModel->contains(KEY_MODEL_TERRAIN)) {
-    auto jsonValueModelTerrain = std::make_shared<picojson::value>(jsonValueModel->get(KEY_MODEL_TERRAIN));
+  if (jsonValueModel->contains(Terrain::KEY_MODEL_TERRAIN)) {
+    auto jsonValueModelTerrain = std::make_shared<picojson::value>(jsonValueModel->get(Terrain::KEY_MODEL_TERRAIN));
 
     ModelParser::parseModelTerrain(jsonValueModelTerrain, model, rootDirPath);
   }
@@ -392,18 +389,18 @@ void ModelParser::parse(std::string filePath, std::shared_ptr<Model> model) {
   }
   std::cout << "### RootDirPath=" << *rootDirPath << std::endl;
 
-  if (jsonValue->contains(KEY_SHADER)) {
-    auto jsonValueShader = std::make_shared<picojson::value>(jsonValue->get(KEY_SHADER));
+  if (jsonValue->contains(ShaderCompiler::KEY_SHADER)) {
+    auto jsonValueShader = std::make_shared<picojson::value>(jsonValue->get(ShaderCompiler::KEY_SHADER));
     ModelParser::parseShader(jsonValueShader, model, rootDirPath);
   }
 
-  if (jsonValue->contains(KEY_BACKGROUND)) {
-    auto jsonValueBackground = std::make_shared<picojson::value>(jsonValue->get(KEY_BACKGROUND));
+  if (jsonValue->contains(Model::KEY_BACKGROUND)) {
+    auto jsonValueBackground = std::make_shared<picojson::value>(jsonValue->get(Model::KEY_BACKGROUND));
     ModelParser::parseBackgroundColor(jsonValueBackground, model, rootDirPath);
   }
 
-  if (jsonValue->contains(KEY_MODEL)) {
-    auto jsonValueModel = std::make_shared<picojson::value>(jsonValue->get(KEY_MODEL));
+  if (jsonValue->contains(Model::KEY_MODEL)) {
+    auto jsonValueModel = std::make_shared<picojson::value>(jsonValue->get(Model::KEY_MODEL));
     ModelParser::parseModel(jsonValueModel, model, rootDirPath);
   }
 }

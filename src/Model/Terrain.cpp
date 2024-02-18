@@ -18,12 +18,11 @@ void Terrain::initVAO() {
   Texture::TextureArray heightMap = std::make_shared<Texture::InnerTextureArray>();
   Texture::readTexture(_filePath, heightMap);
 
-  int height = heightMap->size();
-  int width = (*heightMap)[0]->size();
-  int nChannels = (*(*heightMap)[0])[0]->size();
+  const int height = heightMap->size();
+  const int width = (*heightMap)[0]->size();
 
-  float diffH = 1.0f / (float)height;
-  float diffW = 1.0f / (float)width;
+  const float diffH = 1.0f / (float)height;
+  const float diffW = 1.0f / (float)width;
 
   // Create vertex array
   std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
@@ -118,27 +117,29 @@ void Terrain::initVAO() {
 }
 
 void Terrain::paintGL(const glm::mat4 &mvpMat) {
-  GLuint uid;
+  if (_isVisible) {
+    GLuint uid;
 
-  // Enable shader program
-  glUseProgram(_shaderID);
+    // Enable shader program
+    glUseProgram(_shaderID);
 
-  // Transfer uniform variables
-  GLuint mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
-  glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvpMat));
+    // Transfer uniform variables
+    const GLuint &mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
+    glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvpMat));
 
-  uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
-  glUniform1f(uid, getRenderType());
+    uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
+    glUniform1f(uid, getRenderType());
 
-  // Enable VAO
-  glBindVertexArray(_vaoId);
+    // Enable VAO
+    glBindVertexArray(_vaoId);
 
-  // Draw triangles
-  glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
+    // Draw triangles
+    glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
 
-  // Disable VAO
-  glBindVertexArray(0);
+    // Disable VAO
+    glBindVertexArray(0);
 
-  // Disable shader program
-  glUseProgram(0);
+    // Disable shader program
+    glUseProgram(0);
+  }
 }

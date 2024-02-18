@@ -20,13 +20,13 @@ void Model::compileShaders() {
     fragShaderCode = ShaderCompiler::readCodesFromFIle(*_fragShaderPath);
   }
 
-  const GLuint shaderID = ShaderCompiler::buildShaderProgram(vertShaderCode, fragShaderCode);
+  _shaderID = ShaderCompiler::buildShaderProgram(vertShaderCode, fragShaderCode);
 
   for (t_object object : *_objects) {
-    object->setShader(shaderID);
+    object->setShader(_shaderID);
   }
   for (t_object backgrounds : *_backgrounds) {
-    backgrounds->setShader(shaderID);
+    backgrounds->setShader(_shaderID);
   }
 }
 

@@ -23,11 +23,11 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel
   // ====================================================================
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  _io = ImGui::GetIO();
-  _io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-  _io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-  _io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-  _io.IniFilename = nullptr;
+  _io = &ImGui::GetIO();
+  _io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  _io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+  _io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  _io->IniFilename = nullptr;
 
   ImGui::StyleColorsDark();
 
@@ -79,11 +79,7 @@ void ImGuiMainView::paint() {
 
     // Side Bar
     if (ImGui::BeginViewportSideBar("Demo window", ImGui::GetWindowViewport(), ImGuiDir_::ImGuiDir_Left, SIDEBAR_WIDTH, true)) {
-      // Background color
-      const auto& arrayBackgroundRGBA = _sceneModel->getBackgroundColor();
-      float backgroundRGBA[4] = {arrayBackgroundRGBA[0], arrayBackgroundRGBA[1], arrayBackgroundRGBA[2], arrayBackgroundRGBA[3]};
-      ImGui::ColorEdit4("Background Color", &backgroundRGBA[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
-      _sceneModel->setBackgroundColor(backgroundRGBA[0], backgroundRGBA[1], backgroundRGBA[2], backgroundRGBA[3]);
+      ImGui::SeparatorText("Rendering");
 
       // Render type
       static int renderType;
@@ -103,9 +99,41 @@ void ImGuiMainView::paint() {
       // Rotation mode
       ImGui::Checkbox("Rotation mode", &_sceneView->enabledRotationgMode);
 
-      ImGui::BeginChild("FPS");
-      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / _io.Framerate, _io.Framerate);
-      ImGui::EndChild();
+      // Background color
+      const auto& arrayBackgroundRGBA = _sceneModel->getBackgroundColor();
+      float backgroundRGBA[4] = {arrayBackgroundRGBA[0], arrayBackgroundRGBA[1], arrayBackgroundRGBA[2], arrayBackgroundRGBA[3]};
+      ImGui::ColorEdit4("Background Color", &backgroundRGBA[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+      _sceneModel->setBackgroundColor(backgroundRGBA[0], backgroundRGBA[1], backgroundRGBA[2], backgroundRGBA[3]);
+
+      ImGui::SeparatorText("Objects");
+      if (ImGui::BeginTable("##Objects", 3, ImGuiTableFlags_Borders)) {
+        const int nObjects = _sceneModel->getNumObjects();
+
+        ImGui::TableSetupColumn("Name");
+        ImGui::TableSetupColumn("Type");
+        ImGui::TableSetupColumn("Visible");
+        ImGui::TableHeadersRow();
+
+        for (int iObject = 0; iObject < nObjects; iObject++) {
+          ImGui::TableNextRow();
+
+          const auto& object = _sceneModel->getObject(iObject);
+
+          ImGui::TableNextColumn();
+          ImGui::Text(object->getName().c_str());
+
+          ImGui::TableNextColumn();
+          ImGui::Text(object->getObjectType().c_str());
+
+          ImGui::TableNextColumn();
+          ImGui::Checkbox("##isVisible", object->getPointerToIsVisible());
+        }
+
+        ImGui::EndTable();
+      }
+
+      ImGui::SeparatorText("Statistics");
+      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / _io->Framerate, _io->Framerate);
 
       ImGui::End();
     }
@@ -128,7 +156,7 @@ void ImGuiMainView::paint() {
       _sceneAreaMin = ImVec2(sceneAreaOrigin.x, sceneAreaOrigin.y);
       _sceneAreaMax = ImVec2(sceneAreaOrigin.x + sceneAreaSize.x, sceneAreaOrigin.y + sceneAreaSize.y);
 
-      _wheelOffset = _io.MouseWheel;
+      _wheelOffset = _io->MouseWheel;
 
       ImGui::GetWindowDrawList()->AddImage(
           (void*)_sceneView->getFrameBuffer()->getFrameTexture(),
@@ -151,7 +179,7 @@ void ImGuiMainView::paint() {
   // Post process
   // ====================================================================
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-  if (_io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+  if (_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
     GLFWwindow* backup_current_context = glfwGetCurrentContext();
     ImGui::UpdatePlatformWindows();
     ImGui::RenderPlatformWindowsDefault();

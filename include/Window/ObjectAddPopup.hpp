@@ -3,13 +3,19 @@
 #include <FileBrowser/ImGuiFileBrowser.h>
 
 #include <ImGui.hpp>
+#include <Model/Background.hpp>
+#include <Model/Box.hpp>
 #include <Model/Object.hpp>
+#include <Model/Terrain.hpp>
 #include <Model/ViewerModel.hpp>
 #include <OpenGL.hpp>
+#include <Window/ImGuiSceneView.hpp>
 #include <map>
 #include <memory>
 #include <string>
 #include <variant>
+
+using namespace std::string_literals;
 
 class FileDialog {
   std::shared_ptr<imgui_addons::ImGuiFileBrowser> _fileDialog = nullptr;
@@ -33,6 +39,7 @@ class ObjectAddFileDialog {
   inline static const std::string TITLE = "Add Object";
 
   std::shared_ptr<FileDialog> _fileDialog;
+  std::string _objectTypes;
   std::shared_ptr<ViewerModel> _model;
   bool _isVisible = false;
   std::map<std::string, Attrib_t> _attributeBuffer;

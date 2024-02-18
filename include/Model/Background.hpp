@@ -15,28 +15,36 @@ class Background : public Primitives {
   GLuint _textureId;
 
   // clang-format off
-  inline static const glm::vec3 positions[4] = {
-    glm::vec3(1.0f, -1.0f, 1.0f),
-    glm::vec3(1.0f, 1.0f, 1.0f),
-    glm::vec3(-1.0f, -1.0f, 1.0f),
-    glm::vec3(-1.0f, 1.0f, 1.0f)
-  };
+    inline static const glm::vec3 positions[4] = {
+            glm::vec3(1.0f, -1.0f, 1.0f),
+            glm::vec3(1.0f, 1.0f, 1.0f),
+            glm::vec3(-1.0f, -1.0f, 1.0f),
+            glm::vec3(-1.0f, 1.0f, 1.0f)
+    };
 
-  inline static const glm::vec2 uvCoords[4] = {
-    glm::vec2(1.0f, 1.0f),
-    glm::vec2(1.0f, 0.0f),
-    glm::vec2(0.0f, 1.0f),
-    glm::vec2(0.0f, 0.0f)
-  };
+    inline static const glm::vec2 uvCoords[4] = {
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(1.0f, 0.0f),
+            glm::vec2(0.0f, 1.0f),
+            glm::vec2(0.0f, 0.0f)
+    };
   // clang-format on
 
  public:
-  Background(const std::string& filePath);
+  inline static const std::string KEY_MODEL_BACKGROUND = "Background";
+  inline static const std::string KEY_MODEL_BACKGROUND_PATH = "Path";
+
+  explicit Background(const std::string &filePath);
+
   ~Background();
 
-  void update(){};
-  void initVAO();
-  void paintGL(const glm::mat4& mvpMat);
+  void update() override{};
+
+  void initVAO() override;
+
+  void paintGL(const glm::mat4 &mvpMat) override;
+
+  std::string getObjectType() override { return KEY_MODEL_BACKGROUND; };
 };
 
 #endif

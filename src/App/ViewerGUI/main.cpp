@@ -42,6 +42,7 @@ int main(int argc, char** argv) {
   // ====================================================================
   model = std::make_shared<ViewerModel>();
   model->setMaskMode(ImGuiSceneView::isMaskMode);
+  model->compileShaders();
 
   // ====================================================================
   // Initialize UI

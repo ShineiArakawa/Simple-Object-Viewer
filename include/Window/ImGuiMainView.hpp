@@ -19,7 +19,7 @@ class ImGuiMainView {
   float _wheelOffset = 0.0f;
   ImVec2 _sceneAreaMin = ImVec2(0.0f, 0.0f);
   ImVec2 _sceneAreaMax = ImVec2(0.0f, 0.0f);
-  ImGuiIO _io;
+  ImGuiIO* _io;
 
   std::shared_ptr<Renderer> _renderer = nullptr;
   std::shared_ptr<ImGuiSceneView> _sceneView = nullptr;

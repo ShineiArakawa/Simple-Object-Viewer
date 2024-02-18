@@ -1,7 +1,8 @@
 #include <Model/Box.hpp>
 #include <iostream>
 
-Box::Box(const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ) {
+Box::Box(const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY,
+         const float scaleZ) {
   _offsetX = offsetX;
   _offsetY = offsetY;
   _offsetZ = offsetZ;
@@ -10,7 +11,7 @@ Box::Box(const float offsetX, const float offsetY, const float offsetZ, const fl
   _scaleZ = scaleZ;
 }
 
-Box::~Box() {}
+Box::~Box() = default;
 
 void Box::initVAO() {
   // Create vertex array
@@ -75,28 +76,30 @@ void Box::initVAO() {
 }
 
 void Box::paintGL(const glm::mat4 &mvpMat) {
-  GLuint uid;
-  glm::mat4 mvptMat = mvpMat * glm::translate(_position);
+  if (_isVisible) {
+    GLuint uid;
+    const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
 
-  // Enable shader program
-  glUseProgram(_shaderID);
+    // Enable shader program
+    glUseProgram(_shaderID);
 
-  // Transfer uniform variables
-  GLuint mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
-  glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvptMat));
+    // Transfer uniform variables
+    const GLuint &mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
+    glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvptMat));
 
-  uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
-  glUniform1f(uid, getRenderType());
+    uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
+    glUniform1f(uid, getRenderType());
 
-  // Enable VAO
-  glBindVertexArray(_vaoId);
+    // Enable VAO
+    glBindVertexArray(_vaoId);
 
-  // Draw triangles
-  glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    // Draw triangles
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-  // Disable VAO
-  glBindVertexArray(0);
+    // Disable VAO
+    glBindVertexArray(0);
 
-  // Disable shader program
-  glUseProgram(0);
+    // Disable shader program
+    glUseProgram(0);
+  }
 }
