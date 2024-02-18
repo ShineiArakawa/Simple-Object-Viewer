@@ -18,7 +18,6 @@ void FileDialog::paint() {
 
   if (_fileDialog->showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 600), _extensions)) {
     strcpy(_textBuffer, (char*)_fileDialog->selected_path.data());
-    std::cout << _textBuffer << std::endl;
   }
 }
 
@@ -44,7 +43,8 @@ void ObjectAddFileDialog::paint() {
   static float scale = 1.0f;
   static float scaleXYZ[3] = {1.0f, 1.0f, 1.0f};
 
-  if (_isVisible && ImGui::Begin(TITLE.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+  if (_isVisible) {
+    ImGui::Begin(TITLE.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::SeparatorText("1. Select the object type");
     ImGui::Combo("Object Type", &objectTypeID, _objectTypes.c_str());
 

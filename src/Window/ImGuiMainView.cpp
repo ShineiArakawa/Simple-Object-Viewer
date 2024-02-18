@@ -27,6 +27,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel
   _io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
   _io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
   _io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  _io->ConfigWindowsMoveFromTitleBarOnly = true;
   _io->IniFilename = nullptr;
 
   ImGui::StyleColorsDark();
@@ -157,9 +158,9 @@ void ImGuiMainView::paintSideBar() {
 
 void ImGuiMainView::paintSceneWindow() {
   const ImVec2 viewportPos = ImGui::GetWindowViewport()->Pos;
-  ImGui::SetNextWindowPos(ImVec2(viewportPos.x + SIDEBAR_WIDTH, viewportPos.y + _menuBarHeight), ImGuiCond_Always);
+  ImGui::SetNextWindowPos(ImVec2(viewportPos.x + SIDEBAR_WIDTH, viewportPos.y + _menuBarHeight), ImGuiCond_Once);
   const ImVec2 sceneWindowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - SIDEBAR_WIDTH, ImGui::GetWindowViewport()->Size.y - _menuBarHeight);
-  ImGui::SetNextWindowSize(sceneWindowSize, ImGuiCond_Always);
+  ImGui::SetNextWindowSize(sceneWindowSize, ImGuiCond_Once);
 
   ImGui::Begin("Scene");
 
