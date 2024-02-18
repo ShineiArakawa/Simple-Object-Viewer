@@ -29,7 +29,7 @@ class FileDialog {
   ~FileDialog();
 
   void setup(char*, const std::string);
-  void buildUI();
+  void paint();
 };
 
 class ObjectAddFileDialog {
@@ -43,11 +43,13 @@ class ObjectAddFileDialog {
   std::shared_ptr<ViewerModel> _model;
   bool _isVisible = false;
   std::map<std::string, Attrib_t> _attributeBuffer;
+  std::string _message = "";
+  std::string _errorMessage = "";
 
  public:
   ObjectAddFileDialog(std::shared_ptr<ViewerModel>);
   ~ObjectAddFileDialog();
 
-  void buildUI();
+  void paint();
   void setVisible();
 };

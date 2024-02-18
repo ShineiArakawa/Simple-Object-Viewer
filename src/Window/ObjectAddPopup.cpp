@@ -11,7 +11,7 @@ void FileDialog::setup(char* textBUffer, const std::string extensions) {
   _extensions = extensions;
 }
 
-void FileDialog::buildUI() {
+void FileDialog::paint() {
   if (isVisible) {
     ImGui::OpenPopup("Open File");
   }
@@ -34,7 +34,7 @@ ObjectAddFileDialog::ObjectAddFileDialog(std::shared_ptr<ViewerModel> model) : _
 
 ObjectAddFileDialog::~ObjectAddFileDialog() {}
 
-void ObjectAddFileDialog::buildUI() {
+void ObjectAddFileDialog::paint() {
   static int objectTypeID = 0;
   static char objName[256];
   static char objFilePath[256];
@@ -44,18 +44,18 @@ void ObjectAddFileDialog::buildUI() {
   static float scale = 1.0f;
   static float scaleXYZ[3] = {1.0f, 1.0f, 1.0f};
 
-  if (_isVisible) {
-    ImGui::Begin(TITLE.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-
+  if (_isVisible && ImGui::Begin(TITLE.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
     ImGui::SeparatorText("1. Select the object type");
     ImGui::Combo("Object Type", &objectTypeID, _objectTypes.c_str());
 
-    ImGui::SeparatorText("2. Set each attributes");
+    ImGui::SeparatorText("2. Set each attribute");
     // ========================================================================================================================
     // Create GUI for attributes
     // ========================================================================================================================
     if (objectTypeID == 0) {
+      // ====================================================================
       // Object
+      // ====================================================================
       ImGui::InputText("Obj Name", objName, 256);
 
       ImGui::InputText("Obj file path", objFilePath, 256);
@@ -76,12 +76,16 @@ void ObjectAddFileDialog::buildUI() {
 
       ImGui::InputFloat("Scale", &scale);
     } else if (objectTypeID == 1) {
+      // ====================================================================
       // Box
+      // ====================================================================
       ImGui::InputText("Obj Name", objName, 256);
       ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ);
       ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ);
     } else if (objectTypeID == 2) {
+      // ====================================================================
       // Terrain
+      // ====================================================================
       ImGui::InputText("Height map file path", heightMapFilePath, 256);
       ImGui::SameLine();
       if (ImGui::Button("Browse Obj")) {
@@ -92,7 +96,9 @@ void ObjectAddFileDialog::buildUI() {
       ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ);
       ImGui::InputFloat3("Scale (X, Y, H)", scaleXYZ);
     } else if (objectTypeID == 3) {
-      // Terrain
+      // ====================================================================
+      // Background
+      // ====================================================================
       ImGui::InputText("Texture file path", textureFilePath, 256);
       ImGui::SameLine();
       if (ImGui::Button("Browse texture")) {
@@ -108,69 +114,79 @@ void ObjectAddFileDialog::buildUI() {
     if (ImGui::Button("Cancel")) {
       ImGui::CloseCurrentPopup();  // close
       _isVisible = false;
+      _message.clear();
+      _errorMessage.clear();
     }
     ImGui::SameLine();
     if (ImGui::Button("Add")) {
-      ImGui::CloseCurrentPopup();  // close
-      _isVisible = false;
-
       // ========================================================================================================================
       // Create objects
       // ========================================================================================================================
-      if (objectTypeID == 0) {
-        // Object
-        std::string strObjFilePath(objFilePath);
-        std::string strTexFilePath(textureFilePath);
-        std::string strObjName(objName);
+      Model::t_object newObject = nullptr;
+      std::string strObjName(objName);
+      std::string strObjFilePath(objFilePath);
+      std::string strTexFilePath(textureFilePath);
+      std::string strHeightMapFilePath(heightMapFilePath);
+      std::string strTextureFilePath(textureFilePath);
 
-        auto object = std::make_shared<Object>(strObjFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scale);
+      try {
+        _message = "Initializing ...";
 
-        if (!strTexFilePath.empty()) {
-          object->loadTexture(strTexFilePath);
+        if (objectTypeID == 0) {
+          // ====================================================================
+          // Object
+          // ====================================================================
+          auto object = std::make_shared<Object>(strObjFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scale);
+          if (!strTexFilePath.empty()) {
+            object->loadTexture(strTexFilePath);
+          }
+
+          newObject = object;
+        } else if (objectTypeID == 1) {
+          // ====================================================================
+          // Box
+          // ====================================================================
+          newObject = std::make_shared<Box>(offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]);
+        } else if (objectTypeID == 2) {
+          // ====================================================================
+          // Terrain
+          // ====================================================================
+          newObject = std::make_shared<Terrain>(strHeightMapFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]);
+        } else if (objectTypeID == 3) {
+          // ====================================================================
+          // Backgound
+          // ====================================================================
+          newObject = std::make_shared<Background>(strTextureFilePath);
         }
 
-        object->setName(strObjName);
-        object->setShader(_model->getShaderID());
-        object->initVAO();
-        _model->addObject(std::move(object));
-      } else if (objectTypeID == 1) {
-        // Box
-        std::string strObjName(objName);
-
-        auto object = std::make_shared<Box>(offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]);
-        object->setName(strObjName);
-        object->setShader(_model->getShaderID());
-        object->initVAO();
-        _model->addObject(std::move(object));
-      } else if (objectTypeID == 2) {
-        // Terrain
-        std::string strObjName(objName);
-        std::string strHeightMapFilePath(heightMapFilePath);
-
-        auto object = std::make_shared<Terrain>(strHeightMapFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]);
-        object->setName(strObjName);
-        object->setShader(_model->getShaderID());
-        object->initVAO();
-        _model->addObject(std::move(object));
-      } else if (objectTypeID == 3) {
-        // Backgound
-        std::string strObjName(objName);
-        std::string strTextureFilePath(textureFilePath);
-
-        auto object = std::make_shared<Background>(strTextureFilePath);
-        object->setName(strObjName);
-        object->setShader(_model->getShaderID());
-        object->initVAO();
-        _model->addObject(std::move(object));
+        if (newObject != nullptr) {
+          newObject->setName(strObjName);
+          newObject->setShader(_model->getShaderID());
+          newObject->initVAO();
+          _model->addObject(std::move(newObject));
+          _errorMessage.clear();
+          _message = "Success";
+        }
+      } catch (const std::exception& error) {
+        std::cerr << "[Error] See below messages." << std::endl;
+        std::cerr << error.what() << std::endl;
+        _errorMessage = "Failed to add a new object. Check attributes.";
       }
+    }
+
+    if (!_errorMessage.empty()) {
+      ImGui::Separator();
+      ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), _errorMessage.c_str());
+    } else if (!_message.empty()) {
+      ImGui::Separator();
+      ImGui::Text(_message.c_str());
     }
 
     ImGui::End();
   }
 
-  _fileDialog->buildUI();
+  _fileDialog->paint();
   _fileDialog->isVisible = false;
-  _model->setMaskMode(ImGuiSceneView::isMaskMode);
 }
 
 void ObjectAddFileDialog::setVisible() {

@@ -5,8 +5,7 @@
 #include <tiny_obj_loader.h>
 #endif
 
-void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices,
-                               std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
+void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
   std::cout << "### Loaded obj file: " << filePath << std::endl;
 
   tinyobj::attrib_t attrib;
@@ -22,8 +21,7 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
   }
 
   if (!success) {
-    std::cerr << "Failed to load OBJ file: " << filePath << std::endl;
-    exit(1);
+    throw std::runtime_error("Failed to load OBJ file: " + filePath);
   }
 
   // Vertex配列の作成
@@ -36,7 +34,6 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
     const tinyobj::mesh_t &mesh = shapes[s].mesh;
 
     int nVertices = mesh.indices.size();
-    // std::array<std::vector<int>, nVertices> verticesArray;
 
     for (int i = 0; i < nVertices; i++) {
       const tinyobj::index_t &index = mesh.indices[i];
@@ -74,9 +71,6 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
     }
   }
 
-  // std::cout << "(x_min, y_min, z_min) = (" << minCoords.x << ", " << minCoords.y << ", " << minCoords.z << ")" << std::endl;
-  // std::cout << "(x_max, y_max, z_max) = (" << maxCoords.x << ", " << maxCoords.y << ", " << maxCoords.z << ")" << std::endl;
-
   ObjectLoader::moveToOrigin(vertices);
   ObjectLoader::move(vertices, offsetX, offsetY, offsetZ);
 }
@@ -101,9 +95,9 @@ void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, co
     }
   }
 
-  glm::vec3 center = (maxCoords + minCoords) / 2.0f;
-  glm::vec3 range = maxCoords - minCoords;
-  glm::vec3 scale(scaleX, scaleY, scaleZ);
+  const glm::vec3 center = (maxCoords + minCoords) / 2.0f;
+  const glm::vec3 range = maxCoords - minCoords;
+  const glm::vec3 scale(scaleX, scaleY, scaleZ);
 
   for (int i = 0; i < vertices->size(); i++) {
     (*vertices)[i].position = ((*vertices)[i].position - center) * scale + center;
@@ -123,10 +117,6 @@ void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, co
       }
     }
   }
-
-  std::cout << "### Obj is scaled" << std::endl;
-  std::cout << "(x_min, y_min, z_min) = (" << afterMinCoords.x << ", " << afterMinCoords.y << ", " << afterMinCoords.z << ")" << std::endl;
-  std::cout << "(x_max, y_max, z_max) = (" << afterMaxCoords.x << ", " << afterMaxCoords.y << ", " << afterMaxCoords.z << ")" << std::endl;
 }
 
 void ObjectLoader::moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices) {
@@ -165,10 +155,6 @@ void ObjectLoader::moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices) {
       }
     }
   }
-
-  // std::cout << "### Obj is moved to the origin" << std::endl;
-  // std::cout << "(x_min, y_min, z_min) = (" << afterMinCoords.x << ", " << afterMinCoords.y << ", " << afterMinCoords.z << ")" << std::endl;
-  // std::cout << "(x_max, y_max, z_max) = (" << afterMaxCoords.x << ", " << afterMaxCoords.y << ", " << afterMaxCoords.z << ")" << std::endl;
 }
 
 void ObjectLoader::move(std::shared_ptr<std::vector<Vertex>> vertices, const float offsetX, const float offsetY, const float offsetZ) {

@@ -29,6 +29,11 @@ class ImGuiMainView {
  public:
   bool moveOn = true;
 
+ private:
+  void paintMenuBar();
+  void paintSideBar();
+  void paintSceneWindow();
+
  public:
   ImGuiMainView(GLFWwindow*, std::shared_ptr<ViewerModel>);
   ~ImGuiMainView();
