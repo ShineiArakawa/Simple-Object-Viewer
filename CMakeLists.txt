@@ -73,6 +73,9 @@ set(
 # #### ImGuiFileBrowser
 set(IMGUI_FILEBROWSER_INCLUDE_DIR ${PROJECT_LIB_DIR}/ImGuiFileBrowser/FileBrowser)
 
+# #### Laz-perf
+set(LIB_LAZ_INCLUDE_DIR ${PROJECT_LIB_DIR}/libLAS/include)
+
 # #### Add subdirectory
 add_subdirectory(pybind11)
 add_subdirectory(src)
@@ -110,4 +113,5 @@ message("#    IMGUI_INCLUDE_DIR                    : ${IMGUI_INCLUDE_DIR}")
 message("#    IMGUI_SOURCE_DIR                     : ${IMGUI_SOURCE_DIR}")
 message("#    IMGUI_BACKENDS_DIR                   : ${IMGUI_BACKENDS_DIR}")
 message("#    IMGUI_FILEBROWSER_INCLUDE_DIR        : ${IMGUI_FILEBROWSER_INCLUDE_DIR}")
+message("#    LIB_LAZ_INCLUDE_DIR                  : ${LIB_LAZ_INCLUDE_DIR}")
 message("# =======================================================================================================")

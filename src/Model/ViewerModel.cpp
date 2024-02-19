@@ -1,6 +1,9 @@
 #include <Model/ViewerModel.hpp>
 
-ViewerModel::ViewerModel(/* args */) {}
+ViewerModel::ViewerModel() {
+  setMaskMode(false);
+  compileShaders();
+}
 
 ViewerModel::~ViewerModel() {}
 

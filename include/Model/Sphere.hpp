@@ -36,4 +36,7 @@ class Sphere : public Primitives {
   void initVAO() override;
   void paintGL(const glm::mat4 &mvpMat) override;
   std::string getObjectType() override { return KEY_MODEL_SPHERE; };
+
+  static void createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices);
+  static void createSphere(const int nDivs, const glm::vec3 color, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices);
 };

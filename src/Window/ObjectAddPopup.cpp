@@ -33,6 +33,7 @@ ObjectAddFileDialog::ObjectAddFileDialog(std::shared_ptr<ViewerModel> model) : _
   _objectTypes += Terrain::KEY_MODEL_TERRAIN + "\0"s;
   _objectTypes += Background::KEY_MODEL_BACKGROUND + "\0"s;
   _objectTypes += Sphere::KEY_MODEL_SPHERE + "\0"s;
+  _objectTypes += PointCloud::KEY_MODEL_POINT_CLOUD + "\0"s;
 }
 
 ObjectAddFileDialog::~ObjectAddFileDialog() {}
@@ -47,6 +48,7 @@ void ObjectAddFileDialog::paint() {
   static float scale = 1.0f;
   static float scaleXYZ[3] = {1.0f, 1.0f, 1.0f};
   static int nDivs = 100;
+  static float pointSize = 0.01f;
 
   if (_isVisible) {
     ImGui::Begin(TITLE.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
@@ -116,9 +118,23 @@ void ObjectAddFileDialog::paint() {
       // Sphere
       // ====================================================================
       ImGui::InputText("Obj Name", objName, 256);
-      ImGui::InputInt("num divisions", &nDivs);
+      ImGui::InputInt("Num divisions", &nDivs);
       ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ);
       ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ);
+    } else if (objectTypeID == 5) {
+      // ====================================================================
+      // Point cloud
+      // ====================================================================
+      ImGui::InputText("Obj Name", objName, 256);
+      ImGui::InputText("Point cloud file path", objFilePath, 256);
+      ImGui::SameLine();
+      if (ImGui::Button("Browse object file")) {
+        _fileDialog->isVisible = true;
+        _fileDialog->setup(objFilePath, ".obj,.laz");
+      }
+      ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ);
+      ImGui::InputFloat("Scale", &scale);
+      ImGui::InputFloat("Point size", &pointSize);
     }
 
     // ========================================================================================================================
@@ -176,6 +192,11 @@ void ObjectAddFileDialog::paint() {
           // Sphere
           // ====================================================================
           newObject = std::make_shared<Sphere>(nDivs, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]);
+        } else if (objectTypeID == 5) {
+          // ====================================================================
+          // Point cloud
+          // ====================================================================
+          newObject = std::make_shared<PointCloud>(objFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scale, pointSize);
         }
 
         if (newObject != nullptr) {

@@ -5,6 +5,19 @@
 #include <tiny_obj_loader.h>
 #endif
 
+void ObjectLoader::readFromFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
+  const std::string extension = FileUtil::extension(filePath);
+
+  if (extension == ".obj") {
+    readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+  } else if (extension == ".laz") {
+    readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+  } else {
+    std::cerr << "Unsupprted file type: " << filePath << std::endl;
+    return;
+  }
+}
+
 void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
   std::cout << "### Loaded obj file: " << filePath << std::endl;
 
@@ -38,12 +51,12 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
     for (int i = 0; i < nVertices; i++) {
       const tinyobj::index_t &index = mesh.indices[i];
 
-      glm::vec3 position, normal;
-      glm::vec2 texcoord;
+      glm::vec3 position(0.0f), normal(0.0f), color(0.0f);
+      glm::vec2 texcoord(0.0f);
 
       if (index.vertex_index >= 0) {
-        position = glm::vec3(attrib.vertices[index.vertex_index * 3 + 0], attrib.vertices[index.vertex_index * 3 + 1],
-                             attrib.vertices[index.vertex_index * 3 + 2]);
+        position = glm::vec3(attrib.vertices[index.vertex_index * 3 + 0], attrib.vertices[index.vertex_index * 3 + 1], attrib.vertices[index.vertex_index * 3 + 2]);
+        color = glm::vec3(attrib.colors[index.vertex_index * 3 + 0], attrib.colors[index.vertex_index * 3 + 1], attrib.colors[index.vertex_index * 3 + 2]);
 
         for (int direction = 0; direction < 3; direction++) {
           if (position[direction] > maxCoords[direction]) {
@@ -56,15 +69,14 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
       }
 
       if (index.normal_index >= 0) {
-        normal = glm::vec3(attrib.normals[index.normal_index * 3 + 0], attrib.normals[index.normal_index * 3 + 1],
-                           attrib.normals[index.normal_index * 3 + 2]);
+        normal = glm::vec3(attrib.normals[index.normal_index * 3 + 0], attrib.normals[index.normal_index * 3 + 1], attrib.normals[index.normal_index * 3 + 2]);
       }
 
       if (index.texcoord_index >= 0) {
         texcoord = glm::vec2(attrib.texcoords[index.texcoord_index * 2 + 0], attrib.texcoords[index.texcoord_index * 2 + 1]);
       }
 
-      const Vertex vertex(position, normal, normal, texcoord, 0.0f);
+      const Vertex vertex(position, color, normal, texcoord, 0.0f);
 
       indices->push_back((uint32_t)vertices->size());
       vertices->push_back(vertex);
@@ -73,6 +85,31 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
 
   ObjectLoader::moveToOrigin(vertices);
   ObjectLoader::move(vertices, offsetX, offsetY, offsetZ);
+}
+
+void ObjectLoader::readLazFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
+  std::ifstream ifs(filePath, std::ios::in | std::ios::binary);
+
+  if (!ifs.good()) {
+    std::cerr << "Could not open file for reading: " << filePath << std::endl;
+    std::cerr << strerror(errno) << std::endl;
+    return;
+  }
+
+  liblas::ReaderFactory f;
+  liblas::Reader reader = f.CreateWithStream(ifs);
+
+  liblas::Header const &header = reader.GetHeader();
+
+  std::cout << "Compressed: " << (header.Compressed() == true) ? "true" : "false";
+  std::cout << "Signature: " << header.GetFileSignature() << '\n';
+  std::cout << "Points count: " << header.GetPointRecordsCount() << '\n';
+
+  while (reader.ReadNextPoint()) {
+    liblas::Point const &p = reader.GetPoint();
+
+    std::cout << p.GetX() << ", " << p.GetY() << ", " << p.GetZ() << "\n";
+  }
 }
 
 void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, const float scale) {

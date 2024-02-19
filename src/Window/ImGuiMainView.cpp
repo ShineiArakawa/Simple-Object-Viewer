@@ -197,7 +197,7 @@ void ImGuiMainView::paintSceneWindow() {
   _wheelOffset = _io->MouseWheel;
 
   ImGui::GetWindowDrawList()->AddImage(
-      (void*)_sceneView->getFrameBuffer()->getFrameTexture(),
+      reinterpret_cast<void*>(_sceneView->getFrameBuffer()->getFrameTexture()),
       _sceneAreaMin,
       _sceneAreaMax,
       ImVec2(0, 1),

@@ -4,6 +4,10 @@
 
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
+#include <Util/FileUtil.hpp>
+#include <fstream>
+#include <iostream>
+#include <liblas/liblas.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,8 +16,9 @@ class ObjectLoader {
  private:
   /* data */
  public:
-  static void readObjFile(const std::string& filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices,
-                          const float offsetX = 0.0f, const float offsetY = 0.0f, const float offsetZ = 0.0f);
+  static void readFromFile(const std::string& filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX = 0.0f, const float offsetY = 0.0f, const float offsetZ = 0.0f);
+  static void readObjFile(const std::string& filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX = 0.0f, const float offsetY = 0.0f, const float offsetZ = 0.0f);
+  static void readLazFile(const std::string& filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX = 0.0f, const float offsetY = 0.0f, const float offsetZ = 0.0f);
   static void scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, const float scale);
   static void scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, const float scaleX, const float scaleY, const float scaleZ);
   static void moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices);

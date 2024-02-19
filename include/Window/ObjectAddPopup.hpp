@@ -6,6 +6,7 @@
 #include <Model/Background.hpp>
 #include <Model/Box.hpp>
 #include <Model/Object.hpp>
+#include <Model/PointCloud.hpp>
 #include <Model/Sphere.hpp>
 #include <Model/Terrain.hpp>
 #include <Model/ViewerModel.hpp>

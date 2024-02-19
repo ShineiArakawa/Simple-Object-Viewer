@@ -15,6 +15,8 @@ Terrain::Terrain(const std::string &filePath, const float offsetX, const float o
 Terrain::~Terrain() {}
 
 void Terrain::initVAO() {
+  const auto startTime = std::chrono::system_clock::now();
+
   Texture::TextureArray heightMap = std::make_shared<Texture::InnerTextureArray>();
   Texture::readTexture(_filePath, heightMap);
 
@@ -27,10 +29,14 @@ void Terrain::initVAO() {
   // Create vertex array
   std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
   std::vector<unsigned int> indices;
-  int idx = 0;
+  vertices->resize((height - 1) * (width - 1) * 6);
+  indices.resize((height - 1) * (width - 1) * 6);
 
+#pragma omp parallel for
   for (int h_texture = 0; h_texture < height - 1; h_texture++) {
     for (int w_texture = 0; w_texture < width - 1; w_texture++) {
+      const int index = 6 * (h_texture * (width - 1) + w_texture);
+
       for (int i_vert = 0; i_vert < 3; i_vert++) {
         int h_texture_offset = 0;
         int w_texture_offset = 0;
@@ -46,8 +52,9 @@ void Terrain::initVAO() {
         pos.z = positions[i_vert].z * diffW + (float)w_texture * diffW;
 
         Vertex v(pos, colors[i_vert], colors[i_vert], textureCoords[i_vert], 0.0f);
-        vertices->push_back(v);
-        indices.push_back(idx++);
+
+        (*vertices)[index + i_vert] = v;
+        indices[index + i_vert] = index + i_vert;
       }
 
       for (int i_vert = 1; i_vert < 4; i_vert++) {
@@ -68,8 +75,9 @@ void Terrain::initVAO() {
         pos.z = positions[i_vert].z * diffW + (float)w_texture * diffW;
 
         Vertex v(pos, colors[i_vert], colors[i_vert], textureCoords[i_vert], 0.0f);
-        vertices->push_back(v);
-        indices.push_back(idx++);
+
+        (*vertices)[index + i_vert + 2] = v;
+        indices[index + i_vert + 2] = index + i_vert + 2;
       }
     }
   }
@@ -114,6 +122,10 @@ void Terrain::initVAO() {
 
   // Temporarily disable VAO
   glBindVertexArray(0);
+
+  const auto endTime = std::chrono::system_clock::now();
+  const double elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+  printf("Elapsed time: %.3lf [sec]\n", elapsedTime / 1000.0);
 }
 
 void Terrain::paintGL(const glm::mat4 &mvpMat) {

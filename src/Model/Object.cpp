@@ -15,7 +15,7 @@ void Object::initVAO() {
   std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
   std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
 
-  ObjectLoader::readObjFile(_filePath, vertices, indices, _offsetX, _offsetY, _offsetZ);
+  ObjectLoader::readFromFile(_filePath, vertices, indices, _offsetX, _offsetY, _offsetZ);
   ObjectLoader::scaleObject(vertices, _scale);
 
   // Create VAO

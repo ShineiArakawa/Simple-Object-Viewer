@@ -28,11 +28,7 @@ int main(int argc, char** argv) {
   // ====================================================================
   // Initialize GLAD
   // ====================================================================
-  if (glfwInit() == GLFW_FALSE) {
-    fprintf(stderr, "Initialization failed!\n");
-    return 1;
-  }
-  if (gladLoadGL() == 0) {
+  if (gladLoadGL() == GL_FALSE) {
     fprintf(stderr, "Failed to load OpenGL 3.x/4.x libraries!\n");
     return 1;
   }
@@ -41,8 +37,6 @@ int main(int argc, char** argv) {
   // Initialize Model
   // ====================================================================
   model = std::make_shared<ViewerModel>();
-  model->setMaskMode(ImGuiSceneView::isMaskMode);
-  model->compileShaders();
 
   // ====================================================================
   // Initialize UI

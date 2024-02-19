@@ -20,7 +20,7 @@ class FileUtil {
   static void mkdirs(const std::string);
   static bool exists(const std::string);
   static bool isAbsolute(const std::string);
-  static std::string FileUtil::getTimeStamp();
+  static std::string getTimeStamp();
 };
 
 #endif

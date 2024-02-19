@@ -35,3 +35,27 @@
 [submodule "lib/ImGuiFileBrowser"]
 	path = lib/ImGuiFileBrowser
 	url = https://github.com/gallickgunner/ImGui-Addons.git
+[submodule "lib/PDAL"]
+	path = lib/PDAL
+	url = https://github.com/PDAL/PDAL.git
+[submodule "lib/gdal"]
+	path = lib/gdal
+	url = https://github.com/OSGeo/gdal.git
+[submodule "lib/PROJ"]
+	path = lib/PROJ
+	url = https://github.com/OSGeo/PROJ.git
+[submodule "lib/curl"]
+	path = lib/curl
+	url = https://github.com/curl/curl.git
+[submodule "lib/laz-perf"]
+	path = lib/laz-perf
+	url = https://github.com/hobuinc/laz-perf.git
+[submodule "lib/libLAS"]
+	path = lib/libLAS
+	url = https://github.com/libLAS/libLAS.git
+[submodule "lib/libgeotiff"]
+	path = lib/libgeotiff
+	url = https://github.com/OSGeo/libgeotiff.git
+[submodule "lib/LASzip"]
+	path = lib/LASzip
+	url = https://github.com/LASzip/LASzip.git
