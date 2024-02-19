@@ -10,7 +10,7 @@ void ObjectLoader::readFromFile(const std::string &filePath, std::shared_ptr<std
 
   if (extension == ".obj") {
     readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
-  } else if (extension == ".laz") {
+  } else if (extension == ".las") {
     readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else {
     std::cerr << "Unsupprted file type: " << filePath << std::endl;
@@ -101,14 +101,21 @@ void ObjectLoader::readLazFile(const std::string &filePath, std::shared_ptr<std:
 
   liblas::Header const &header = reader.GetHeader();
 
-  std::cout << "Compressed: " << (header.Compressed() == true) ? "true" : "false";
-  std::cout << "Signature: " << header.GetFileSignature() << '\n';
-  std::cout << "Points count: " << header.GetPointRecordsCount() << '\n';
+  std::cout << "Compressed: " << ((header.Compressed() == true) ? "true" : "false") << std::endl;
+  std::cout << "Signature: " << header.GetFileSignature() << std::endl;
+  std::cout << "Points count: " << header.GetPointRecordsCount() << std::endl;
 
   while (reader.ReadNextPoint()) {
-    liblas::Point const &p = reader.GetPoint();
+    const liblas::Point &point = reader.GetPoint();
+    const liblas::Color &col = point.GetColor();
 
-    std::cout << p.GetX() << ", " << p.GetY() << ", " << p.GetZ() << "\n";
+    const glm::vec3 position(point.GetX(), point.GetY(), point.GetZ());
+    const glm::vec3 normal(0.0f);
+    const glm::vec3 color(col.GetRed(), col.GetGreen(), col.GetBlue());
+    const glm::vec2 texcoord(0.0f);
+
+    const Vertex vertex(position, color, normal, texcoord, 0.0f);
+    vertices->push_back(vertex);
   }
 }
 

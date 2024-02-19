@@ -130,7 +130,7 @@ void ObjectAddFileDialog::paint() {
       ImGui::SameLine();
       if (ImGui::Button("Browse object file")) {
         _fileDialog->isVisible = true;
-        _fileDialog->setup(objFilePath, ".obj,.laz");
+        _fileDialog->setup(objFilePath, ".las,.obj");
       }
       ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ);
       ImGui::InputFloat("Scale", &scale);
