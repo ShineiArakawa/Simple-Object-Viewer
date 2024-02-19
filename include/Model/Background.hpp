@@ -35,13 +35,9 @@ class Background : public Primitives {
   inline static const std::string KEY_MODEL_BACKGROUND_PATH = "Path";
 
   explicit Background(const std::string &filePath);
-
   ~Background();
-
   void update() override{};
-
   void initVAO() override;
-
   void paintGL(const glm::mat4 &mvpMat) override;
 
   std::string getObjectType() override { return KEY_MODEL_BACKGROUND; };

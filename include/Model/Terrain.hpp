@@ -59,16 +59,11 @@ class Terrain : public Primitives {
  protected:
   // nothing
  public:
-  Terrain(const std::string &filePath, float offsetX, float offsetY, float offsetZ,
-          float scaleX, float scaleY,
-          float scaleH);
-
+  Terrain(const std::string &filePath, float offsetX, float offsetY, float offsetZ, float scaleX, float scaleY, float scaleH);
   ~Terrain();
 
   void update() override{};
-
   void initVAO() override;
-
   void paintGL(const glm::mat4 &mvpMat) override;
 
   std::string getObjectType() override { return KEY_MODEL_TERRAIN; };

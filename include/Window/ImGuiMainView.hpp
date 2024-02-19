@@ -25,6 +25,7 @@ class ImGuiMainView {
   std::shared_ptr<ImGuiSceneView> _sceneView = nullptr;
   std::shared_ptr<ViewerModel> _sceneModel = nullptr;
   std::shared_ptr<ObjectAddFileDialog> _objectAddDialog = nullptr;
+  std::shared_ptr<FileDialog> _fileDialog = nullptr;
 
  public:
   bool moveOn = true;

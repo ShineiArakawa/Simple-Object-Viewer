@@ -1,6 +1,7 @@
 #include <Window/ObjectAddPopup.hpp>
 
-FileDialog::FileDialog() {
+FileDialog::FileDialog(const std::string label, MODE mode) : _label(label) {
+  _mode = mode;
   _fileDialog = std::make_shared<imgui_addons::ImGuiFileBrowser>();
 }
 
@@ -13,22 +14,25 @@ void FileDialog::setup(char* textBUffer, const std::string extensions) {
 
 void FileDialog::paint() {
   if (isVisible) {
-    ImGui::OpenPopup("Open File");
+    ImGui::OpenPopup(_label.c_str());
   }
 
-  if (_fileDialog->showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 600), _extensions)) {
+  if (_fileDialog->showFileDialog(_label, _mode, ImVec2(700, 600), _extensions)) {
     strcpy(_textBuffer, (char*)_fileDialog->selected_path.data());
   }
+
+  isVisible = false;
 }
 
 ObjectAddFileDialog::ObjectAddFileDialog(std::shared_ptr<ViewerModel> model) : _model(model) {
-  _fileDialog = std::make_shared<FileDialog>();
+  _fileDialog = std::make_shared<FileDialog>("Open file", FileDialog::MODE::OPEN);
 
   _objectTypes = ""s;
   _objectTypes += Object::KEY_MODEL_OBJECT + "\0"s;
   _objectTypes += Box::KEY_MODEL_BOX + "\0"s;
   _objectTypes += Terrain::KEY_MODEL_TERRAIN + "\0"s;
   _objectTypes += Background::KEY_MODEL_BACKGROUND + "\0"s;
+  _objectTypes += Sphere::KEY_MODEL_SPHERE + "\0"s;
 }
 
 ObjectAddFileDialog::~ObjectAddFileDialog() {}
@@ -42,6 +46,7 @@ void ObjectAddFileDialog::paint() {
   static float offsetXYZ[3] = {0.0f, 0.0f, 0.0f};
   static float scale = 1.0f;
   static float scaleXYZ[3] = {1.0f, 1.0f, 1.0f};
+  static int nDivs = 100;
 
   if (_isVisible) {
     ImGui::Begin(TITLE.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
@@ -86,25 +91,34 @@ void ObjectAddFileDialog::paint() {
       // ====================================================================
       // Terrain
       // ====================================================================
+      ImGui::InputText("Obj Name", objName, 256);
       ImGui::InputText("Height map file path", heightMapFilePath, 256);
       ImGui::SameLine();
       if (ImGui::Button("Browse Obj")) {
         _fileDialog->isVisible = true;
         _fileDialog->setup(heightMapFilePath, ".png,.jpg");
       }
-      ImGui::InputText("Obj Name", objName, 256);
       ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ);
       ImGui::InputFloat3("Scale (X, Y, H)", scaleXYZ);
     } else if (objectTypeID == 3) {
       // ====================================================================
       // Background
       // ====================================================================
+      ImGui::InputText("Obj Name", objName, 256);
       ImGui::InputText("Texture file path", textureFilePath, 256);
       ImGui::SameLine();
       if (ImGui::Button("Browse texture")) {
         _fileDialog->isVisible = true;
         _fileDialog->setup(textureFilePath, ".png,.jpg");
       }
+    } else if (objectTypeID == 4) {
+      // ====================================================================
+      // Sphere
+      // ====================================================================
+      ImGui::InputText("Obj Name", objName, 256);
+      ImGui::InputInt("num divisions", &nDivs);
+      ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ);
+      ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ);
     }
 
     // ========================================================================================================================
@@ -157,6 +171,11 @@ void ObjectAddFileDialog::paint() {
           // Backgound
           // ====================================================================
           newObject = std::make_shared<Background>(strTextureFilePath);
+        } else if (objectTypeID == 4) {
+          // ====================================================================
+          // Sphere
+          // ====================================================================
+          newObject = std::make_shared<Sphere>(nDivs, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]);
         }
 
         if (newObject != nullptr) {
@@ -186,7 +205,6 @@ void ObjectAddFileDialog::paint() {
   }
 
   _fileDialog->paint();
-  _fileDialog->isVisible = false;
 }
 
 void ObjectAddFileDialog::setVisible() {

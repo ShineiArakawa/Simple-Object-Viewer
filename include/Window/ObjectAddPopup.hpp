@@ -6,6 +6,7 @@
 #include <Model/Background.hpp>
 #include <Model/Box.hpp>
 #include <Model/Object.hpp>
+#include <Model/Sphere.hpp>
 #include <Model/Terrain.hpp>
 #include <Model/ViewerModel.hpp>
 #include <OpenGL.hpp>
@@ -18,14 +19,20 @@
 using namespace std::string_literals;
 
 class FileDialog {
+ public:
+  using MODE = imgui_addons::ImGuiFileBrowser::DialogMode;
+
+ private:
   std::shared_ptr<imgui_addons::ImGuiFileBrowser> _fileDialog = nullptr;
   char* _textBuffer = nullptr;
   std::string _extensions = "";
+  std::string _label;
+  MODE _mode;
 
  public:
   bool isVisible = false;
 
-  FileDialog();
+  FileDialog(const std::string label, MODE mode);
   ~FileDialog();
 
   void setup(char*, const std::string);

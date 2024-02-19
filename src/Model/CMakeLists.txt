@@ -12,6 +12,7 @@ add_library(
   "ViewerModel.cpp"
   "Model.cpp"
   "PoneModel.cpp"
+  "Sphere.cpp"
 )
 
 # =========================================================

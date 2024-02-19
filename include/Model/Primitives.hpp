@@ -2,7 +2,11 @@
 #ifndef _PRIMITIVES_H_
 #define _PRIMITIVES_H_
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include <OpenGL.hpp>
+#include <array>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -10,6 +14,7 @@
 #include <vector>
 
 struct Vertex {
+  Vertex(){};
   Vertex(const glm::vec3& position_, const glm::vec3& color_, const glm::vec3& normal_, const glm::vec2& uv_, const float id_)
       : position(position_), color(color_), normal(normal_), uv(uv_), id(id_) {}
 
@@ -22,10 +27,19 @@ struct Vertex {
 
 class Primitives {
  public:
+  template <class dtype>
+  using vec4_t = std::array<dtype, 4>;
+  using vec4f_t = vec4_t<float>;
+
+  template <class dtype>
+  using vec3_t = std::array<dtype, 3>;
+  using vec3f_t = vec3_t<float>;
+
   enum class RenderType { NORMAL,
                           COLOR,
                           TEXTURE,
                           VERT_NORMAL };
+
   static RenderType getRenderType(std::string string) {
     RenderType renderType = RenderType::NORMAL;
     if (string == "NORMAL") {
@@ -35,7 +49,6 @@ class Primitives {
     } else if (string == "TEXTURE") {
       renderType = RenderType::TEXTURE;
     }
-
     return renderType;
   }
 

@@ -5,6 +5,7 @@
 #include <ImGui.hpp>
 #include <Model/Model.hpp>
 #include <Renderer/Renderer.hpp>
+#include <Util/StbAdapter.hpp>
 #include <Window/ImGuiSceneView.hpp>
 #include <iostream>
 #include <string>
@@ -97,6 +98,8 @@ class ImGuiSceneView {
   void mouseEvent(const bool& isMouseOnScene, const ImVec2& relMousePos);
   void motionEvent(const bool& isMouseOnScene, const ImVec2& relMousePos);
   void wheelEvent(const bool& isMouseOnScene, const float& offset);
+
+  void saveScreenShot(const std::string& filePath);
 };
 
 #endif

@@ -48,8 +48,8 @@ class Renderer {
   void updateTranslate(const glm::vec4& newPosScreenSpace, const glm::vec4& oldPosScreenSpace);
   void updateRotate(const glm::vec3& u, const glm::vec3& v);
 
-  void rotateModel(const float angle, const glm::vec3);
-  void setViewMat(glm::mat4);
+  void rotateModel(const float angle, const glm::vec3&);
+  void setViewMat(const glm::mat4&);
   glm::vec4 getOriginScreenSpace();
 };
 

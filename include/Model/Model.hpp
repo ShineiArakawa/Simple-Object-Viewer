@@ -13,7 +13,10 @@
 
 class Model {
  public:
+  template <class dtype>
+  using t_vec4 = std::array<dtype, 4>;
   using t_object = std::shared_ptr<Primitives>;
+  using t_background = std::shared_ptr<Background>;
   using t_objects = std::shared_ptr<std::vector<t_object>>;
   using t_string = std::shared_ptr<std::string>;
 
@@ -23,7 +26,7 @@ class Model {
  protected:
   t_objects _objects = std::make_shared<std::vector<t_object>>();
   t_objects _backgrounds = std::make_shared<std::vector<t_object>>();
-  std::array<float, 4> _backgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
+  t_vec4<float> _backgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
 
   t_string _vertShaderPath = nullptr;
   t_string _fragShaderPath = nullptr;
@@ -45,7 +48,7 @@ class Model {
   virtual void paintGL(const glm::mat4 &mvpMat) = 0;
   virtual void tick(float time) = 0;
   void compileShaders();
-  void addBackground(const std::shared_ptr<Background> &background) { _backgrounds->push_back(background); };
+  void addBackground(const t_background &background) { _backgrounds->push_back(background); };
   void addObject(const t_object &object) { _objects->push_back(object); };
   void removeObject(const int index) {
     if (index >= 0 && index < getNumObjects()) {
@@ -71,7 +74,6 @@ class Model {
     _backgroundColor[2] = b;
     _backgroundColor[3] = a;
   }
-  void setBackgroundColor(std::array<float, 4> rgba) { _backgroundColor = rgba; }
-
-  std::array<float, 4> getBackgroundColor() { return _backgroundColor; };
+  void setBackgroundColor(const t_vec4<float> &rgba) { _backgroundColor = rgba; }
+  t_vec4<float> getBackgroundColor() { return _backgroundColor; };
 };

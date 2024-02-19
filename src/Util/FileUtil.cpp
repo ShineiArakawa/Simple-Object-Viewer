@@ -11,6 +11,8 @@ std::string FileUtil::dirPath(const std::string path) { return generic_fs::absol
 
 std::string FileUtil::baseName(const std::string path) { return generic_fs::absolute(tPath(path)).filename().string(); }
 
+std::string FileUtil::extension(const std::string path) { return tPath(path).extension().string(); }
+
 std::string FileUtil::cwd() { return generic_fs::current_path().string(); }
 
 void FileUtil::mkdirs(const std::string path) {
@@ -21,3 +23,15 @@ void FileUtil::mkdirs(const std::string path) {
 bool FileUtil::exists(const std::string path) { return generic_fs::exists(generic_fs::absolute(tPath(path))); }
 
 bool FileUtil::isAbsolute(const std::string path) { return tPath(path).is_absolute(); }
+
+std::string FileUtil::getTimeStamp() {
+  const time_t t = time(NULL);
+  const tm *local = localtime(&t);
+
+  char buf[128];
+  strftime(buf, sizeof(buf), "%Y-%m-%d-%H-%M-%S", local);
+
+  std::string timeStamp(buf);
+
+  return timeStamp;
+}

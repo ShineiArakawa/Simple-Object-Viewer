@@ -204,3 +204,13 @@ void ImGuiSceneView::wheelEvent(const bool& isMouseOnScene, const float& offset)
     updateScale();
   }
 }
+
+void ImGuiSceneView::saveScreenShot(const std::string& filePath) {
+  unsigned char* bytesTexture = (unsigned char*)malloc(sizeof(unsigned char) * WIN_WIDTH * WIN_HEIGHT * 4);
+
+  _frameBuffer->bind();
+  glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytesTexture);
+  _frameBuffer->unbind();
+
+  stb::saveImage(WIN_WIDTH, WIN_HEIGHT, 4, bytesTexture, filePath);
+}

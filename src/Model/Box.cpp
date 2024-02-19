@@ -1,8 +1,7 @@
 #include <Model/Box.hpp>
 #include <iostream>
 
-Box::Box(const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY,
-         const float scaleZ) {
+Box::Box(const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ) {
   _offsetX = offsetX;
   _offsetY = offsetY;
   _offsetZ = offsetZ;

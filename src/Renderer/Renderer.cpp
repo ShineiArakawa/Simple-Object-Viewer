@@ -68,8 +68,8 @@ void Renderer::resizeGL() {
   _projMat = glm::perspective(glm::radians(45.0f), (float)*_windowWidth / (float)*_windowHeight, 0.1f, 1000.0f);
 }
 
-void Renderer::rotateModel(const float angle, const glm::vec3 rotAxisWorldSpace) { _acRotMat = glm::rotate(angle, rotAxisWorldSpace) * _acRotMat; }
+void Renderer::rotateModel(const float angle, const glm::vec3& rotAxisWorldSpace) { _acRotMat = glm::rotate(angle, rotAxisWorldSpace) * _acRotMat; }
 
-void Renderer::setViewMat(glm::mat4 viewMat) { _viewMat = viewMat; }
+void Renderer::setViewMat(const glm::mat4& viewMat) { _viewMat = viewMat; }
 
 glm::vec4 Renderer::getOriginScreenSpace() { return (_projMat * _viewMat) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); }

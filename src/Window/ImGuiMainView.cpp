@@ -19,6 +19,11 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel
   _objectAddDialog = std::make_shared<ObjectAddFileDialog>(_sceneModel);
 
   // ====================================================================
+  // Initialize file dialog
+  // ====================================================================
+  _fileDialog = std::make_shared<FileDialog>("Open image file", FileDialog::MODE::SAVE);
+
+  // ====================================================================
   // Initialize ImGui
   // ====================================================================
   IMGUI_CHECKVERSION();
@@ -149,6 +154,23 @@ void ImGuiMainView::paintSideBar() {
       ImGui::EndTable();
     }
 
+    // Screen shot
+    ImGui::SeparatorText("Screen shot");
+    static char screenshotFilePath[256];
+    ImGui::InputText("##Save to", screenshotFilePath, 256);
+    ImGui::SameLine();
+    if (ImGui::Button("Browse")) {
+      _fileDialog->isVisible = true;
+      _fileDialog->setup(screenshotFilePath, ".png,.jpg");
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Save")) {
+      std::string strScreenshotFilePath(screenshotFilePath);
+      std::cout << "Save screen shot to " << strScreenshotFilePath << std::endl;
+      _sceneView->saveScreenShot(strScreenshotFilePath);
+    }
+
+    // Statistics
     ImGui::SeparatorText("Statistics");
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / _io->Framerate, _io->Framerate);
 
@@ -205,6 +227,9 @@ void ImGuiMainView::paint() {
 
     // Add object dialog
     _objectAddDialog->paint();
+
+    // File dialog
+    _fileDialog->paint();
   }
 
   ImGui::Render();
