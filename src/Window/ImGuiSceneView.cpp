@@ -6,7 +6,7 @@ FrameBuffer::FrameBuffer(float width, float height) {
 
   glGenTextures(1, &_texture);
   glBindTexture(GL_TEXTURE_2D, _texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
@@ -31,8 +31,10 @@ unsigned int FrameBuffer::getFrameTexture() {
 }
 
 void FrameBuffer::rescaleFrameBuffer(float width, float height) {
+  bind();
+
   glBindTexture(GL_TEXTURE_2D, _texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
@@ -40,6 +42,11 @@ void FrameBuffer::rescaleFrameBuffer(float width, float height) {
   glBindRenderbuffer(GL_RENDERBUFFER, _rbo);
   glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _rbo);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+  unbind();
 }
 
 void FrameBuffer::bind() const {
@@ -218,9 +225,23 @@ void ImGuiSceneView::wheelEvent(const bool& isMouseOnScene, const float& offset)
 void ImGuiSceneView::saveScreenShot(const std::string& filePath) {
   unsigned char* bytesTexture = (unsigned char*)malloc(sizeof(unsigned char) * WIN_WIDTH * WIN_HEIGHT * 4);
 
-  _frameBuffer->bind();
+  glBindTexture(GL_TEXTURE_2D, _frameBuffer->getFrameTexture());
   glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytesTexture);
-  _frameBuffer->unbind();
+  glBindTexture(GL_TEXTURE_2D, 0);
 
-  stb::saveImage(WIN_WIDTH, WIN_HEIGHT, 4, bytesTexture, filePath);
+  // Transpose
+  unsigned char* bytesTransposedTexture = (unsigned char*)malloc(sizeof(unsigned char) * WIN_WIDTH * WIN_HEIGHT * 4);
+  for (int w = 0; w < WIN_WIDTH; ++w) {
+    for (int h = 0; h < WIN_HEIGHT; ++h) {
+      const int distIndex = 4 * (h * WIN_WIDTH + w);
+      const int srcIndex = 4 * ((WIN_HEIGHT - h - 1) * WIN_WIDTH + w);
+
+      bytesTransposedTexture[distIndex + 0] = bytesTexture[srcIndex + 0];
+      bytesTransposedTexture[distIndex + 1] = bytesTexture[srcIndex + 1];
+      bytesTransposedTexture[distIndex + 2] = bytesTexture[srcIndex + 2];
+      bytesTransposedTexture[distIndex + 3] = bytesTexture[srcIndex + 3];
+    }
+  }
+
+  stb::saveImage(WIN_WIDTH, WIN_HEIGHT, 4, bytesTransposedTexture, filePath);
 }

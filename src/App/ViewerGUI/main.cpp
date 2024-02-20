@@ -10,8 +10,6 @@ int main(int argc, char** argv) {
   }
 
   GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
-  glfwMaximizeWindow(window);
-  glfwGetWindowSize(window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
 
   if (window == NULL) {
     glfwTerminate();

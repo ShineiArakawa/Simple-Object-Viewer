@@ -76,7 +76,7 @@ void ImGuiMainView::paintMenuBar() {
 }
 
 void ImGuiMainView::paintSideBar() {
-  if (ImGui::BeginViewportSideBar("Settings", ImGui::GetWindowViewport(), ImGuiDir_::ImGuiDir_Left, SIDEBAR_WIDTH, true)) {
+  if (ImGui::BeginViewportSideBar("Settings", ImGui::GetWindowViewport(), ImGuiDir_Left, SIDEBAR_WIDTH, true)) {
     // ========================================================================================
     // Rendering section
     // ========================================================================================
@@ -312,9 +312,6 @@ void ImGuiMainView::paint() {
 
     // Scene window
     paintSceneWindow();
-
-    // File dialog
-    // _fileDialog->paint();
   }
 
   ImGui::Render();
