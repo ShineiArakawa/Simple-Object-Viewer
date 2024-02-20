@@ -88,35 +88,57 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
 }
 
 void ObjectLoader::readLazFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
-  std::ifstream ifs(filePath, std::ios::in | std::ios::binary);
+  // std::ifstream ifs(filePath, std::ios::in | std::ios::binary);
 
-  if (!ifs.good()) {
-    std::cerr << "Could not open file for reading: " << filePath << std::endl;
-    std::cerr << strerror(errno) << std::endl;
-    return;
-  }
+  // if (!ifs.good()) {
+  //   std::cerr << "Could not open file for reading: " << filePath << std::endl;
+  //   std::cerr << strerror(errno) << std::endl;
+  //   return;
+  // }
 
-  liblas::ReaderFactory f;
-  liblas::Reader reader = f.CreateWithStream(ifs);
+  // liblas::ReaderFactory f;
+  // liblas::Reader reader = f.CreateWithStream(ifs);
 
-  liblas::Header const &header = reader.GetHeader();
+  // liblas::Header const &header = reader.GetHeader();
 
-  std::cout << "Compressed: " << ((header.Compressed() == true) ? "true" : "false") << std::endl;
-  std::cout << "Signature: " << header.GetFileSignature() << std::endl;
-  std::cout << "Points count: " << header.GetPointRecordsCount() << std::endl;
+  // std::cout << "Compressed: " << ((header.Compressed() == true) ? "true" : "false") << std::endl;
+  // std::cout << "Signature: " << header.GetFileSignature() << std::endl;
+  // std::cout << "Points count: " << header.GetPointRecordsCount() << std::endl;
 
-  while (reader.ReadNextPoint()) {
-    const liblas::Point &point = reader.GetPoint();
-    const liblas::Color &col = point.GetColor();
+  // glm::vec3 min(0.0f);
+  // glm::vec3 max(0.0f);
 
-    const glm::vec3 position(point.GetX(), point.GetY(), point.GetZ());
-    const glm::vec3 normal(0.0f);
-    const glm::vec3 color(col.GetRed(), col.GetGreen(), col.GetBlue());
-    const glm::vec2 texcoord(0.0f);
+  // while (reader.ReadNextPoint()) {
+  //   const liblas::Point &point = reader.GetPoint();
+  //   const liblas::Color &col = point.GetColor();
 
-    const Vertex vertex(position, color, normal, texcoord, 0.0f);
-    vertices->push_back(vertex);
-  }
+  //   const glm::vec3 position(point.GetX(), point.GetY(), point.GetZ());
+  //   const glm::vec3 normal(0.0f);
+  //   const glm::vec3 color(col.GetRed(), col.GetGreen(), col.GetBlue());
+  //   const glm::vec2 texcoord(0.0f);
+
+  //   // const Vertex vertex(position, color, normal, texcoord, 0.0f);
+  //   // vertices->push_back(vertex);
+
+  //   if (position.x < min.x) {
+  //     min.x = position.x;
+  //   }
+  //   if (position.y < min.y) {
+  //     min.y = position.y;
+  //   }
+  //   if (position.z < min.z) {
+  //     min.z = position.z;
+  //   }
+  //   if (position.x > max.x) {
+  //     max.x = position.x;
+  //   }
+  //   if (position.y > max.y) {
+  //     max.y = position.y;
+  //   }
+  //   if (position.z > max.z) {
+  //     max.z = position.z;
+  //   }
+  // }
 }
 
 void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, const float scale) {

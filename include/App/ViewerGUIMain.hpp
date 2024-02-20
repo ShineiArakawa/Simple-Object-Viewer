@@ -12,8 +12,8 @@
 #include <iostream>
 #include <memory>
 
-inline static const int WINDOW_WIDTH = 1200;
-inline static const int WINDOW_HEIGHT = 800;
+inline static int WINDOW_WIDTH = 1200;
+inline static int WINDOW_HEIGHT = 800;
 static const char* WINDOW_TITLE = "ViewerGUI";
 static GLFWwindow* window = nullptr;
 static std::shared_ptr<ViewerModel> model = nullptr;

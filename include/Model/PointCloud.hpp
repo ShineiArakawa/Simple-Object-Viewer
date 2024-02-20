@@ -14,6 +14,7 @@ class PointCloud : public Primitives {
   float _offsetZ;
   float _scale;
   float _pointSize;
+  bool _isDoubled;
 
   int _indexBufferSize;
   GLuint _vaoId;
@@ -37,12 +38,18 @@ class PointCloud : public Primitives {
  protected:
   // nothing
  public:
-  PointCloud(const std::string &, const float, const float, const float, const float, const float);
+  PointCloud(const std::string&, const float, const float, const float, const float, const float, const bool);
   ~PointCloud(){};
 
   void update() override{};
   void initVAO() override;
-  void paintGL(const glm::mat4 &mvpMat) override;
+  void paintGL(const glm::mat4& mvMat,
+               const glm::mat4& mvpMat,
+               const glm::mat4& normMat,
+               const glm::mat4& lightMat,
+               const glm::vec3& lightPos,
+               const float& shininess,
+               const float& ambientIntensity) override;
 
   std::string getObjectType() override { return KEY_MODEL_POINT_CLOUD; };
 };

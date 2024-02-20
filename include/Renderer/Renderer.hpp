@@ -15,12 +15,13 @@ class Renderer {
  private:
   inline static const float TICK_VALUE = 1.0f;
 
-  std::shared_ptr<Model> _models;
+  std::shared_ptr<Model> _model;
   glm::mat4 _viewMat;
   glm::mat4 _projMat;
   glm::mat4 _acRotMat;
   glm::mat4 _acTransMat;
   glm::mat4 _acScaleMat;
+  glm::mat4 _lightTrasMat;
 
   const int* _windowWidth = nullptr;
   const int* _windowHeight = nullptr;
@@ -37,7 +38,8 @@ class Renderer {
   Renderer(const int* windowWidth, const int* windowHeight, std::shared_ptr<Model> models);
   ~Renderer();
 
-  void initMatrices();
+  void initModelMatrices();
+  void initLightMatrices();
   void initVAO();
   void initializeGL();
 
@@ -49,6 +51,7 @@ class Renderer {
   void updateRotate(const glm::vec3& u, const glm::vec3& v);
 
   void rotateModel(const float angle, const glm::vec3&);
+  void rotateLight(const float angle, const glm::vec3&);
   void setViewMat(const glm::mat4&);
   glm::vec4 getOriginScreenSpace();
 };

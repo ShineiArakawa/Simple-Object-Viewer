@@ -19,11 +19,6 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel
   _objectAddDialog = std::make_shared<ObjectAddFileDialog>(_sceneModel);
 
   // ====================================================================
-  // Initialize file dialog
-  // ====================================================================
-  _fileDialog = std::make_shared<FileDialog>("Open image file", FileDialog::MODE::SAVE);
-
-  // ====================================================================
   // Initialize ImGui
   // ====================================================================
   IMGUI_CHECKVERSION();
@@ -57,9 +52,6 @@ void ImGuiMainView::paintMenuBar() {
     _menuBarHeight = ImGui::GetWindowHeight();
 
     if (ImGui::BeginMenu("File")) {
-      if (ImGui::MenuItem("Add object", "Ctrl+O")) {
-        _objectAddDialog->setVisible();
-      }
       if (ImGui::MenuItem("Quit")) {
         std::cout << "Quit the program" << std::endl;
         moveOn = false;
@@ -80,97 +72,187 @@ void ImGuiMainView::paintMenuBar() {
 }
 
 void ImGuiMainView::paintSideBar() {
-  if (ImGui::BeginViewportSideBar("Demo window", ImGui::GetWindowViewport(), ImGuiDir_::ImGuiDir_Left, SIDEBAR_WIDTH, true)) {
-    ImGui::SeparatorText("Rendering");
+  if (ImGui::BeginViewportSideBar("Settings", ImGui::GetWindowViewport(), ImGuiDir_::ImGuiDir_Left, SIDEBAR_WIDTH, true)) {
+    // ========================================================================================
+    // Rendering section
+    // ========================================================================================
+    if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
+      // Render type
+      static int renderType;
+      static const char* renderTypeItems = "Normal\0Color\0Texture\0Vertex Normal\0Shading\0Shading with texture\0";
+      ImGui::Combo("Render Type", &renderType, renderTypeItems);
+      _sceneModel->setRenderType(static_cast<Primitives::RenderType>(renderType));
 
-    // Render type
-    static int renderType;
-    static const char* renderTypeItems = "Normal\0Color\0Texture\0Vertex Normal\0";
-    ImGui::Combo("Render Type", &renderType, renderTypeItems);
-    _sceneModel->setRenderType(static_cast<Primitives::RenderType>(renderType));
+      // Mask mode
+      ImGui::Checkbox("Mask mode", &_sceneView->isMaskMode);
+      _sceneModel->setMaskMode(_sceneView->isMaskMode);
 
-    // Mask mode
-    ImGui::Checkbox("Mask mode", &_sceneView->isMaskMode);
-    _sceneModel->setMaskMode(_sceneView->isMaskMode);
+      // Background color
+      const auto& arrayBackgroundRGBA = _sceneModel->getBackgroundColor();
+      float backgroundRGBA[4] = {arrayBackgroundRGBA[0], arrayBackgroundRGBA[1], arrayBackgroundRGBA[2], arrayBackgroundRGBA[3]};
+      ImGui::ColorEdit4("Background Color", &backgroundRGBA[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+      _sceneModel->setBackgroundColor(backgroundRGBA[0], backgroundRGBA[1], backgroundRGBA[2], backgroundRGBA[3]);
 
-    // Home position
-    if (ImGui::Button("Reset Camera Pose")) {
-      _sceneView->resetCameraPose();
+      // Axes cone
+      static bool isShownAxesCone = false;
+      ImGui::Checkbox("Show axes cone", &isShownAxesCone);
+      _sceneModel->setAxesConeState(isShownAxesCone);
     }
 
-    // Rotation mode
-    ImGui::Checkbox("Rotation mode", &_sceneView->enabledRotationgMode);
+    // ========================================================================================
+    // Animation section
+    // ========================================================================================
+    if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen)) {
+      // Rotation Angle
+      ImGui::DragFloat("Rotation Angle", &_sceneView->rotateAnimationAngle, 0.005f, 0.0f, glm::radians(360.0f), FLOAT_FORMAT);
 
-    // Background color
-    const auto& arrayBackgroundRGBA = _sceneModel->getBackgroundColor();
-    float backgroundRGBA[4] = {arrayBackgroundRGBA[0], arrayBackgroundRGBA[1], arrayBackgroundRGBA[2], arrayBackgroundRGBA[3]};
-    ImGui::ColorEdit4("Background Color", &backgroundRGBA[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
-    _sceneModel->setBackgroundColor(backgroundRGBA[0], backgroundRGBA[1], backgroundRGBA[2], backgroundRGBA[3]);
+      // Rotation mode
+      ImGui::Checkbox("Rotate Model", &_sceneView->enabledModelRotationMode);
 
-    ImGui::SeparatorText("Objects");
-    if (ImGui::BeginTable("##Objects", 4, ImGuiTableFlags_Borders)) {
-      ImGui::TableSetupColumn("Name");
-      ImGui::TableSetupColumn("Type");
-      ImGui::TableSetupColumn("Visible");
-      ImGui::TableHeadersRow();
+      // Rotation mode
+      ImGui::Checkbox("Rotation Light", &_sceneView->enabledLightRotationMode);
 
-      for (int iObject = 0; iObject < _sceneModel->getNumObjects(); iObject++) {
-        ImGui::TableNextRow();
+      // Home Camera position
+      if (ImGui::Button("Reset Camera Pose")) {
+        _sceneView->resetCameraPose();
+      }
 
-        const auto object = _sceneModel->getObject(iObject);
+      // Home Light position
+      ImGui::SameLine();
+      if (ImGui::Button("Reset Light Pose")) {
+        _sceneView->resetLightPose();
+      }
+    }
 
-        ImGui::TableNextColumn();
-        ImGui::PushID(iObject * 4 + 0);
-        ImGui::Text(object->getName().c_str());
-        ImGui::PopID();
+    // ========================================================================================
+    // Lighting section
+    // ========================================================================================
+    if (ImGui::CollapsingHeader("Lighting", ImGuiTreeNodeFlags_DefaultOpen)) {
+      // Specular
+      ImGui::InputFloat("Specular", _sceneModel->getPointerToShininess(), 1.0f, 0.0f, FLOAT_FORMAT);
 
-        ImGui::TableNextColumn();
-        ImGui::PushID(iObject * 4 + 1);
-        ImGui::Text(object->getObjectType().c_str());
-        ImGui::PopID();
+      // Light pos
+      ImGui::InputFloat3("Light position", _sceneModel->getPointerToLightPos(), FLOAT_FORMAT);
 
-        ImGui::TableNextColumn();
-        ImGui::PushID(iObject * 4 + 2);
-        ImGui::Checkbox("##isVisible", object->getPointerToIsVisible());
-        ImGui::PopID();
+      // Ambient intensity
+      ImGui::DragFloat("Ambient intensity", _sceneModel->getPointerToAmbientIntensity(), 0.001f, 0.0f, 1.0f, FLOAT_FORMAT);
+    }
 
-        ImGui::TableNextColumn();
-        ImGui::PushID(iObject * 4 + 3);
-        if (ImGui::Button("Remove")) {
-          _sceneModel->removeObject(iObject);
+    // ========================================================================================
+    // Objects section
+    // ========================================================================================
+    if (ImGui::CollapsingHeader("Objects", ImGuiTreeNodeFlags_DefaultOpen)) {
+      ImGui::SeparatorText("Registered Objects");
+      if (ImGui::BeginTable("##Registered Objects", 4, ImGuiTableFlags_Borders)) {
+        ImGui::TableSetupColumn("Name");
+        ImGui::TableSetupColumn("Type");
+        ImGui::TableSetupColumn("Visible");
+        ImGui::TableHeadersRow();
+
+        for (int iObject = 0; iObject < _sceneModel->getNumObjects(); iObject++) {
+          ImGui::TableNextRow();
+
+          const auto object = _sceneModel->getObject(iObject);
+
+          ImGui::TableNextColumn();
+          ImGui::PushID(iObject * 4 + 0);
+          ImGui::Text(object->getName().c_str());
+          ImGui::PopID();
+
+          ImGui::TableNextColumn();
+          ImGui::PushID(iObject * 4 + 1);
+          ImGui::Text(object->getObjectType().c_str());
+          ImGui::PopID();
+
+          ImGui::TableNextColumn();
+          ImGui::PushID(iObject * 4 + 2);
+          ImGui::Checkbox("##isVisible", object->getPointerToIsVisible());
+          ImGui::PopID();
+
+          ImGui::TableNextColumn();
+          if (object->getObjectType() != AxesCone::KEY_MODEL_AXES_CONE) {
+            ImGui::PushID(iObject * 4 + 3);
+            if (ImGui::Button("Remove")) {
+              _sceneModel->removeObject(iObject);
+            }
+            ImGui::PopID();
+          }
         }
-        ImGui::PopID();
+
+        bool* backgoundFlags = (bool*)calloc(_sceneModel->getNumBackgrounds(), sizeof(bool));
+        if (_sceneModel->getNumBackgrounds() > 0) {
+          backgoundFlags[_sceneModel->getBackgroundIDtoDraw()] = true;
+        }
+
+        for (int iBackground = 0; iBackground < _sceneModel->getNumBackgrounds(); iBackground++) {
+          ImGui::TableNextRow();
+
+          const auto background = _sceneModel->getBackground(iBackground);
+
+          ImGui::TableNextColumn();
+          ImGui::PushID((_sceneModel->getNumObjects() + iBackground) * 4 + 0);
+          ImGui::Text(background->getName().c_str());
+          ImGui::PopID();
+
+          ImGui::TableNextColumn();
+          ImGui::PushID((_sceneModel->getNumObjects() + iBackground) * 4 + 1);
+          ImGui::Text(background->getObjectType().c_str());
+          ImGui::PopID();
+
+          ImGui::TableNextColumn();
+          ImGui::PushID((_sceneModel->getNumObjects() + iBackground) * 4 + 2);
+          ImGui::Checkbox("##isVisible", &backgoundFlags[iBackground]);
+          ImGui::PopID();
+
+          ImGui::TableNextColumn();
+          ImGui::PushID((_sceneModel->getNumObjects() + iBackground) * 4 + 3);
+          if (ImGui::Button("Remove")) {
+            _sceneModel->removeBackground(iBackground);
+          }
+          ImGui::PopID();
+        }
+
+        for (int iBackground = 0; iBackground < _sceneModel->getNumBackgrounds(); iBackground++) {
+          if (backgoundFlags[iBackground] && iBackground != _sceneModel->getBackgroundIDtoDraw()) {
+            _sceneModel->setBackgroundIDtoDraw(iBackground);
+            break;
+          }
+        }
+
+        ImGui::EndTable();
       }
 
-      ImGui::TableNextRow();
-      ImGui::TableNextColumn();
-      if (ImGui::Button("Add ...")) {
-        _objectAddDialog->setVisible();
+      ImGui::SeparatorText("Add object");
+      _objectAddDialog->paint();
+    }
+
+    // ========================================================================================
+    // Screen shot section
+    // ========================================================================================
+    if (ImGui::CollapsingHeader("Screen shot", ImGuiTreeNodeFlags_DefaultOpen)) {
+      static char screenshotFilePath[256];
+      ImGui::InputText("##Save to", screenshotFilePath, 256);
+      ImGui::SameLine();
+      if (ImGui::Button("Browse")) {
+        nfdchar_t* outPath;
+        nfdfilteritem_t filterItem[1] = {{"Image", "png,jpg"}};
+        nfdresult_t result = NFD_SaveDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str(), "screenshot.png");
+
+        if (result == NFD_OKAY) {
+          strcpy(screenshotFilePath, outPath);
+        }
       }
-      ImGui::TableNextColumn();
-      ImGui::TableNextColumn();
-      ImGui::TableNextColumn();
-
-      ImGui::EndTable();
+      ImGui::SameLine();
+      if (ImGui::Button("Save")) {
+        std::string strScreenshotFilePath(screenshotFilePath);
+        std::cout << "Save screen shot to " << strScreenshotFilePath << std::endl;
+        _sceneView->saveScreenShot(strScreenshotFilePath);
+      }
     }
 
-    // Screen shot
-    ImGui::SeparatorText("Screen shot");
-    static char screenshotFilePath[256];
-    ImGui::InputText("##Save to", screenshotFilePath, 256);
-    ImGui::SameLine();
-    if (ImGui::Button("Browse")) {
-      _fileDialog->isVisible = true;
-      _fileDialog->setup(screenshotFilePath, ".png,.jpg");
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Save")) {
-      std::string strScreenshotFilePath(screenshotFilePath);
-      std::cout << "Save screen shot to " << strScreenshotFilePath << std::endl;
-      _sceneView->saveScreenShot(strScreenshotFilePath);
-    }
-
-    // Statistics
+    // ========================================================================================
+    // Statistics section
+    // ========================================================================================
     ImGui::SeparatorText("Statistics");
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / _io->Framerate, _io->Framerate);
 
@@ -212,6 +294,8 @@ void ImGuiMainView::paint() {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
+  ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
   // ====================================================================
   // Generate main frame
   // ====================================================================
@@ -225,11 +309,8 @@ void ImGuiMainView::paint() {
     // Scene window
     paintSceneWindow();
 
-    // Add object dialog
-    _objectAddDialog->paint();
-
     // File dialog
-    _fileDialog->paint();
+    // _fileDialog->paint();
   }
 
   ImGui::Render();

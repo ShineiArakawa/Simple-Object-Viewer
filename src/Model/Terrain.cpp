@@ -37,47 +37,37 @@ void Terrain::initVAO() {
     for (int w_texture = 0; w_texture < width - 1; w_texture++) {
       const int index = 6 * (h_texture * (width - 1) + w_texture);
 
+      std::array<glm::vec3, 4> points;
+      for (int i_point = 0; i_point < 4; i_point++) {
+        const int h_texture_offset = (i_point == 2 || i_point == 3) ? 1 : 0;
+        const int w_texture_offset = (i_point == 1 || i_point == 2) ? 1 : 0;
+
+        points[i_point] = glm::vec3(
+            positions[i_point].x * diffH + (float)h_texture * diffH,
+            (float)(*(*(*heightMap)[h_texture + h_texture_offset])[w_texture + w_texture_offset])[0] / 255.0f,
+            positions[i_point].z * diffW + (float)w_texture * diffW);
+      }
+
+      std::array<glm::vec3, 2> normals;
+      for (int i_normal = 0; i_normal < 2; i_normal++) {
+        const auto &relvec0 = points[faces[i_normal][1]] - points[faces[i_normal][0]];
+        const auto &relvec1 = points[faces[i_normal][2]] - points[faces[i_normal][1]];
+        const auto normal = glm::normalize(glm::cross(relvec0, relvec1));
+        normals[i_normal] = normal;
+      }
+
       for (int i_vert = 0; i_vert < 3; i_vert++) {
-        int h_texture_offset = 0;
-        int w_texture_offset = 0;
-        if (i_vert == 1) {
-          h_texture_offset = 1;
-        } else if (i_vert == 2) {
-          w_texture_offset = 1;
-        }
-
-        glm::vec3 pos(0.0f);
-        pos.x = positions[i_vert].x * diffH + (float)h_texture * diffH;
-        pos.y = (float)(*(*(*heightMap)[h_texture + h_texture_offset])[w_texture + w_texture_offset])[0] / 255.0f;
-        pos.z = positions[i_vert].z * diffW + (float)w_texture * diffW;
-
-        Vertex v(pos, colors[i_vert], colors[i_vert], textureCoords[i_vert], 0.0f);
+        Vertex v(points[faces[0][i_vert]], colors[i_vert], normals[0], textureCoords[i_vert], 0.0f);
 
         (*vertices)[index + i_vert] = v;
         indices[index + i_vert] = index + i_vert;
       }
 
-      for (int i_vert = 1; i_vert < 4; i_vert++) {
-        int h_texture_offset = 0;
-        int w_texture_offset = 0;
-        if (i_vert == 1) {
-          h_texture_offset = 1;
-        } else if (i_vert == 2) {
-          w_texture_offset = 1;
-        } else {
-          h_texture_offset = 1;
-          w_texture_offset = 1;
-        }
+      for (int i_vert = 0; i_vert < 3; i_vert++) {
+        Vertex v(points[faces[1][i_vert]], colors[i_vert], normals[1], textureCoords[i_vert], 0.0f);
 
-        glm::vec3 pos(0.0f);
-        pos.x = positions[i_vert].x * diffH + (float)h_texture * diffH;
-        pos.y = (float)(*(*(*heightMap)[h_texture + h_texture_offset])[w_texture + w_texture_offset])[0] / 255.0f;
-        pos.z = positions[i_vert].z * diffW + (float)w_texture * diffW;
-
-        Vertex v(pos, colors[i_vert], colors[i_vert], textureCoords[i_vert], 0.0f);
-
-        (*vertices)[index + i_vert + 2] = v;
-        indices[index + i_vert + 2] = index + i_vert + 2;
+        (*vertices)[index + i_vert + 3] = v;
+        indices[index + i_vert + 3] = index + i_vert + 3;
       }
     }
   }
@@ -128,19 +118,18 @@ void Terrain::initVAO() {
   printf("Elapsed time: %.3lf [sec]\n", elapsedTime / 1000.0);
 }
 
-void Terrain::paintGL(const glm::mat4 &mvpMat) {
+void Terrain::paintGL(const glm::mat4 &mvMat,
+                      const glm::mat4 &mvpMat,
+                      const glm::mat4 &normMat,
+                      const glm::mat4 &lightMat,
+                      const glm::vec3 &lightPos,
+                      const float &shininess,
+                      const float &ambientIntensity) {
   if (_isVisible) {
-    GLuint uid;
+    const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
+    const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
 
-    // Enable shader program
-    glUseProgram(_shaderID);
-
-    // Transfer uniform variables
-    const GLuint &mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
-    glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvpMat));
-
-    uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
-    glUniform1f(uid, getRenderType());
+    bindShader(mvtMat, mvptMat, normMat, lightMat, lightPos, shininess, ambientIntensity, getRenderType());
 
     // Enable VAO
     glBindVertexArray(_vaoId);
@@ -151,7 +140,6 @@ void Terrain::paintGL(const glm::mat4 &mvpMat) {
     // Disable VAO
     glBindVertexArray(0);
 
-    // Disable shader program
-    glUseProgram(0);
+    unbindShader();
   }
 }

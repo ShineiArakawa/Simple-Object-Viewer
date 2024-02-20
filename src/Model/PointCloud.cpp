@@ -1,12 +1,13 @@
 #include <Model/PointCloud.hpp>
 
-PointCloud::PointCloud(const std::string &filePath, const float offsetX, const float offsetY, const float offsetZ, const float scale, const float pointSize)
+PointCloud::PointCloud(const std::string &filePath, const float offsetX, const float offsetY, const float offsetZ, const float scale, const float pointSize, const bool isDoubled)
     : _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),
       _scale(scale),
-      _pointSize(pointSize) {
+      _pointSize(pointSize),
+      _isDoubled(isDoubled) {
 }
 
 void PointCloud::initVAO() {
@@ -32,7 +33,7 @@ void PointCloud::initVAO() {
 
   std::shared_ptr<std::vector<Vertex>> primitiveVertices = std::make_shared<std::vector<Vertex>>();
   std::shared_ptr<std::vector<uint32_t>> primitiveIndices = std::make_shared<std::vector<uint32_t>>();
-  Sphere::createSphere(NUM_DIVISIONS, primitiveVertices, primitiveIndices);
+  Sphere::createSphere(NUM_DIVISIONS, primitiveVertices, primitiveIndices, _isDoubled);
   ObjectLoader::moveToOrigin(primitiveVertices);
   ObjectLoader::scaleObject(primitiveVertices, _pointSize);
 
@@ -88,20 +89,19 @@ void PointCloud::initVAO() {
   glBindVertexArray(0);
 }
 
-void PointCloud::paintGL(const glm::mat4 &mvpMat) {
+void PointCloud::paintGL(const glm::mat4 &mvMat,
+                         const glm::mat4 &mvpMat,
+                         const glm::mat4 &normMat,
+                         const glm::mat4 &lightMat,
+                         const glm::vec3 &lightPos,
+                         const float &shininess,
+                         const float &ambientIntensity) {
   if (_isVisible) {
     GLuint uid;
+    const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
 
-    // Enable shader program
-    glUseProgram(_shaderID);
-
-    // Transfer uniform variables
-    const GLuint &mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
-    glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvptMat));
-
-    uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
-    glUniform1f(uid, getRenderType());
+    bindShader(mvtMat, mvptMat, normMat, lightMat, lightPos, shininess, ambientIntensity, getRenderType());
 
     // Enable VAO
     glBindVertexArray(_vaoId);
@@ -112,7 +112,6 @@ void PointCloud::paintGL(const glm::mat4 &mvpMat) {
     // Disable VAO
     glBindVertexArray(0);
 
-    // Disable shader program
-    glUseProgram(0);
+    unbindShader();
   }
 }

@@ -27,9 +27,9 @@ class Terrain : public Primitives {
   // clang-format off
     inline static const glm::vec3 positions[4] = {
             glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(1.0f, 0.0f, 0.0f),
             glm::vec3(0.0f, 0.0f, 1.0f),
-            glm::vec3(1.0f, 0.0f, 1.0f)
+            glm::vec3(1.0f, 0.0f, 1.0f),
+            glm::vec3(1.0f, 0.0f, 0.0f)
     };
     inline static const glm::vec3 colors[4] = {
             glm::vec3(4.0f / 255.0f, 200.0f / 255.0f, 3.0f / 255.0f),
@@ -43,6 +43,9 @@ class Terrain : public Primitives {
             glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(0.0f, 0.0f, 0.0f)
     };
+    inline static const unsigned int faces[2][3] = {
+            {0, 1, 2},
+            {2, 3, 0}};
   // clang-format on
 
  protected:
@@ -59,12 +62,18 @@ class Terrain : public Primitives {
  protected:
   // nothing
  public:
-  Terrain(const std::string &filePath, float offsetX, float offsetY, float offsetZ, float scaleX, float scaleY, float scaleH);
+  Terrain(const std::string& filePath, float offsetX, float offsetY, float offsetZ, float scaleX, float scaleY, float scaleH);
   ~Terrain();
 
   void update() override{};
   void initVAO() override;
-  void paintGL(const glm::mat4 &mvpMat) override;
+  void paintGL(const glm::mat4& mvMat,
+               const glm::mat4& mvpMat,
+               const glm::mat4& normMat,
+               const glm::mat4& lightMat,
+               const glm::vec3& lightPos,
+               const float& shininess,
+               const float& ambientIntensity) override;
 
   std::string getObjectType() override { return KEY_MODEL_TERRAIN; };
 };

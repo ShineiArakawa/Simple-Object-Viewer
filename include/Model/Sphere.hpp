@@ -11,7 +11,9 @@ class Sphere : public Primitives {
   float _scaleX;
   float _scaleY;
   float _scaleZ;
+  glm::vec3 _color;
   int _nDivs;
+
   int _indexBufferSize;
   GLuint _vaoId;
   GLuint _vertexBufferId;
@@ -30,13 +32,19 @@ class Sphere : public Primitives {
  protected:
   // nothing
  public:
-  Sphere(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ);
+  Sphere(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ, const glm::vec3 color);
   ~Sphere();
   void update() override{};
   void initVAO() override;
-  void paintGL(const glm::mat4 &mvpMat) override;
+  void paintGL(const glm::mat4& mvMat,
+               const glm::mat4& mvpMat,
+               const glm::mat4& normMat,
+               const glm::mat4& lightMat,
+               const glm::vec3& lightPos,
+               const float& shininess,
+               const float& ambientIntensity) override;
   std::string getObjectType() override { return KEY_MODEL_SPHERE; };
 
-  static void createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices);
-  static void createSphere(const int nDivs, const glm::vec3 color, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices);
+  static void createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled = false);
+  static void createSphere(const int nDivs, const glm::vec3 color, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled = false);
 };

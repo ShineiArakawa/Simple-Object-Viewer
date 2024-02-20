@@ -23,7 +23,10 @@ class Window {
   inline static const glm::vec3 DEFAULT_CAMERA_UP = glm::vec3(0.0f, 1.0f, 0.0f);
   inline static const float DEFAULT_AC_SCALE = 1.0f;
   inline static const float ROTATE_ANIMATION_ANGLE = glm::radians(1.0f);
-  enum ArcballMode { ARCBALL_MODE_NONE = 0x00, ARCBALL_MODE_TRANSLATE = 0x01, ARCBALL_MODE_ROTATE = 0x02, ARCBALL_MODE_SCALE = 0x04 };
+  enum ArcballMode { ARCBALL_MODE_NONE = 0x00,
+                     ARCBALL_MODE_TRANSLATE = 0x01,
+                     ARCBALL_MODE_ROTATE = 0x02,
+                     ARCBALL_MODE_SCALE = 0x04 };
   // ========================================================================
   // ========================================================================
   // ========================================================================
@@ -38,7 +41,7 @@ class Window {
   inline static bool isDragging = false;
   inline static bool isMaskMode = false;
 
-  inline static bool enabledRotationgMode = false;
+  inline static bool enabledModelRotationMode = false;
 
   inline static glm::ivec2 oldPos;
   inline static glm::ivec2 newPos;

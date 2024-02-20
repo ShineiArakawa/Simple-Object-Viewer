@@ -1,13 +1,14 @@
 #include <Model/Sphere.hpp>
 
-Sphere::Sphere(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ)
+Sphere::Sphere(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ, const glm::vec3 color)
     : _nDivs(nDivs),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),
       _scaleX(scaleX),
       _scaleY(scaleY),
-      _scaleZ(scaleZ) {
+      _scaleZ(scaleZ),
+      _color(color) {
 }
 
 Sphere::~Sphere() = default;
@@ -16,7 +17,7 @@ void Sphere::initVAO() {
   std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
   std::shared_ptr<std::vector<unsigned int>> indices = std::make_shared<std::vector<unsigned int>>();
 
-  createSphere(_nDivs, vertices, indices);
+  createSphere(_nDivs, _color, vertices, indices);
 
   ObjectLoader::moveToOrigin(vertices);
   ObjectLoader::scaleObject(vertices, _scaleX / 2.0f, _scaleY / 2.0f, _scaleZ / 2.0f);
@@ -58,20 +59,18 @@ void Sphere::initVAO() {
   glBindVertexArray(0);
 }
 
-void Sphere::paintGL(const glm::mat4 &mvpMat) {
+void Sphere::paintGL(const glm::mat4 &mvMat,
+                     const glm::mat4 &mvpMat,
+                     const glm::mat4 &normMat,
+                     const glm::mat4 &lightMat,
+                     const glm::vec3 &lightPos,
+                     const float &shininess,
+                     const float &ambientIntensity) {
   if (_isVisible) {
-    GLuint uid;
+    const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
 
-    // Enable shader program
-    glUseProgram(_shaderID);
-
-    // Transfer uniform variables
-    const GLuint &mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
-    glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvptMat));
-
-    uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
-    glUniform1f(uid, getRenderType());
+    bindShader(mvtMat, mvptMat, normMat, lightMat, lightPos, shininess, ambientIntensity, getRenderType());
 
     // Enable VAO
     glBindVertexArray(_vaoId);
@@ -82,18 +81,17 @@ void Sphere::paintGL(const glm::mat4 &mvpMat) {
     // Disable VAO
     glBindVertexArray(0);
 
-    // Disable shader program
-    glUseProgram(0);
+    unbindShader();
   }
 }
 
-void Sphere::createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices) {
-  createSphere(nDivs, glm::vec3(0.0f), vertices, indices);
+void Sphere::createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled) {
+  createSphere(nDivs, glm::vec3(0.0f), vertices, indices, isDoubled);
 }
 
-void Sphere::createSphere(const int nDivs, const glm::vec3 color, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices) {
+void Sphere::createSphere(const int nDivs, const glm::vec3 color, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled) {
   const int nDivsTheta = nDivs;
-  const int nDivsPhi = 2 * nDivs;
+  const int nDivsPhi = isDoubled ? 2 * nDivs : nDivs;
   const float deltaTheta = M_PI / (float)(nDivsTheta - 1);
   const float deltaPhi = 2 * M_PI / (float)(nDivsPhi - 1);
 
@@ -117,10 +115,10 @@ void Sphere::createSphere(const int nDivs, const glm::vec3 color, std::shared_pt
       const glm::vec3 position2(std::sin(thetaNext) * std::cos(phiNext), std::sin(thetaNext) * std::sin(phiNext), std::cos(thetaNext));
       const glm::vec3 position3(std::sin(theta) * std::cos(phiNext), std::sin(theta) * std::sin(phiNext), std::cos(theta));
 
-      Vertex v0(position0, color, glm::vec3(0), glm::vec2(0), -1.0);
-      Vertex v1(position1, color, glm::vec3(0), glm::vec2(0), -1.0);
-      Vertex v2(position2, color, glm::vec3(0), glm::vec2(0), -1.0);
-      Vertex v3(position3, color, glm::vec3(0), glm::vec2(0), -1.0);
+      Vertex v0(position0, color, position0, glm::vec2(0), -1.0);
+      Vertex v1(position1, color, position1, glm::vec2(0), -1.0);
+      Vertex v2(position2, color, position2, glm::vec2(0), -1.0);
+      Vertex v3(position3, color, position3, glm::vec2(0), -1.0);
 
       (*vertices)[index + 0] = v0;
       (*indices)[index + 0] = index + 0;

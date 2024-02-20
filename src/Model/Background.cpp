@@ -53,18 +53,26 @@ void Background::initVAO() {
   glBindVertexArray(0);
 }
 
-void Background::paintGL(const glm::mat4& mvpMat) {
+void Background::paintGL(const glm::mat4& mvMat,
+                         const glm::mat4& mvpMat,
+                         const glm::mat4& normMat,
+                         const glm::mat4& lightMat,
+                         const glm::vec3& lightPos,
+                         const float& shininess,
+                         const float& ambientIntensity) {
   if (_isVisible) {
     GLuint uid;
 
-    glUseProgram(_shaderID);
-    glDisable(GL_DEPTH_TEST);
-
-    uid = glGetUniformLocation(_shaderID, "u_mvpMat");
-    glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
-
-    uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
-    glUniform1f(uid, getRenderType(false, Primitives::RenderType::TEXTURE));
+    bindShader(
+        glm::mat4(1.0f),
+        glm::mat4(1.0f),
+        normMat,
+        lightMat,
+        lightPos,
+        shininess,
+        ambientIntensity,
+        getRenderType(false, Primitives::RenderType::TEXTURE),
+        true);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _textureId);
@@ -75,7 +83,6 @@ void Background::paintGL(const glm::mat4& mvpMat) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
-    glEnable(GL_DEPTH_TEST);
-    glUseProgram(0);
+    unbindShader();
   }
 }

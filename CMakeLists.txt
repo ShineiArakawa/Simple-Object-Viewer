@@ -32,6 +32,9 @@ if(OpenMP_FOUND)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
+# #### Boost
+find_package(Boost REQUIRED)
+
 # #### EIGEN
 set(EIGEN_INCLUDE_DIR ${PROJECT_LIB_DIR}/eigen)
 
@@ -70,11 +73,8 @@ set(
   ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp
 )
 
-# #### ImGuiFileBrowser
-set(IMGUI_FILEBROWSER_INCLUDE_DIR ${PROJECT_LIB_DIR}/ImGuiFileBrowser/FileBrowser)
-
-# #### Laz-perf
-set(LIB_LAZ_INCLUDE_DIR ${PROJECT_LIB_DIR}/libLAS/include)
+# #### nativefiledialog-extended
+set(NFD_INCLUDE_DIR ${PROJECT_LIB_DIR}/nativefiledialog-extended/src/include)
 
 # #### Add subdirectory
 add_subdirectory(pybind11)
@@ -112,6 +112,5 @@ message("#    TINYOBJLOADER_INCLUDE_DIR            : ${TINYOBJLOADER_INCLUDE_DIR
 message("#    IMGUI_INCLUDE_DIR                    : ${IMGUI_INCLUDE_DIR}")
 message("#    IMGUI_SOURCE_DIR                     : ${IMGUI_SOURCE_DIR}")
 message("#    IMGUI_BACKENDS_DIR                   : ${IMGUI_BACKENDS_DIR}")
-message("#    IMGUI_FILEBROWSER_INCLUDE_DIR        : ${IMGUI_FILEBROWSER_INCLUDE_DIR}")
-message("#    LIB_LAZ_INCLUDE_DIR                  : ${LIB_LAZ_INCLUDE_DIR}")
+message("#    NFD_INCLUDE_DIR                      : ${NFD_INCLUDE_DIR}")
 message("# =======================================================================================================")

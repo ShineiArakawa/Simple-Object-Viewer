@@ -38,7 +38,9 @@ class Primitives {
   enum class RenderType { NORMAL,
                           COLOR,
                           TEXTURE,
-                          VERT_NORMAL };
+                          VERT_NORMAL,
+                          SHADE,
+                          SHADE_TEXTURE };
 
   static RenderType getRenderType(std::string string) {
     RenderType renderType = RenderType::NORMAL;
@@ -69,8 +71,33 @@ class Primitives {
 
  private:
   // nothing
+
  protected:
-  // nothing
+  void rotateObject(std::shared_ptr<std::vector<Vertex>> vertices, const float angle, const glm::vec3 axis) const {
+    const int nVertices = vertices->size();
+    const glm::mat4 rotMat = glm::rotate(angle, axis);
+
+    for (int i_vertex = 0; i_vertex < nVertices; ++i_vertex) {
+      const glm::vec4& position = rotMat * glm::vec4((*vertices)[i_vertex].position, 1.0f);
+      const glm::vec4& normal = rotMat * glm::vec4((*vertices)[i_vertex].normal, 1.0f);
+      (*vertices)[i_vertex].position = glm::vec3(position.x, position.y, position.z);
+      (*vertices)[i_vertex].normal = glm::vec3(normal.x, normal.y, normal.z);
+    }
+  };
+
+  void mergeVertices(
+      const std::shared_ptr<std::vector<Vertex>>& sourceVertices,
+      const std::shared_ptr<std::vector<unsigned int>>& sourceIndices,
+      std::shared_ptr<std::vector<Vertex>>& distVertices,
+      std::shared_ptr<std::vector<unsigned int>>& distIndices) {
+    const int offsetIndex = distIndices->size();
+    const int nSourceVertices = sourceVertices->size();
+
+    for (int i_vertex = 0; i_vertex < nSourceVertices; ++i_vertex) {
+      distVertices->push_back((*sourceVertices)[i_vertex]);
+      distIndices->push_back((*sourceIndices)[i_vertex] + offsetIndex);
+    }
+  };
 
  public:
   void setMaskMode(bool maskMode) { _maskMode = maskMode; };
@@ -84,9 +111,6 @@ class Primitives {
   void resetRenderType() { _renderType = _defaultRenderType; };
   void setRenderType(Primitives::RenderType renderType) { _renderType = renderType; };
   std::string getName() { return _name; };
-  float getRenderType() {
-    return getRenderType(_maskMode, _renderType);
-  };
   glm::vec3 getPosition() { return _position; };
   void setPosition(glm::vec3 position) { _position = position; };
   glm::vec3 getVecocity() { return _vecocity; };
@@ -94,11 +118,21 @@ class Primitives {
   void forward(float deltaT) { _position = _position + deltaT * _vecocity; };
   bool* getPointerToIsVisible() { return &_isVisible; };
 
-  virtual void update() { std::cout << "Primitives::update" << std::endl; };
-  virtual void initVAO() { std::cout << "Primitives::initVAO" << std::endl; };
-  virtual void paintGL(const glm::mat4& mvpMat){};
+  virtual void update() = 0;
+  virtual void initVAO() = 0;
+  virtual void paintGL(
+      const glm::mat4& mvMat,
+      const glm::mat4& mvpMat,
+      const glm::mat4& normMat,
+      const glm::mat4& lightMat,
+      const glm::vec3& lightPos,
+      const float& shininess,
+      const float& ambientIntensity) = 0;
   virtual std::string getObjectType() = 0;
 
+  float getRenderType() {
+    return getRenderType(_maskMode, _renderType);
+  };
   inline static float getRenderType(bool maskMode, enum Primitives::RenderType renderType) {
     float renderTypeValue = 0.0f;
 
@@ -112,9 +146,59 @@ class Primitives {
       renderTypeValue = 1.0f;
     } else if (renderType == Primitives::RenderType::VERT_NORMAL) {
       renderTypeValue = -3.0f;
+    } else if (renderType == Primitives::RenderType::SHADE) {
+      renderTypeValue = 2.0f;
+    } else if (renderType == Primitives::RenderType::SHADE_TEXTURE) {
+      renderTypeValue = 3.0f;
     }
 
     return renderTypeValue;
+  };
+
+  inline void bindShader(
+      const glm::mat4& mvMat,
+      const glm::mat4& mvpMat,
+      const glm::mat4& normMat,
+      const glm::mat4& lightMat,
+      const glm::vec3& lightPos,
+      const float& shininess,
+      const float& ambientIntensity,
+      const float& renderType,
+      const bool& disableDepthTest = false) {
+    GLuint uid;
+
+    // Enable shader program
+    glUseProgram(_shaderID);
+
+    if (disableDepthTest) {
+      glDisable(GL_DEPTH_TEST);
+    }
+
+    // Transfer uniform variables
+    uid = glGetUniformLocation(_shaderID, "u_mvMat");
+    glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(mvMat));
+    uid = glGetUniformLocation(_shaderID, "u_mvpMat");
+    glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(mvpMat));
+    uid = glGetUniformLocation(_shaderID, "u_normMat");
+    glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(normMat));
+    uid = glGetUniformLocation(_shaderID, "u_lightMat");
+    glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(lightMat));
+    uid = glGetUniformLocation(_shaderID, "u_lightPos");
+    glUniform3fv(uid, 1, glm::value_ptr(lightPos));
+    uid = glGetUniformLocation(_shaderID, "u_shininess");
+    glUniform1f(uid, shininess);
+    uid = glGetUniformLocation(_shaderID, "u_ambientIntensity");
+    glUniform1f(uid, ambientIntensity);
+
+    uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
+    glUniform1f(uid, renderType);
+  };
+
+  inline void unbindShader() {
+    glEnable(GL_DEPTH_TEST);
+
+    // Disable shader program
+    glUseProgram(0);
   };
 };
 #endif

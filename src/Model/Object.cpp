@@ -54,32 +54,31 @@ void Object::initVAO() {
   glBindVertexArray(0);
 }
 
-void Object::paintGL(const glm::mat4 &mvpMat) {
+void Object::paintGL(const glm::mat4 &mvMat,
+                     const glm::mat4 &mvpMat,
+                     const glm::mat4 &normMat,
+                     const glm::mat4 &lightMat,
+                     const glm::vec3 &lightPos,
+                     const float &shininess,
+                     const float &ambientIntensity) {
   if (_isVisible) {
-    GLuint uid;
+    const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
 
-    glUseProgram(_shaderID);
+    bindShader(mvtMat, mvptMat, normMat, lightMat, lightPos, shininess, ambientIntensity, getRenderType());
 
-    {
-      const GLuint &mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
-      glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvptMat));
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _textureId);
+    const GLuint uid = glGetUniformLocation(_shaderID, "u_texture");
+    glUniform1i(uid, 0);
 
-      uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
-      glUniform1f(uid, getRenderType());
+    glBindVertexArray(_vaoId);
 
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, _textureId);
-      uid = glGetUniformLocation(_shaderID, "u_texture");
-      glUniform1i(uid, 0);
+    glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
 
-      glBindVertexArray(_vaoId);
-      glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 
-      glBindVertexArray(0);
-    }
-
-    glUseProgram(0);
+    unbindShader();
   }
 }
 

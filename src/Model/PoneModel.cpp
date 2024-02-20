@@ -46,23 +46,25 @@ void PoneModel::initVAO() {
   reset();
 }
 
-void PoneModel::paintGL(const glm::mat4& mvpMat) {
+void PoneModel::paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) {
+  const glm::vec3 lightPosition = glm::vec3(_lightPosition[0], _lightPosition[1], _lightPosition[2]);
+
   if (_phase == GamePhase::START) {
-    _backgroundStart->paintGL(mvpMat);
+    _backgroundStart->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
   } else if (_phase == GamePhase::PLAYING) {
     for (int iWall = 0; iWall < (int)_walls->size(); iWall++) {
       (*_walls)[iWall]->update();
-      (*_walls)[iWall]->paintGL(mvpMat);
+      (*_walls)[iWall]->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
     }
 
     _sphere->update();
-    _sphere->paintGL(mvpMat);
+    _sphere->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
 
     _paddle->update();
-    _paddle->paintGL(mvpMat);
+    _paddle->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
 
   } else if (_phase == GamePhase::GAME_OVER) {
-    _backgroundGameOver->paintGL(mvpMat);
+    _backgroundGameOver->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
   }
 }
 
@@ -129,7 +131,7 @@ void PoneModel::reset() {
   }
 }
 
-void PoneModel::rebound(const glm::vec3& normal) {
+void PoneModel::rebound(const glm::vec3 &normal) {
   glm::vec3 velocity = _sphere->getVecocity();
   const float lenNormal = glm::length(normal);
   const float len1 = glm::dot(velocity, normal) / lenNormal;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <nfd.h>
+
 #include <ImGui.hpp>
 #include <Model/ViewerModel.hpp>
 #include <OpenGL.hpp>
@@ -12,7 +14,8 @@
 
 class ImGuiMainView {
  private:
-  inline static const int SIDEBAR_WIDTH = 400;
+  inline static const int SIDEBAR_WIDTH = 700;
+  inline static const char* FLOAT_FORMAT = "%.6f";
 
   float _menuBarHeight = -1.0f;
   bool _isForcusedOnScene = false;
@@ -25,7 +28,6 @@ class ImGuiMainView {
   std::shared_ptr<ImGuiSceneView> _sceneView = nullptr;
   std::shared_ptr<ViewerModel> _sceneModel = nullptr;
   std::shared_ptr<ObjectAddFileDialog> _objectAddDialog = nullptr;
-  std::shared_ptr<FileDialog> _fileDialog = nullptr;
 
  public:
   bool moveOn = true;

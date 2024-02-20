@@ -8,7 +8,7 @@ void Window::resetCameraPose() {
 
   if (renderer != nullptr) {
     renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
-    renderer->initMatrices();
+    renderer->initModelMatrices();
   }
 }
 

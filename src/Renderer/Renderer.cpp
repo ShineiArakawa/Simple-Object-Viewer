@@ -1,44 +1,53 @@
 #include <Renderer/Renderer.hpp>
 #include <iostream>
 
-Renderer::Renderer(const int* windowWidth, const int* windowHeight, std::shared_ptr<Model> models) {
+Renderer::Renderer(const int* windowWidth, const int* windowHeight, std::shared_ptr<Model> model) {
   _windowWidth = windowWidth;
   _windowHeight = windowHeight;
-  _models = models;
+  _model = model;
 }
 
 Renderer::~Renderer() {}
 
-void Renderer::initMatrices() {
+void Renderer::initModelMatrices() {
   _projMat = glm::perspective(glm::radians(45.0f), (float)*_windowWidth / (float)*_windowHeight, 0.1f, 1000.0f);
   _acRotMat = glm::mat4(1.0);
   _acTransMat = glm::mat4(1.0);
   _acScaleMat = glm::mat4(1.0);
 }
 
-void Renderer::initVAO() { _models->initVAO(); }
+void Renderer::initLightMatrices() {
+  _lightTrasMat = glm::mat4(1.0);
+}
+
+void Renderer::initVAO() { _model->initVAO(); }
 
 void Renderer::initializeGL() {
   glEnable(GL_DEPTH_TEST);
 
-  auto RGBA = _models->getBackgroundColor();
+  auto RGBA = _model->getBackgroundColor();
   glClearColor(RGBA[0], RGBA[1], RGBA[2], RGBA[3]);
 
-  initMatrices();
+  initModelMatrices();
+  initLightMatrices();
+
   initVAO();
 }
 
 void Renderer::paintGL() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  const auto& RGBA = _models->getBackgroundColor();
+  const auto& RGBA = _model->getBackgroundColor();
   glClearColor(RGBA[0], RGBA[1], RGBA[2], RGBA[3]);
 
-  glm::mat4 modelMat = _acTransMat * _acRotMat * _acScaleMat;
-  glm::mat4 mvpMat = _projMat * _viewMat * modelMat;
+  const glm::mat4 modelMat = _acTransMat * _acRotMat * _acScaleMat;
+  const glm::mat4 mvMat = _viewMat * modelMat;
+  const glm::mat4 mvpMat = _projMat * mvMat;
+  const glm::mat4 normMat = glm::transpose(glm::inverse(mvMat));
+  const glm::mat4 lightMat = _viewMat * _lightTrasMat;
 
-  _models->paintGL(mvpMat);
-  _models->tick(TICK_VALUE);
+  _model->paintGL(mvMat, mvpMat, normMat, lightMat);
+  _model->tick(TICK_VALUE);
 }
 
 void Renderer::updateScale(float acScale) { _acScaleMat = glm::scale(glm::vec3(acScale, acScale, acScale)); }
@@ -68,7 +77,13 @@ void Renderer::resizeGL() {
   _projMat = glm::perspective(glm::radians(45.0f), (float)*_windowWidth / (float)*_windowHeight, 0.1f, 1000.0f);
 }
 
-void Renderer::rotateModel(const float angle, const glm::vec3& rotAxisWorldSpace) { _acRotMat = glm::rotate(angle, rotAxisWorldSpace) * _acRotMat; }
+void Renderer::rotateModel(const float angle, const glm::vec3& rotAxisWorldSpace) {
+  _acRotMat = glm::rotate(angle, rotAxisWorldSpace) * _acRotMat;
+}
+
+void Renderer::rotateLight(const float angle, const glm::vec3& rotAxisWorldSpace) {
+  _lightTrasMat = glm::rotate(angle, rotAxisWorldSpace) * _lightTrasMat;
+}
 
 void Renderer::setViewMat(const glm::mat4& viewMat) { _viewMat = viewMat; }
 

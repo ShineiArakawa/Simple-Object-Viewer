@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ImGuiFileBrowser.h>
+#include <nfd.h>
 
 #include <ImGui.hpp>
 #include <Model/Background.hpp>
@@ -19,37 +19,16 @@
 
 using namespace std::string_literals;
 
-class FileDialog {
- public:
-  using MODE = imgui_addons::ImGuiFileBrowser::DialogMode;
-
- private:
-  std::shared_ptr<imgui_addons::ImGuiFileBrowser> _fileDialog = nullptr;
-  char* _textBuffer = nullptr;
-  std::string _extensions = "";
-  std::string _label;
-  MODE _mode;
-
- public:
-  bool isVisible = false;
-
-  FileDialog(const std::string label, MODE mode);
-  ~FileDialog();
-
-  void setup(char*, const std::string);
-  void paint();
-};
-
 class ObjectAddFileDialog {
  private:
+  inline static const char* FLOAT_FORMAT = "%.6f";
+
   using Attrib_t = std::variant<int, float, std::string>;
 
   inline static const std::string TITLE = "Add Object";
 
-  std::shared_ptr<FileDialog> _fileDialog;
   std::string _objectTypes;
   std::shared_ptr<ViewerModel> _model;
-  bool _isVisible = false;
   std::map<std::string, Attrib_t> _attributeBuffer;
   std::string _message = "";
   std::string _errorMessage = "";
@@ -59,5 +38,4 @@ class ObjectAddFileDialog {
   ~ObjectAddFileDialog();
 
   void paint();
-  void setVisible();
 };

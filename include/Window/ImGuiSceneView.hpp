@@ -6,7 +6,6 @@
 #include <Model/Model.hpp>
 #include <Renderer/Renderer.hpp>
 #include <Util/StbAdapter.hpp>
-#include <Window/ImGuiSceneView.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -50,7 +49,6 @@ class ImGuiSceneView {
   inline static const glm::vec3 DEFAULT_CAMERA_LOOK_AT = glm::vec3(0.0f, 0.0f, 0.0f);
   inline static const glm::vec3 DEFAULT_CAMERA_UP = glm::vec3(0.0f, 1.0f, 0.0f);
   inline static const float DEFAULT_AC_SCALE = 1.0f;
-  inline static const float ROTATE_ANIMATION_ANGLE = glm::radians(1.0f);
   enum ArcballMode { ARCBALL_MODE_NONE = 0x00,
                      ARCBALL_MODE_TRANSLATE = 0x01,
                      ARCBALL_MODE_ROTATE = 0x02,
@@ -66,7 +64,8 @@ class ImGuiSceneView {
   inline static bool isDragging = false;
   inline static bool isMaskMode = false;
 
-  inline static bool enabledRotationgMode = false;
+  inline static bool enabledModelRotationMode = false;
+  inline static bool enabledLightRotationMode = false;
 
   inline static ImVec2 oldPos;
   inline static ImVec2 newPos;
@@ -76,6 +75,7 @@ class ImGuiSceneView {
 
   inline static int arcballMode = ARCBALL_MODE_NONE;
   inline static float acScale = DEFAULT_AC_SCALE;
+  inline static float rotateAnimationAngle = glm::radians(1.0f);
   // ========================================================================
   // ========================================================================
   // ========================================================================
@@ -87,6 +87,7 @@ class ImGuiSceneView {
 
   void paintGL();
   void resetCameraPose();
+  void resetLightPose();
   void resizeGL(const int& width, const int& height);
   glm::vec3 getVector(const double& x, const double& y);
 

@@ -11,12 +11,5 @@ add_subdirectory(
 )
 
 add_subdirectory(
-    ImGuiFileBrowser/FileBrowser
+    nativefiledialog-extended
 )
-
-set(WITH_GEOTIFF FALSE)
-set(WITH_LASZIP FALSE)
-add_subdirectory(
-    libLAS
-)
-    

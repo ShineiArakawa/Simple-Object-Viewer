@@ -35,6 +35,10 @@ class Model {
   float _time = 0.0f;
   GLuint _shaderID;
 
+  float _lightPosition[3] = {5.0f, 0.0f, 0.0f};
+  float _shininess = 50.0f;
+  float _ambientIntensity = 0.1f;
+
  public:
   // clang-format off
   inline static const std::string KEY_MODEL = "Model";
@@ -45,9 +49,11 @@ class Model {
  public:
   virtual ~Model();
   virtual void initVAO() = 0;
-  virtual void paintGL(const glm::mat4 &mvpMat) = 0;
+  virtual void paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) = 0;
   virtual void tick(float time) = 0;
+
   void compileShaders();
+
   void addBackground(const t_background &background) { _backgrounds->push_back(background); };
   void addObject(const t_object &object) { _objects->push_back(object); };
   void removeObject(const int index) {
@@ -55,6 +61,12 @@ class Model {
       _objects->erase(_objects->begin() + index);
     }
   }
+  void removeBackground(const int index) {
+    if (index >= 0 && index < getNumBackgrounds()) {
+      _backgrounds->erase(_backgrounds->begin() + index);
+    }
+  }
+
   t_objects getBackgrounds() { return _backgrounds; };
   GLuint getShaderID() { return _shaderID; };
   t_object getBackground(const int index) { return (*_backgrounds)[index]; };
@@ -62,11 +74,18 @@ class Model {
   t_objects getObjects() { return _objects; };
   t_object getObject(const int index) { return (*_objects)[index]; };
   int getNumObjects() { return (int)_objects->size(); };
+  float *getPointerToLightPos() { return _lightPosition; };
+  float *getPointerToShininess() { return &_shininess; };
+  float *getPointerToAmbientIntensity() { return &_ambientIntensity; };
+  int *getPointerToBackgroundIDtoDraw() { return &_backgroundIDtoDraw; };
+  int getBackgroundIDtoDraw() { return _backgroundIDtoDraw; };
+
   void setVertShaderPath(const t_string &vertShaderPath) { _vertShaderPath = vertShaderPath; };
   void setFragShaderPath(const t_string &fragShaderPath) { _fragShaderPath = fragShaderPath; };
+
   void setMaskMode(bool maskMode);
   void setRenderType(Primitives::RenderType renderType);
-  void setBackgroundIDtoDraw(const int id) { _backgroundIDtoDraw = id; };
+  void setBackgroundIDtoDraw(const int index) { _backgroundIDtoDraw = index; };
   void resetRenderType();
   void setBackgroundColor(const float r, const float g, const float b, const float a) {
     _backgroundColor[0] = r;

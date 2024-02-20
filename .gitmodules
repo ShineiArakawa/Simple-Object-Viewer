@@ -59,3 +59,9 @@
 [submodule "lib/LASzip"]
 	path = lib/LASzip
 	url = https://github.com/LASzip/LASzip.git
+[submodule "lib/boost"]
+	path = lib/boost
+	url = https://github.com/boostorg/boost.git
+[submodule "lib/nativefiledialog-extended"]
+	path = lib/nativefiledialog-extended
+	url = https://github.com/btzy/nativefiledialog-extended.git

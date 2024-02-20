@@ -47,14 +47,14 @@ class PoneModel : public Model {
   // clang-format on
 
  private:
-  void rebound(const glm::vec3&);
+  void rebound(const glm::vec3 &);
 
  public:
   PoneModel();
   ~PoneModel();
 
   void initVAO() override;
-  void paintGL(const glm::mat4& mvpMat) override;
+  void paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) override;
   void tick(float time) override;
 
   void setPhase(GamePhase phase) { _phase = phase; };

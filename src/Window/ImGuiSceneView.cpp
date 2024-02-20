@@ -74,7 +74,13 @@ void ImGuiSceneView::resetCameraPose() {
 
   if (_renderer != nullptr) {
     _renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
-    _renderer->initMatrices();
+    _renderer->initModelMatrices();
+  }
+}
+
+void ImGuiSceneView::resetLightPose() {
+  if (_renderer != nullptr) {
+    _renderer->initLightMatrices();
   }
 }
 
@@ -82,9 +88,13 @@ void ImGuiSceneView::paintGL() {
   _frameBuffer->bind();
 
   {
-    if (enabledRotationgMode) {
-      _renderer->rotateModel(ROTATE_ANIMATION_ANGLE, cameraUp);
+    if (enabledModelRotationMode) {
+      _renderer->rotateModel(rotateAnimationAngle, cameraUp);
     }
+    if (enabledLightRotationMode) {
+      _renderer->rotateLight(rotateAnimationAngle, cameraUp);
+    }
+
     _renderer->paintGL();
   }
 

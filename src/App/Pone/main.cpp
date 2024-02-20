@@ -44,7 +44,7 @@ void keyboardEventPone(GLFWwindow* window, int key, int scancode, int action, in
     } else if (key == GLFW_KEY_HOME) {
       Window::resetCameraPose();
     } else if (key == GLFW_KEY_X) {
-      Window::enabledRotationgMode = !Window::enabledRotationgMode;
+      Window::enabledModelRotationMode = !Window::enabledModelRotationMode;
     } else if (key == GLFW_KEY_ENTER) {
       PoneModel::GamePhase currentPhase = model->getPhase();
       if (currentPhase == PoneModel::GamePhase::START) {
@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
         glfwSetWindowTitle(window, winTitle);
       }
 
-      if (Window::enabledRotationgMode) {
+      if (Window::enabledModelRotationMode) {
         Window::renderer->rotateModel(Window::ROTATE_ANIMATION_ANGLE, Window::cameraUp);
       }
 

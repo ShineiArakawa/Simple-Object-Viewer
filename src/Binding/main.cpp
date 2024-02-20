@@ -53,7 +53,7 @@ class ViewerBinding {
       } else if (key == GLFW_KEY_HOME) {
         Window::resetCameraPose();
       } else if (key == GLFW_KEY_X) {
-        Window::enabledRotationgMode = !Window::enabledRotationgMode;
+        Window::enabledModelRotationMode = !Window::enabledModelRotationMode;
       }
 
       model->setMaskMode(Window::isMaskMode);
@@ -130,7 +130,7 @@ class ViewerBinding {
           glfwSetWindowTitle(window, winTitle);
         }
 
-        if (Window::enabledRotationgMode) {
+        if (Window::enabledModelRotationMode) {
           Window::renderer->rotateModel(Window::ROTATE_ANIMATION_ANGLE, Window::cameraUp);
         }
 

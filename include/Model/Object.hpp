@@ -5,6 +5,7 @@
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
 #include <Util/ObjectLoader.hpp>
+#include <Util/Texture.hpp>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -39,18 +40,18 @@ class Object : public Primitives {
  protected:
   // nothing
  public:
-  Object(const std::string &filePath, float offsetX, float offsetY, float offsetZ, float scale = 1.0f);
-
+  Object(const std::string& filePath, float offsetX, float offsetY, float offsetZ, float scale = 1.0f);
   ~Object();
-
-  void loadTexture(const std::string &filePath);
-
+  void loadTexture(const std::string& filePath);
   void update() override{};
-
   void initVAO() override;
-
-  void paintGL(const glm::mat4 &mvpMat) override;
-
+  void paintGL(const glm::mat4& mvMat,
+               const glm::mat4& mvpMat,
+               const glm::mat4& normMat,
+               const glm::mat4& lightMat,
+               const glm::vec3& lightPos,
+               const float& shininess,
+               const float& ambientIntensity) override;
   std::string getObjectType() override { return KEY_MODEL_OBJECT; };
 };
 

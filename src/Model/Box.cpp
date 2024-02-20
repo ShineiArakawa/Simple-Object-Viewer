@@ -22,7 +22,7 @@ void Box::initVAO() {
     for (int j = 0; j < 3; j++) {
       glm::vec3 pos = positions[faces[i * 2 + 0][j]];
 
-      Vertex v(pos, colors[i], colors[i], textureCoords[faces[i * 2 + 0][j]], 0.0f);
+      Vertex v(pos, colors[i], normals[i], uvKeypointCoords[faceToUVKeypointIndex[i * 2 + 0][j]], 0.0f);
       vertices->push_back(v);
       indices.push_back(idx++);
     }
@@ -30,7 +30,7 @@ void Box::initVAO() {
     for (int j = 0; j < 3; j++) {
       glm::vec3 pos = positions[faces[i * 2 + 1][j]];
 
-      Vertex v(pos, colors[i], colors[i], textureCoords[faces[i * 2 + 0][j]], 0.0f);
+      Vertex v(pos, colors[i], normals[i], uvKeypointCoords[faceToUVKeypointIndex[i * 2 + 1][j]], 0.0f);
       vertices->push_back(v);
       indices.push_back(idx++);
     }
@@ -51,19 +51,19 @@ void Box::initVAO() {
 
   // Setup attributes for vertex buffer object
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, position));
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 
   glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
+  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, id));
+  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, id));
 
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
@@ -74,20 +74,23 @@ void Box::initVAO() {
   glBindVertexArray(0);
 }
 
-void Box::paintGL(const glm::mat4 &mvpMat) {
+void Box::paintGL(const glm::mat4& mvMat,
+                  const glm::mat4& mvpMat,
+                  const glm::mat4& normMat,
+                  const glm::mat4& lightMat,
+                  const glm::vec3& lightPos,
+                  const float& shininess,
+                  const float& ambientIntensity) {
   if (_isVisible) {
-    GLuint uid;
-    const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
+    const glm::mat4& mvtMat = mvMat * glm::translate(_position);
+    const glm::mat4& mvptMat = mvpMat * glm::translate(_position);
 
-    // Enable shader program
-    glUseProgram(_shaderID);
+    bindShader(mvtMat, mvptMat, normMat, lightMat, lightPos, shininess, ambientIntensity, getRenderType());
 
-    // Transfer uniform variables
-    const GLuint &mvpMatLocId = glGetUniformLocation(_shaderID, "u_mvpMat");
-    glUniformMatrix4fv(mvpMatLocId, 1, GL_FALSE, glm::value_ptr(mvptMat));
-
-    uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
-    glUniform1f(uid, getRenderType());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _textureId);
+    const GLuint uid = glGetUniformLocation(_shaderID, "u_texture");
+    glUniform1i(uid, 0);
 
     // Enable VAO
     glBindVertexArray(_vaoId);
@@ -98,7 +101,8 @@ void Box::paintGL(const glm::mat4 &mvpMat) {
     // Disable VAO
     glBindVertexArray(0);
 
-    // Disable shader program
-    glUseProgram(0);
+    unbindShader();
   }
 }
+
+void Box::loadTexture(const std::string& filePath) { Texture::loadTexture(filePath, _textureId); }

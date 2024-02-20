@@ -28,14 +28,40 @@ void ViewerModel::initVAO() {
   }
 }
 
-void ViewerModel::paintGL(const glm::mat4& mvpMat) {
+void ViewerModel::paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) {
+  const glm::vec3 lightPosition = glm::vec3(_lightPosition[0], _lightPosition[1], _lightPosition[2]);
+
   if (_backgroundIDtoDraw >= 0 && _backgroundIDtoDraw < _backgrounds->size()) {
     getBackground(_backgroundIDtoDraw)->update();
-    getBackground(_backgroundIDtoDraw)->paintGL(mvpMat);
+    getBackground(_backgroundIDtoDraw)->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
   }
 
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->update();
-    getObject(iModel)->paintGL(mvpMat);
+    getObject(iModel)->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
+  }
+}
+
+void ViewerModel::setAxesConeState(const bool isShown) {
+  if (isShown) {
+    // Add
+    for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+      if (getObject(iModel)->getObjectType() == AxesCone::KEY_MODEL_AXES_CONE) {
+        return;
+      }
+    }
+
+    auto axesCone = std::make_shared<AxesCone>(32, -10.0f, -10.0f, -10.0f, 1.0f);
+    axesCone->setName("Axes cone");
+    axesCone->setShader(_shaderID);
+    axesCone->initVAO();
+    addObject(axesCone);
+  } else {
+    // Remove
+    for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+      if (getObject(iModel)->getObjectType() == AxesCone::KEY_MODEL_AXES_CONE) {
+        removeObject(iModel);
+      }
+    }
   }
 }
