@@ -32,9 +32,6 @@ if(OpenMP_FOUND)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-# #### Boost
-find_package(Boost REQUIRED)
-
 # #### EIGEN
 set(EIGEN_INCLUDE_DIR ${PROJECT_LIB_DIR}/eigen)
 
