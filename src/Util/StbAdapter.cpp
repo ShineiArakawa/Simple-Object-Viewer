@@ -17,6 +17,10 @@ void saveImage(const int width, const int height, const int channels, unsigned c
       FileUtil::mkdirs(dirPath);
     }
 
+    if (FileUtil::exists(filePath)) {
+      std::remove(filePath.c_str());
+    }
+
     const std::string extension = FileUtil::extension(filePath);
     if (extension == ".png") {
       stbi_write_png(filePath.c_str(), width, height, channels, bytes, 0);

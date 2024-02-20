@@ -75,7 +75,7 @@ class ImGuiSceneView {
 
   inline static int arcballMode = ARCBALL_MODE_NONE;
   inline static float acScale = DEFAULT_AC_SCALE;
-  inline static float rotateAnimationAngle = glm::radians(1.0f);
+  inline static float rotateAnimationAngle = 30.0f;
   // ========================================================================
   // ========================================================================
   // ========================================================================

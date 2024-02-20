@@ -101,6 +101,8 @@ void Box::paintGL(const glm::mat4& mvMat,
     // Disable VAO
     glBindVertexArray(0);
 
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     unbindShader();
   }
 }

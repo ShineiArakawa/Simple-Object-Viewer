@@ -34,6 +34,8 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel
 
   ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
   ImGui_ImplOpenGL3_Init("#version 330");
+
+  NFD_Init();
 }
 
 ImGuiMainView::~ImGuiMainView() {}
@@ -45,6 +47,8 @@ void ImGuiMainView::destroy() {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
+
+  NFD_Quit();
 }
 
 void ImGuiMainView::paintMenuBar() {
@@ -104,7 +108,7 @@ void ImGuiMainView::paintSideBar() {
     // ========================================================================================
     if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen)) {
       // Rotation Angle
-      ImGui::DragFloat("Rotation Angle", &_sceneView->rotateAnimationAngle, 0.005f, 0.0f, glm::radians(360.0f), FLOAT_FORMAT);
+      ImGui::DragFloat("Rotation Angle", &_sceneView->rotateAnimationAngle, 0.1f, 0.0f, 360.0f, FLOAT_FORMAT);
 
       // Rotation mode
       ImGui::Checkbox("Rotate Model", &_sceneView->enabledModelRotationMode);
@@ -236,7 +240,7 @@ void ImGuiMainView::paintSideBar() {
       if (ImGui::Button("Browse")) {
         nfdchar_t* outPath;
         nfdfilteritem_t filterItem[1] = {{"Image", "png,jpg"}};
-        nfdresult_t result = NFD_SaveDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str(), "screenshot.png");
+        nfdresult_t result = NFD_SaveDialog(&outPath, filterItem, 1, NULL, "screenshot.png");
 
         if (result == NFD_OKAY) {
           strcpy(screenshotFilePath, outPath);

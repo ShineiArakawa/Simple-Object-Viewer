@@ -74,7 +74,6 @@ void Background::paintGL(const glm::mat4& mvMat,
         getRenderType(false, Primitives::RenderType::TEXTURE),
         true);
 
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _textureId);
     uid = glGetUniformLocation(_shaderID, "u_texture");
     glUniform1i(uid, 0);
@@ -82,6 +81,8 @@ void Background::paintGL(const glm::mat4& mvMat,
     glBindVertexArray(_vaoId);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     unbindShader();
   }

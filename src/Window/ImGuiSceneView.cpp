@@ -89,10 +89,10 @@ void ImGuiSceneView::paintGL() {
 
   {
     if (enabledModelRotationMode) {
-      _renderer->rotateModel(rotateAnimationAngle, cameraUp);
+      _renderer->rotateModel(glm::radians(rotateAnimationAngle), cameraUp);
     }
     if (enabledLightRotationMode) {
-      _renderer->rotateLight(rotateAnimationAngle, cameraUp);
+      _renderer->rotateLight(glm::radians(rotateAnimationAngle), cameraUp);
     }
 
     _renderer->paintGL();

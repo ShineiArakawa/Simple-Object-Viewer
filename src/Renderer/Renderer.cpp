@@ -44,7 +44,7 @@ void Renderer::paintGL() {
   const glm::mat4 mvMat = _viewMat * modelMat;
   const glm::mat4 mvpMat = _projMat * mvMat;
   const glm::mat4 normMat = glm::transpose(glm::inverse(mvMat));
-  const glm::mat4 lightMat = _viewMat * _lightTrasMat;
+  const glm::mat4 lightMat = mvMat * _lightTrasMat;
 
   _model->paintGL(mvMat, mvpMat, normMat, lightMat);
   _model->tick(TICK_VALUE);
