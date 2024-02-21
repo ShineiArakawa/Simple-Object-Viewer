@@ -1,4 +1,10 @@
 from ViewerPythonBinding.lib import ViewerPythonBinding
-# print(ViewerPythonBinding.lib.launchViewerWindow())
-# ViewerPythonBinding.lib.launch_viewer_window("../data/sample_bunny.json")
-# ViewerPythonBinding.lib.launch_viewer_window("../data/sample_bunny.json")
+
+viewer = ViewerPythonBinding.ViewerApp(
+    "/home/shinaraka/Projects/OpenGLTemplate/data/sample_bunny.json")
+viewer.launch()
+del viewer
+
+viewerGUI = ViewerPythonBinding.ViewerGUIApp()
+viewerGUI.launch()
+del viewerGUI

@@ -5,6 +5,7 @@
 #include <Model/ShaderCompiler.hpp>
 #include <OpenGL.hpp>
 #include <Shaders/DefaultShaders.hpp>
+#include <Util/Logging.hpp>
 #include <array>
 #include <iostream>
 #include <memory>

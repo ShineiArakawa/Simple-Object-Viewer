@@ -5,9 +5,9 @@
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
 #include <Util/FileUtil.hpp>
+#include <Util/Logging.hpp>
 #include <fstream>
 #include <iostream>
-// #include <liblas/liblas.hpp>
 #include <memory>
 #include <string>
 #include <vector>

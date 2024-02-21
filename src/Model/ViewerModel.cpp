@@ -2,7 +2,6 @@
 
 ViewerModel::ViewerModel() {
   setMaskMode(false);
-  compileShaders();
 }
 
 ViewerModel::~ViewerModel() {}
@@ -13,8 +12,7 @@ void ViewerModel::initVAO() {
     getBackground(iBackground)->initVAO();
 
     if (iBackground % 10000 == 0 || iBackground == nBackgrounds - 1) {
-      std::cout << "Initialized " << iBackground + 1 << " backgrounds."
-                << std::endl;
+      LOG_INFO("Initialized " + std::to_string(iBackground + 1) + " backgrounds.");
     }
   }
 
@@ -23,7 +21,7 @@ void ViewerModel::initVAO() {
     getObject(iModel)->initVAO();
 
     if (iModel % 10000 == 0 || iModel == nModels - 1) {
-      std::cout << "Initialized " << iModel + 1 << " models." << std::endl;
+      LOG_INFO("Initialized " + std::to_string(iModel + 1) + " models.");
     }
   }
 }

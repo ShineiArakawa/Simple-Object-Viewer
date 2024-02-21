@@ -13,13 +13,13 @@ void ObjectLoader::readFromFile(const std::string &filePath, std::shared_ptr<std
   } else if (extension == ".las") {
     readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else {
-    std::cerr << "Unsupprted file type: " << filePath << std::endl;
+    LOG_ERROR("Unsupprted file type: " + filePath);
     return;
   }
 }
 
 void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
-  std::cout << "### Loaded obj file: " << filePath << std::endl;
+  LOG_INFO("### Loaded obj file: " + filePath);
 
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
@@ -30,7 +30,7 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
   bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath.c_str());
 
   if (!err.empty()) {
-    std::cerr << "[WARNING] " << err << std::endl;
+    LOG_ERROR(err);
   }
 
   if (!success) {

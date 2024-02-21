@@ -44,6 +44,5 @@ class Logging {
   static void setLevelFromEnv() {
     spdlog::cfg::load_env_levels();
     spdlog::level::level_enum logLevel = spdlog::get_level();
-    std::cout << "log_level=" + std::to_string((int)logLevel) << std::endl;
   };
 };

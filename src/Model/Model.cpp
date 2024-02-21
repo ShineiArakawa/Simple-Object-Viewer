@@ -7,18 +7,20 @@ void Model::compileShaders() {
   std::string fragShaderCode;
 
   if (_vertShaderPath == nullptr) {
-    std::cout << "Use default vertex shader." << std::endl;
+    LOG_INFO("Use default vertex shader.");
     vertShaderCode = DefaultShaders::VERT_SHADER;
   } else {
-    vertShaderCode = ShaderCompiler::readCodesFromFIle(*_vertShaderPath);
+    vertShaderCode = ShaderCompiler::readCodesFromFile(*_vertShaderPath);
   }
 
   if (_fragShaderPath == nullptr) {
-    std::cout << "Use default fragment shader." << std::endl;
+    LOG_INFO("Use default fragment shader.");
     fragShaderCode = DefaultShaders::FRAG_SHADER;
   } else {
-    fragShaderCode = ShaderCompiler::readCodesFromFIle(*_fragShaderPath);
+    fragShaderCode = ShaderCompiler::readCodesFromFile(*_fragShaderPath);
   }
+
+  LOG_INFO("Start compiling shaders");
 
   _shaderID = ShaderCompiler::buildShaderProgram(vertShaderCode, fragShaderCode);
 
@@ -28,6 +30,8 @@ void Model::compileShaders() {
   for (t_object backgrounds : *_backgrounds) {
     backgrounds->setShader(_shaderID);
   }
+
+  LOG_INFO("Finish compiling shaders");
 }
 
 void Model::setMaskMode(const bool maskMode) {
