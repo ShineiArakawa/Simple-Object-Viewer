@@ -43,10 +43,13 @@ void Sphere::initVAO() {
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
 
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, bary));
 
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, id));
+  glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
+
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, id));
 
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
@@ -65,12 +68,25 @@ void Sphere::paintGL(const glm::mat4 &mvMat,
                      const glm::mat4 &lightMat,
                      const glm::vec3 &lightPos,
                      const float &shininess,
-                     const float &ambientIntensity) {
+                     const float &ambientIntensity,
+                     const glm::vec3 &wireFrameColor,
+                     const float &wireFrameWidth) {
   if (_isVisible) {
     const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
 
-    bindShader(mvtMat, mvptMat, normMat, lightMat, lightPos, shininess, ambientIntensity, getRenderType());
+    bindShader(
+        mvtMat,
+        mvptMat,
+        normMat,
+        lightMat,
+        lightPos,
+        shininess,
+        ambientIntensity,
+        getRenderType(),
+        getWireFrameMode(),
+        wireFrameColor,
+        wireFrameWidth);
 
     // Enable VAO
     glBindVertexArray(_vaoId);
@@ -115,23 +131,26 @@ void Sphere::createSphere(const int nDivs, const glm::vec3 color, std::shared_pt
       const glm::vec3 position2(std::sin(thetaNext) * std::cos(phiNext), std::sin(thetaNext) * std::sin(phiNext), std::cos(thetaNext));
       const glm::vec3 position3(std::sin(theta) * std::cos(phiNext), std::sin(theta) * std::sin(phiNext), std::cos(theta));
 
-      Vertex v0(position0, color, position0, glm::vec2(0), -1.0);
-      Vertex v1(position1, color, position1, glm::vec2(0), -1.0);
-      Vertex v2(position2, color, position2, glm::vec2(0), -1.0);
-      Vertex v3(position3, color, position3, glm::vec2(0), -1.0);
+      Vertex v00(position0, color, position0, BARY_CENTER[0], glm::vec2(0), -1.0);
+      Vertex v01(position1, color, position1, BARY_CENTER[1], glm::vec2(0), -1.0);
+      Vertex v02(position2, color, position2, BARY_CENTER[2], glm::vec2(0), -1.0);
 
-      (*vertices)[index + 0] = v0;
+      Vertex v12(position2, color, position2, BARY_CENTER[0], glm::vec2(0), -1.0);
+      Vertex v13(position3, color, position3, BARY_CENTER[1], glm::vec2(0), -1.0);
+      Vertex v10(position0, color, position0, BARY_CENTER[2], glm::vec2(0), -1.0);
+
+      (*vertices)[index + 0] = v00;
       (*indices)[index + 0] = index + 0;
-      (*vertices)[index + 1] = v1;
+      (*vertices)[index + 1] = v01;
       (*indices)[index + 1] = index + 1;
-      (*vertices)[index + 2] = v2;
+      (*vertices)[index + 2] = v02;
       (*indices)[index + 2] = index + 2;
 
-      (*vertices)[index + 3] = v2;
+      (*vertices)[index + 3] = v12;
       (*indices)[index + 3] = index + 3;
-      (*vertices)[index + 4] = v3;
+      (*vertices)[index + 4] = v13;
       (*indices)[index + 4] = index + 4;
-      (*vertices)[index + 5] = v0;
+      (*vertices)[index + 5] = v10;
       (*indices)[index + 5] = index + 5;
     }
   }

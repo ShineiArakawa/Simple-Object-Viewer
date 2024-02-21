@@ -22,7 +22,7 @@ void Box::initVAO() {
     for (int j = 0; j < 3; j++) {
       glm::vec3 pos = positions[faces[i * 2 + 0][j]];
 
-      Vertex v(pos, colors[i], normals[i], uvKeypointCoords[faceToUVKeypointIndex[i * 2 + 0][j]], 0.0f);
+      Vertex v(pos, colors[i], normals[i], BARY_CENTER[j], uvKeypointCoords[faceToUVKeypointIndex[i * 2 + 0][j]], 0.0f);
       vertices->push_back(v);
       indices.push_back(idx++);
     }
@@ -30,7 +30,7 @@ void Box::initVAO() {
     for (int j = 0; j < 3; j++) {
       glm::vec3 pos = positions[faces[i * 2 + 1][j]];
 
-      Vertex v(pos, colors[i], normals[i], uvKeypointCoords[faceToUVKeypointIndex[i * 2 + 1][j]], 0.0f);
+      Vertex v(pos, colors[i], normals[i], BARY_CENTER[j], uvKeypointCoords[faceToUVKeypointIndex[i * 2 + 1][j]], 0.0f);
       vertices->push_back(v);
       indices.push_back(idx++);
     }
@@ -60,10 +60,13 @@ void Box::initVAO() {
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bary));
 
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, id));
+  glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, id));
 
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
@@ -80,12 +83,25 @@ void Box::paintGL(const glm::mat4& mvMat,
                   const glm::mat4& lightMat,
                   const glm::vec3& lightPos,
                   const float& shininess,
-                  const float& ambientIntensity) {
+                  const float& ambientIntensity,
+                  const glm::vec3& wireFrameColor,
+                  const float& wireFrameWidth) {
   if (_isVisible) {
     const glm::mat4& mvtMat = mvMat * glm::translate(_position);
     const glm::mat4& mvptMat = mvpMat * glm::translate(_position);
 
-    bindShader(mvtMat, mvptMat, normMat, lightMat, lightPos, shininess, ambientIntensity, getRenderType());
+    bindShader(
+        mvtMat,
+        mvptMat,
+        normMat,
+        lightMat,
+        lightPos,
+        shininess,
+        ambientIntensity,
+        getRenderType(),
+        getWireFrameMode(),
+        wireFrameColor,
+        wireFrameWidth);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _textureId);

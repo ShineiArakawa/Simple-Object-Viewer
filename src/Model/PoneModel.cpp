@@ -48,23 +48,69 @@ void PoneModel::initVAO() {
 
 void PoneModel::paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) {
   const glm::vec3 lightPosition = glm::vec3(_lightPosition[0], _lightPosition[1], _lightPosition[2]);
+  const glm::vec3 wireFrameColor = glm::vec3(_wireFrameColor[0], _wireFrameColor[1], _wireFrameColor[2]);
 
   if (_phase == GamePhase::START) {
-    _backgroundStart->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
+    _backgroundStart->paintGL(
+        mvMat,
+        mvpMat,
+        normMat,
+        lightMat,
+        lightPosition,
+        _shininess,
+        _ambientIntensity,
+        wireFrameColor,
+        _wireFrameWidth);
   } else if (_phase == GamePhase::PLAYING) {
     for (int iWall = 0; iWall < (int)_walls->size(); iWall++) {
       (*_walls)[iWall]->update();
-      (*_walls)[iWall]->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
+      (*_walls)[iWall]->paintGL(
+          mvMat,
+          mvpMat,
+          normMat,
+          lightMat,
+          lightPosition,
+          _shininess,
+          _ambientIntensity,
+          wireFrameColor,
+          _wireFrameWidth);
     }
 
     _sphere->update();
-    _sphere->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
+    _sphere->paintGL(
+        mvMat,
+        mvpMat,
+        normMat,
+        lightMat,
+        lightPosition,
+        _shininess,
+        _ambientIntensity,
+        wireFrameColor,
+        _wireFrameWidth);
 
     _paddle->update();
-    _paddle->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
+    _paddle->paintGL(
+        mvMat,
+        mvpMat,
+        normMat,
+        lightMat,
+        lightPosition,
+        _shininess,
+        _ambientIntensity,
+        wireFrameColor,
+        _wireFrameWidth);
 
   } else if (_phase == GamePhase::GAME_OVER) {
-    _backgroundGameOver->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
+    _backgroundGameOver->paintGL(
+        mvMat,
+        mvpMat,
+        normMat,
+        lightMat,
+        lightPosition,
+        _shininess,
+        _ambientIntensity,
+        wireFrameColor,
+        _wireFrameWidth);
   }
 }
 

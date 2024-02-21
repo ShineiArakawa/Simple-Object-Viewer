@@ -42,6 +42,12 @@ void Model::setRenderType(const Primitives::RenderType renderType) {
   }
 }
 
+void Model::setWireFrameMode(Primitives::WireFrameMode wireFrameMode) {
+  for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+    getObject(iModel)->setWireFrameMode(wireFrameMode);
+  }
+}
+
 void Model::resetRenderType() {
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->resetRenderType();

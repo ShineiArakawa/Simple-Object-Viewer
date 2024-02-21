@@ -17,6 +17,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  glfwWindowHint(GLFW_SAMPLES, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
@@ -24,6 +25,8 @@ int main(int argc, char** argv) {
 
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);
+
+  LOG_INFO(glfwGetVersionString());
 
   // ====================================================================
   // Initialize GLAD

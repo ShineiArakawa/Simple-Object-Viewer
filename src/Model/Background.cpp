@@ -13,13 +13,13 @@ void Background::initVAO() {
   int idx = 0;
 
   for (int j = 0; j < 3; j++) {
-    Vertex v(positions[j], glm::vec3(0), glm::vec3(0), uvCoords[j], -1.0);
+    Vertex v(positions[j], glm::vec3(0), glm::vec3(0), BARY_CENTER[j], uvCoords[j], -1.0);
     vertices.push_back(v);
     indices.push_back(idx++);
   }
 
   for (int j = 0; j < 3; j++) {
-    Vertex v(positions[j + 1], glm::vec3(0), glm::vec3(0), uvCoords[j + 1], -1.0);
+    Vertex v(positions[j + 1], glm::vec3(0), glm::vec3(0), BARY_CENTER[j], uvCoords[j + 1], -1.0);
     vertices.push_back(v);
     indices.push_back(idx++);
   }
@@ -41,10 +41,13 @@ void Background::initVAO() {
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bary));
 
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, id));
+  glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, id));
 
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
@@ -59,7 +62,9 @@ void Background::paintGL(const glm::mat4& mvMat,
                          const glm::mat4& lightMat,
                          const glm::vec3& lightPos,
                          const float& shininess,
-                         const float& ambientIntensity) {
+                         const float& ambientIntensity,
+                         const glm::vec3& wireFrameColor,
+                         const float& wireFrameWidth) {
   if (_isVisible) {
     GLuint uid;
 
@@ -72,6 +77,9 @@ void Background::paintGL(const glm::mat4& mvMat,
         shininess,
         ambientIntensity,
         getRenderType(false, Primitives::RenderType::TEXTURE),
+        getWireFrameMode(),
+        wireFrameColor,
+        wireFrameWidth,
         true);
 
     glBindTexture(GL_TEXTURE_2D, _textureId);

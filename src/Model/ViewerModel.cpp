@@ -30,15 +30,25 @@ void ViewerModel::initVAO() {
 
 void ViewerModel::paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) {
   const glm::vec3 lightPosition = glm::vec3(_lightPosition[0], _lightPosition[1], _lightPosition[2]);
+  const glm::vec3 wireFrameColor = glm::vec3(_wireFrameColor[0], _wireFrameColor[1], _wireFrameColor[2]);
 
   if (_backgroundIDtoDraw >= 0 && _backgroundIDtoDraw < _backgrounds->size()) {
     getBackground(_backgroundIDtoDraw)->update();
-    getBackground(_backgroundIDtoDraw)->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
+    getBackground(_backgroundIDtoDraw)->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity, wireFrameColor, _wireFrameWidth);
   }
 
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->update();
-    getObject(iModel)->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity);
+    getObject(iModel)->paintGL(
+        mvMat,
+        mvpMat,
+        normMat,
+        lightMat,
+        lightPosition,
+        _shininess,
+        _ambientIntensity,
+        wireFrameColor,
+        _wireFrameWidth);
   }
 }
 

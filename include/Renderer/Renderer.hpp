@@ -40,7 +40,6 @@ class Renderer {
 
   void initModelMatrices();
   void initLightMatrices();
-  void initVAO();
   void initializeGL();
 
   void paintGL();

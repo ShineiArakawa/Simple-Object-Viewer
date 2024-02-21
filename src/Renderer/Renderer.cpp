@@ -20,22 +20,22 @@ void Renderer::initLightMatrices() {
   _lightTrasMat = glm::mat4(1.0);
 }
 
-void Renderer::initVAO() { _model->initVAO(); }
-
 void Renderer::initializeGL() {
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_MULTISAMPLE);
 
   auto RGBA = _model->getBackgroundColor();
   glClearColor(RGBA[0], RGBA[1], RGBA[2], RGBA[3]);
 
   initModelMatrices();
   initLightMatrices();
-
-  initVAO();
 }
 
 void Renderer::paintGL() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_MULTISAMPLE);
 
   const auto& RGBA = _model->getBackgroundColor();
   glClearColor(RGBA[0], RGBA[1], RGBA[2], RGBA[3]);

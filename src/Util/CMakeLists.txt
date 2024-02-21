@@ -25,5 +25,6 @@ target_include_directories(
   ${STB_INCLUDE_DIR}
   ${TINYOBJLOADER_INCLUDE_DIR}
   ${NFD_INCLUDE_DIR}
+  ${SPD_LOG_INCLUDE_DIR}
   ${PROJECT_INCLUDE_DIR}
 )

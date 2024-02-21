@@ -76,7 +76,7 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
         texcoord = glm::vec2(attrib.texcoords[index.texcoord_index * 2 + 0], attrib.texcoords[index.texcoord_index * 2 + 1]);
       }
 
-      const Vertex vertex(position, color, normal, texcoord, 0.0f);
+      const Vertex vertex(position, color, normal, BARY_CENTER[i % 3], texcoord, 0.0f);
 
       indices->push_back((uint32_t)vertices->size());
       vertices->push_back(vertex);

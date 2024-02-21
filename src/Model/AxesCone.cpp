@@ -29,19 +29,19 @@ void AxesCone::createXorientedCone(
     const glm::vec3 coneNormal = glm::normalize(glm::cross(coneBottomPosition1 - coneBottomPosition0, apex - coneBottomPosition1));
 
     // Cone
-    vertices->push_back(Vertex(coneBottomPosition0, color, glm::vec3(0.0f, std::cos(theta), std::sin(theta)), glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(coneBottomPosition0, color, glm::vec3(0.0f, std::cos(theta), std::sin(theta)), BARY_CENTER[0], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(coneBottomPosition1, color, glm::vec3(0.0f, std::cos(theta + deltaTheta), std::sin(theta + deltaTheta)), glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(coneBottomPosition1, color, glm::vec3(0.0f, std::cos(theta + deltaTheta), std::sin(theta + deltaTheta)), BARY_CENTER[1], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(apex, color, apex, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(apex, color, apex, BARY_CENTER[2], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
 
     // Cone lit
-    vertices->push_back(Vertex(coneBottomPosition0, color, -apex, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(coneBottomPosition0, color, -apex, BARY_CENTER[0], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(coneBottom, color, -apex, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(coneBottom, color, -apex, BARY_CENTER[1], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(coneBottomPosition1, color, -apex, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(coneBottomPosition1, color, -apex, BARY_CENTER[2], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
 
     const glm::vec3 cylinderTopPosition0(1.0f - CONE_HIGHT, CYLINDER_RADIUS * std::cos(theta), CYLINDER_RADIUS * std::sin(theta));
@@ -53,25 +53,25 @@ void AxesCone::createXorientedCone(
     const glm::vec3 cylinderNormal1 = glm::vec3(0.0f, std::cos(theta + deltaTheta), std::sin(theta + deltaTheta));
 
     // Cylinder side
-    vertices->push_back(Vertex(cylinderTopPosition1, color, cylinderNormal1, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(cylinderTopPosition1, color, cylinderNormal1, BARY_CENTER[0], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(cylinderTopPosition0, color, cylinderNormal0, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(cylinderTopPosition0, color, cylinderNormal0, BARY_CENTER[1], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(cylinderBottomPosition0, color, cylinderNormal0, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(cylinderBottomPosition0, color, cylinderNormal0, BARY_CENTER[2], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(cylinderBottomPosition0, color, cylinderNormal0, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(cylinderBottomPosition0, color, cylinderNormal0, BARY_CENTER[0], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(cylinderBottomPosition1, color, cylinderNormal1, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(cylinderBottomPosition1, color, cylinderNormal1, BARY_CENTER[1], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(cylinderTopPosition1, color, cylinderNormal1, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(cylinderTopPosition1, color, cylinderNormal1, BARY_CENTER[2], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
 
     // Cylinder lit
-    vertices->push_back(Vertex(cylinderBottomPosition0, color, -apex, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(cylinderBottomPosition0, color, -apex, BARY_CENTER[0], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(origin, color, -apex, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(origin, color, -apex, BARY_CENTER[1], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
-    vertices->push_back(Vertex(cylinderBottomPosition1, color, -apex, glm::vec2(0.0f), 0.0f));
+    vertices->push_back(Vertex(cylinderBottomPosition1, color, -apex, BARY_CENTER[2], glm::vec2(0.0f), 0.0f));
     indices->push_back(index++);
   }
 }
@@ -124,10 +124,13 @@ void AxesCone::initVAO() {
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bary));
 
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, id));
+  glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, id));
 
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
@@ -146,7 +149,9 @@ void AxesCone::paintGL(const glm::mat4& mvMat,
                        const glm::mat4& lightMat,
                        const glm::vec3& lightPos,
                        const float& shininess,
-                       const float& ambientIntensity) {
+                       const float& ambientIntensity,
+                       const glm::vec3& wireFrameColor,
+                       const float& wireFrameWidth) {
   if (_isVisible) {
     const glm::mat4& mvtMat = mvMat * glm::translate(_position);
     const glm::mat4& mvptMat = mvpMat * glm::translate(_position);
@@ -159,7 +164,10 @@ void AxesCone::paintGL(const glm::mat4& mvMat,
         lightPos,
         shininess,
         ambientIntensity,
-        getRenderType(false, Primitives::RenderType::SHADE));
+        getRenderType(false, Primitives::RenderType::SHADE),
+        getWireFrameMode(),
+        wireFrameColor,
+        wireFrameWidth);
 
     // Enable VAO
     glBindVertexArray(_vaoId);

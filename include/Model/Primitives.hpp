@@ -13,19 +13,34 @@
 #include <string>
 #include <vector>
 
+inline static const std::array<glm::vec3, 3> BARY_CENTER = {
+    glm::vec3(1.0f, 0.0f, 0.0f),
+    glm::vec3(0.0f, 1.0f, 0.0f),
+    glm::vec3(0.0f, 0.0f, 1.0f)};
+
 struct Vertex {
   Vertex(){};
-  Vertex(const glm::vec3& position_, const glm::vec3& color_, const glm::vec3& normal_, const glm::vec2& uv_, const float id_)
-      : position(position_), color(color_), normal(normal_), uv(uv_), id(id_) {}
+  Vertex(
+      const glm::vec3& position_,
+      const glm::vec3& color_,
+      const glm::vec3& normal_,
+      const glm::vec3& bary_,
+      const glm::vec2& uv_,
+      const float id_)
+      : position(position_), color(color_), normal(normal_), bary(bary_), uv(uv_), id(id_) {}
 
   glm::vec3 position;
   glm::vec3 color;
   glm::vec3 normal;
+  glm::vec3 bary;
   glm::vec2 uv;
   float id;
 };
 
 class Primitives {
+  // ==================================================================================================
+  // Type defines
+  // ==================================================================================================
  public:
   template <class dtype>
   using vec4_t = std::array<dtype, 4>;
@@ -35,12 +50,14 @@ class Primitives {
   using vec3_t = std::array<dtype, 3>;
   using vec3f_t = vec3_t<float>;
 
-  enum class RenderType { NORMAL,
-                          COLOR,
-                          TEXTURE,
-                          VERT_NORMAL,
-                          SHADE,
-                          SHADE_TEXTURE };
+  enum class RenderType {
+    NORMAL,
+    COLOR,
+    TEXTURE,
+    VERT_NORMAL,
+    SHADE,
+    SHADE_TEXTURE
+  };
 
   static RenderType getRenderType(std::string string) {
     RenderType renderType = RenderType::NORMAL;
@@ -54,6 +71,15 @@ class Primitives {
     return renderType;
   }
 
+  enum class WireFrameMode {
+    OFF,
+    ON,
+    ONLY
+  };
+
+  // ==================================================================================================
+  // Variable defines
+  // ==================================================================================================
  private:
   // nothing
  protected:
@@ -61,6 +87,7 @@ class Primitives {
   GLuint _shaderID;
   Primitives::RenderType _defaultRenderType = Primitives::RenderType::COLOR;
   Primitives::RenderType _renderType = Primitives::RenderType::COLOR;
+  Primitives::WireFrameMode _wireFrameMode = Primitives::WireFrameMode::OFF;
   bool _maskMode = false;
   bool _isVisible = true;
   glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -69,6 +96,9 @@ class Primitives {
  public:
   // nothing
 
+  // ==================================================================================================
+  // Function defines
+  // ==================================================================================================
  private:
   // nothing
 
@@ -104,12 +134,6 @@ class Primitives {
   void setVisible(bool isVisible) { _isVisible = isVisible; };
   void setName(std::string name) { _name = name; };
   void setShader(GLuint shaderID) { _shaderID = shaderID; };
-  void setDefaultRenderType(Primitives::RenderType renderType) {
-    _defaultRenderType = renderType;
-    _renderType = renderType;
-  };
-  void resetRenderType() { _renderType = _defaultRenderType; };
-  void setRenderType(Primitives::RenderType renderType) { _renderType = renderType; };
   std::string getName() { return _name; };
   glm::vec3 getPosition() { return _position; };
   void setPosition(glm::vec3 position) { _position = position; };
@@ -118,22 +142,31 @@ class Primitives {
   void forward(float deltaT) { _position = _position + deltaT * _vecocity; };
   bool* getPointerToIsVisible() { return &_isVisible; };
 
-  virtual void update() = 0;
-  virtual void initVAO() = 0;
-  virtual void paintGL(
-      const glm::mat4& mvMat,
-      const glm::mat4& mvpMat,
-      const glm::mat4& normMat,
-      const glm::mat4& lightMat,
-      const glm::vec3& lightPos,
-      const float& shininess,
-      const float& ambientIntensity) = 0;
   virtual std::string getObjectType() = 0;
+
+  // ==================================================================================================
+  // Rendering options
+  // ==================================================================================================
+  void setDefaultRenderType(const Primitives::RenderType& renderType) {
+    _defaultRenderType = renderType;
+    _renderType = renderType;
+  };
+
+  void resetRenderType() { _renderType = _defaultRenderType; };
+
+  void setRenderType(const Primitives::RenderType& renderType) { _renderType = renderType; };
 
   float getRenderType() {
     return getRenderType(_maskMode, _renderType);
   };
-  inline static float getRenderType(bool maskMode, enum Primitives::RenderType renderType) {
+
+  void setWireFrameMode(const Primitives::WireFrameMode& wireFrameMode) { _wireFrameMode = wireFrameMode; };
+
+  float getWireFrameMode() {
+    return getWireFrameMode(_wireFrameMode);
+  };
+
+  inline static float getRenderType(const bool& maskMode, const Primitives::RenderType& renderType) {
     float renderTypeValue = 0.0f;
 
     if (maskMode) {
@@ -155,6 +188,21 @@ class Primitives {
     return renderTypeValue;
   };
 
+  inline static float getWireFrameMode(const Primitives::WireFrameMode& wireFrameType) {
+    float wireFrameTypeValue = 0.0f;
+
+    if (wireFrameType == Primitives::WireFrameMode::ON) {
+      wireFrameTypeValue = 1.0f;
+    } else if (wireFrameType == Primitives::WireFrameMode::ONLY) {
+      wireFrameTypeValue = -1.0f;
+    }
+
+    return wireFrameTypeValue;
+  };
+
+  // ==================================================================================================
+  // Rendering
+  // ==================================================================================================
   inline void bindShader(
       const glm::mat4& mvMat,
       const glm::mat4& mvpMat,
@@ -164,6 +212,9 @@ class Primitives {
       const float& shininess,
       const float& ambientIntensity,
       const float& renderType,
+      const float& wireFrameMode,
+      const glm::vec3& wireFrameColor,
+      const float& wireFrameWidth,
       const bool& disableDepthTest = false) {
     GLuint uid;
 
@@ -189,6 +240,12 @@ class Primitives {
     glUniform1f(uid, shininess);
     uid = glGetUniformLocation(_shaderID, "u_ambientIntensity");
     glUniform1f(uid, ambientIntensity);
+    uid = glGetUniformLocation(_shaderID, "u_wireFrameMode");
+    glUniform1f(uid, wireFrameMode);
+    uid = glGetUniformLocation(_shaderID, "u_wireFrameColor");
+    glUniform3fv(uid, 1, glm::value_ptr(wireFrameColor));
+    uid = glGetUniformLocation(_shaderID, "u_wireFrameWidth");
+    glUniform1f(uid, wireFrameWidth);
 
     uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
     glUniform1f(uid, renderType);
@@ -200,5 +257,18 @@ class Primitives {
     // Disable shader program
     glUseProgram(0);
   };
+
+  virtual void update() = 0;
+  virtual void initVAO() = 0;
+  virtual void paintGL(
+      const glm::mat4& mvMat,
+      const glm::mat4& mvpMat,
+      const glm::mat4& normMat,
+      const glm::mat4& lightMat,
+      const glm::vec3& lightPos,
+      const float& shininess,
+      const float& ambientIntensity,
+      const glm::vec3& wireFrameColor,
+      const float& wireFrameWidth) = 0;
 };
 #endif

@@ -23,8 +23,7 @@ std::string ShaderCompiler::readCodesFromFIle(const std::string& filename) {
     reader.seekg(0, std::ios::beg);
 
     // Load entire file and copy to "code" variable
-    code.assign(std::istreambuf_iterator<char>(reader),
-                std::istreambuf_iterator<char>());
+    code.assign(std::istreambuf_iterator<char>(reader), std::istreambuf_iterator<char>());
   }
 
   // Close file

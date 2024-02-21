@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#define USE_MIP_MAP
+
 class FrameBuffer {
  public:
   FrameBuffer(){};
@@ -75,7 +77,7 @@ class ImGuiSceneView {
 
   inline static int arcballMode = ARCBALL_MODE_NONE;
   inline static float acScale = DEFAULT_AC_SCALE;
-  inline static float rotateAnimationAngle = 30.0f;
+  inline static float rotateAnimationAngle = 1.0f;
   // ========================================================================
   // ========================================================================
   // ========================================================================

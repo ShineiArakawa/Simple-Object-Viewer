@@ -57,14 +57,14 @@ void Terrain::initVAO() {
       }
 
       for (int i_vert = 0; i_vert < 3; i_vert++) {
-        Vertex v(points[faces[0][i_vert]], colors[i_vert], normals[0], textureCoords[i_vert], 0.0f);
+        Vertex v(points[faces[0][i_vert]], colors[i_vert], normals[0], BARY_CENTER[i_vert], textureCoords[i_vert], 0.0f);
 
         (*vertices)[index + i_vert] = v;
         indices[index + i_vert] = index + i_vert;
       }
 
       for (int i_vert = 0; i_vert < 3; i_vert++) {
-        Vertex v(points[faces[1][i_vert]], colors[i_vert], normals[1], textureCoords[i_vert], 0.0f);
+        Vertex v(points[faces[1][i_vert]], colors[i_vert], normals[1], BARY_CENTER[i_vert], textureCoords[i_vert], 0.0f);
 
         (*vertices)[index + i_vert + 3] = v;
         indices[index + i_vert + 3] = index + i_vert + 3;
@@ -98,10 +98,13 @@ void Terrain::initVAO() {
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
 
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, bary));
 
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, id));
+  glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
+
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, id));
 
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
@@ -124,12 +127,25 @@ void Terrain::paintGL(const glm::mat4 &mvMat,
                       const glm::mat4 &lightMat,
                       const glm::vec3 &lightPos,
                       const float &shininess,
-                      const float &ambientIntensity) {
+                      const float &ambientIntensity,
+                      const glm::vec3 &wireFrameColor,
+                      const float &wireFrameWidth) {
   if (_isVisible) {
     const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
 
-    bindShader(mvtMat, mvptMat, normMat, lightMat, lightPos, shininess, ambientIntensity, getRenderType());
+    bindShader(
+        mvtMat,
+        mvptMat,
+        normMat,
+        lightMat,
+        lightPos,
+        shininess,
+        ambientIntensity,
+        getRenderType(),
+        getWireFrameMode(),
+        wireFrameColor,
+        wireFrameWidth);
 
     // Enable VAO
     glBindVertexArray(_vaoId);

@@ -101,6 +101,18 @@ void ImGuiMainView::paintSideBar() {
       static bool isShownAxesCone = false;
       ImGui::Checkbox("Show axes cone", &isShownAxesCone);
       _sceneModel->setAxesConeState(isShownAxesCone);
+
+      // Wire frame mode
+      static int wireFrameMode;
+      static const char* wireFrameModeItems = "OFF\0ON\0Wire frame only\0";
+      ImGui::Combo("Wire Frame", &wireFrameMode, wireFrameModeItems);
+      _sceneModel->setWireFrameMode(static_cast<Primitives::WireFrameMode>(wireFrameMode));
+
+      // Wire frame width
+      ImGui::DragFloat("Wire Frame Width", _sceneModel->getPointerToWireFrameWidth(), 0.001f, 0.0f, 0.1f, FLOAT_FORMAT);
+
+      // Wire frame color
+      ImGui::ColorEdit3("Wire Frame Color", _sceneModel->getPointerToWireFrameColor(), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
     }
 
     // ========================================================================================
@@ -114,7 +126,7 @@ void ImGuiMainView::paintSideBar() {
       ImGui::Checkbox("Rotate Model", &_sceneView->enabledModelRotationMode);
 
       // Rotation mode
-      ImGui::Checkbox("Rotation Light", &_sceneView->enabledLightRotationMode);
+      ImGui::Checkbox("Rotate Light", &_sceneView->enabledLightRotationMode);
 
       // Home Camera position
       if (ImGui::Button("Reset Camera Pose")) {
@@ -355,25 +367,34 @@ void ImGuiMainView::listenEvent() {
       // Keyboard
       const auto cameraDirection = glm::normalize(_sceneView->cameraLookAt - _sceneView->cameraPos);
       if (ImGui::IsKeyPressed(ImGuiKey_W)) {
+        // Camera move forward
         _sceneView->cameraPos += cameraDirection * _sceneView->CAMERA_MOVE_STEP;
         _renderer->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
       } else if (ImGui::IsKeyPressed(ImGuiKey_A)) {
+        // Camera move left
         const glm::vec3 moveVec = glm::cross(_sceneView->cameraUp, cameraDirection) * _sceneView->CAMERA_MOVE_STEP;
         _sceneView->cameraPos += moveVec;
         _sceneView->cameraLookAt += moveVec;
         _renderer->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
       } else if (ImGui::IsKeyPressed(ImGuiKey_S)) {
+        // Camera move backward
         _sceneView->cameraPos += -cameraDirection * _sceneView->CAMERA_MOVE_STEP;
         _renderer->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
       } else if (ImGui::IsKeyPressed(ImGuiKey_D)) {
+        // Camera move right
         const glm::vec3 moveVec = glm::cross(cameraDirection, _sceneView->cameraUp) * _sceneView->CAMERA_MOVE_STEP;
         _sceneView->cameraPos += moveVec;
         _sceneView->cameraLookAt += moveVec;
         _renderer->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
       } else if (ImGui::IsKeyPressed(ImGuiKey_Q)) {
+        // Camera rotate left
         _renderer->rotateModel(_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
       } else if (ImGui::IsKeyPressed(ImGuiKey_E)) {
+        // Camera rotate right
         _renderer->rotateModel(-_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
+      } else if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+        _sceneView->resetCameraPose();
+        _sceneView->resetLightPose();
       }
     }
   }

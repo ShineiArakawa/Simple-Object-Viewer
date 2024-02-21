@@ -7,6 +7,7 @@
 #include <Model/ViewerModel.hpp>
 #include <OpenGL.hpp>
 #include <Util/FileUtil.hpp>
+#include <Util/Logging.hpp>
 #include <Util/ModelParser.hpp>
 #include <Window/ImGuiMainView.hpp>
 #include <iostream>

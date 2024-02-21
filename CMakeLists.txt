@@ -73,6 +73,9 @@ set(
 # #### nativefiledialog-extended
 set(NFD_INCLUDE_DIR ${PROJECT_LIB_DIR}/nativefiledialog-extended/src/include)
 
+# #### spdlog
+set(SPD_LOG_INCLUDE_DIR ${PROJECT_LIB_DIR}/spdlog/include)
+
 # #### Add subdirectory
 add_subdirectory(pybind11)
 add_subdirectory(src)
@@ -110,4 +113,5 @@ message("#    IMGUI_INCLUDE_DIR                    : ${IMGUI_INCLUDE_DIR}")
 message("#    IMGUI_SOURCE_DIR                     : ${IMGUI_SOURCE_DIR}")
 message("#    IMGUI_BACKENDS_DIR                   : ${IMGUI_BACKENDS_DIR}")
 message("#    NFD_INCLUDE_DIR                      : ${NFD_INCLUDE_DIR}")
+message("#    SPD_LOG_INCLUDE_DIR                  : ${SPD_LOG_INCLUDE_DIR}")
 message("# =======================================================================================================")

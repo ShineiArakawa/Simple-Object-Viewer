@@ -105,10 +105,12 @@ int main(int argc, char** argv) {
 
   model = std::make_shared<ViewerModel>();
   ModelParser::parse(configFilePath, model);
+  model->initVAO();
   model->compileShaders();
   model->setMaskMode(Window::isMaskMode);
 
   Window::renderer = std::make_shared<Renderer>(&Window::WIN_WIDTH, &Window::WIN_HEIGHT, model);
+  Window::renderer->initializeGL();
   Window::resetCameraPose();
 
   glfwSetWindowSizeCallback(window, Window::resizeGL);
@@ -121,7 +123,6 @@ int main(int argc, char** argv) {
     std::cout << std::endl
               << "### Start initilizing models ..." << std::endl;
     auto start = std::chrono::system_clock::now();
-    Window::renderer->initializeGL();
     auto end = std::chrono::system_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
     std::cout << "### Finish initilizing models. Elapsed time is " << elapsedTime << " [sec]." << std::endl;

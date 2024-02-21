@@ -73,7 +73,9 @@ class Terrain : public Primitives {
                const glm::mat4& lightMat,
                const glm::vec3& lightPos,
                const float& shininess,
-               const float& ambientIntensity) override;
+               const float& ambientIntensity,
+               const glm::vec3& wireFrameColor,
+               const float& wireFrameWidth) override;
 
   std::string getObjectType() override { return KEY_MODEL_TERRAIN; };
 };

@@ -13,3 +13,7 @@ add_subdirectory(
 add_subdirectory(
     nativefiledialog-extended
 )
+
+add_subdirectory(
+    spdlog
+)

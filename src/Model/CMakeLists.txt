@@ -14,6 +14,7 @@ add_library(
   "PoneModel.cpp"
   "Sphere.cpp"
   "PointCloud.cpp"
+  "PointCloudPoly.cpp"
   "AxesCone.cpp"
 )
 
@@ -31,5 +32,6 @@ target_include_directories(
   ${STB_INCLUDE_DIR}
   ${TINYOBJLOADER_INCLUDE_DIR}
   ${NFD_INCLUDE_DIR}
+  ${SPD_LOG_INCLUDE_DIR}
   ${PROJECT_INCLUDE_DIR}
 )

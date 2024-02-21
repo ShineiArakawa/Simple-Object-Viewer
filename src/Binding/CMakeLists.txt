@@ -6,7 +6,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE on)
 
 pybind11_add_module(
   ${BINDING_MODULE_NAME}
-  "main.cpp"
+  "ViewerGUI.cpp"
+  "Viewer.cpp"
   ${IMGUI_SOURCE_FILES}
 )
 
@@ -25,6 +26,7 @@ target_include_directories(
   ${TINYOBJLOADER_INCLUDE_DIR}
   ${IMGUI_INCLUDE_DIR}
   ${NFD_INCLUDE_DIR}
+  ${SPD_LOG_INCLUDE_DIR}
   ${PROJECT_INCLUDE_DIR}
 )
 

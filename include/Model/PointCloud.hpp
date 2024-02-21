@@ -1,26 +1,22 @@
 #pragma once
 
 #include <Model/Primitives.hpp>
-#include <Model/Sphere.hpp>
+#include <Util/Logging.hpp>
 #include <Util/ObjectLoader.hpp>
 
 class PointCloud : public Primitives {
  private:
-  inline static const int NUM_DIVISIONS = 3;
-
   std::string _filePath;
   float _offsetX;
   float _offsetY;
   float _offsetZ;
   float _scale;
   float _pointSize;
-  bool _isDoubled;
 
   int _indexBufferSize;
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;
-  GLuint _textureId;
 
  protected:
   // nothing
@@ -30,16 +26,15 @@ class PointCloud : public Primitives {
   inline static const std::string KEY_MODEL_POINT_CLOUD_OBJ_PATH = "ObjPath";
   inline static const std::string KEY_MODEL_POINT_CLOUD_OFFSET = "Offset";
   inline static const std::string KEY_MODEL_POINT_CLOUD_SCALE = "Scale";
-  inline static const std::string KEY_MODEL_POINT_CLOUD_NUM_DIVS = "nDivs";
-  inline static const std::string KEY_MODEL_POINT_CLOUD_POINT_SIZE = "pointSize";
+  inline static const std::string KEY_MODEL_POINT_CLOUD_POINT_SIZE = "Point size";
 
  private:
   // nothing
  protected:
   // nothing
  public:
-  PointCloud(const std::string&, const float, const float, const float, const float, const float, const bool);
-  ~PointCloud(){};
+  PointCloud(const std::string&, const float, const float, const float, const float, const float);
+  ~PointCloud() = default;
 
   void update() override{};
   void initVAO() override;
@@ -49,7 +44,9 @@ class PointCloud : public Primitives {
                const glm::mat4& lightMat,
                const glm::vec3& lightPos,
                const float& shininess,
-               const float& ambientIntensity) override;
+               const float& ambientIntensity,
+               const glm::vec3& wireFrameColor,
+               const float& wireFrameWidth) override;
 
   std::string getObjectType() override { return KEY_MODEL_POINT_CLOUD; };
 };

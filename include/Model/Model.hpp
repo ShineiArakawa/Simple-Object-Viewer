@@ -38,6 +38,8 @@ class Model {
   float _lightPosition[3] = {5.0f, 0.0f, 0.0f};
   float _shininess = 50.0f;
   float _ambientIntensity = 0.1f;
+  float _wireFrameColor[3] = {1.0f, 1.0f, 1.0f};
+  float _wireFrameWidth = 0.01f;
 
  public:
   // clang-format off
@@ -74,17 +76,20 @@ class Model {
   t_objects getObjects() { return _objects; };
   t_object getObject(const int index) { return (*_objects)[index]; };
   int getNumObjects() { return (int)_objects->size(); };
+  int getBackgroundIDtoDraw() { return _backgroundIDtoDraw; };
   float *getPointerToLightPos() { return _lightPosition; };
   float *getPointerToShininess() { return &_shininess; };
   float *getPointerToAmbientIntensity() { return &_ambientIntensity; };
   int *getPointerToBackgroundIDtoDraw() { return &_backgroundIDtoDraw; };
-  int getBackgroundIDtoDraw() { return _backgroundIDtoDraw; };
+  float *getPointerToWireFrameColor() { return _wireFrameColor; };
+  float *getPointerToWireFrameWidth() { return &_wireFrameWidth; };
 
   void setVertShaderPath(const t_string &vertShaderPath) { _vertShaderPath = vertShaderPath; };
   void setFragShaderPath(const t_string &fragShaderPath) { _fragShaderPath = fragShaderPath; };
 
   void setMaskMode(bool maskMode);
   void setRenderType(Primitives::RenderType renderType);
+  void setWireFrameMode(Primitives::WireFrameMode wireFrameMode);
   void setBackgroundIDtoDraw(const int index) { _backgroundIDtoDraw = index; };
   void resetRenderType();
   void setBackgroundColor(const float r, const float g, const float b, const float a) {

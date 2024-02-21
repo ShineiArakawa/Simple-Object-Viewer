@@ -7,6 +7,7 @@ ObjectAddFileDialog::ObjectAddFileDialog(std::shared_ptr<ViewerModel> model) : _
   _objectTypes += Terrain::KEY_MODEL_TERRAIN + "\0"s;
   _objectTypes += Background::KEY_MODEL_BACKGROUND + "\0"s;
   _objectTypes += Sphere::KEY_MODEL_SPHERE + "\0"s;
+  _objectTypes += PointCloudPoly::KEY_MODEL_POINT_CLOUD_POLY + "\0"s;
   _objectTypes += PointCloud::KEY_MODEL_POINT_CLOUD + "\0"s;
 }
 
@@ -24,7 +25,7 @@ void ObjectAddFileDialog::paint() {
   static float color[3] = {1.0f, 1.0f, 1.0f};
   static int nDivs = 100;
   static float pointSize = 0.01f;
-  static bool isDoubled = false;
+  static bool isDoubled = true;
 
   ImGui::Text("Step 1. Select the object type");
   ImGui::Combo("Object Type", &objectTypeID, _objectTypes.c_str());
@@ -148,6 +149,25 @@ void ObjectAddFileDialog::paint() {
     ImGui::InputFloat("Scale", &scale);
     ImGui::InputFloat("Point size", &pointSize, 0.0f, 0.0f, FLOAT_FORMAT);
     ImGui::Checkbox("Doubled mesh", &isDoubled);
+  } else if (objectTypeID == 6) {
+    // ====================================================================
+    // Point cloud
+    // ====================================================================
+    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Point cloud file path", objFilePath, 256);
+    ImGui::SameLine();
+    if (ImGui::Button("Browse object file")) {
+      nfdchar_t* outPath;
+      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj"}};
+      nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
+
+      if (result == NFD_OKAY) {
+        strcpy(objFilePath, outPath);
+      }
+    }
+    ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
+    ImGui::InputFloat("Scale", &scale);
+    ImGui::InputFloat("Point size", &pointSize, 0.0f, 0.0f, FLOAT_FORMAT);
   }
 
   // ========================================================================================================================
@@ -221,7 +241,12 @@ void ObjectAddFileDialog::paint() {
         // ====================================================================
         // Point cloud
         // ====================================================================
-        newObject = std::make_shared<PointCloud>(objFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scale, pointSize, isDoubled);
+        newObject = std::make_shared<PointCloudPoly>(objFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scale, pointSize, isDoubled);
+      } else if (objectTypeID == 6) {
+        // ====================================================================
+        // Point cloud
+        // ====================================================================
+        newObject = std::make_shared<PointCloud>(objFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scale, pointSize);
       }
 
       if (newObject != nullptr) {
