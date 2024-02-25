@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _WINDOW_H_
-#define _WINDOW_H_
 
 #include <ImGui.hpp>
 #include <Model/Model.hpp>
@@ -104,5 +102,3 @@ class ImGuiSceneView {
 
   void saveScreenShot(const std::string& filePath);
 };
-
-#endif

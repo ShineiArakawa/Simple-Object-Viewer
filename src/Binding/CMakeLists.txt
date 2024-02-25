@@ -6,8 +6,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE on)
 
 pybind11_add_module(
   ${BINDING_MODULE_NAME}
-  "ViewerGUI.cpp"
-  "Viewer.cpp"
+  "Binding.cpp"
   ${IMGUI_SOURCE_FILES}
 )
 

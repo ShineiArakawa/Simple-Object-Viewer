@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _WINDOW_H_
-#define _WINDOW_H_
 
 #include <Model/Model.hpp>
 #include <Renderer/Renderer.hpp>
@@ -68,5 +66,3 @@ class Window {
   static void motionEvent(GLFWwindow* window, double xpos, double ypos);
   static void wheelEvent(GLFWwindow* window, double xoffset, double yoffset);
 };
-
-#endif

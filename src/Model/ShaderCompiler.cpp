@@ -1,6 +1,6 @@
 #include <Model/ShaderCompiler.hpp>
 
-std::string ShaderCompiler::readCodesFromFIle(const std::string& filename) {
+std::string ShaderCompiler::readCodesFromFile(const std::string& filename) {
   // Load source file
   std::ifstream reader;
   std::string code;
@@ -33,13 +33,19 @@ std::string ShaderCompiler::readCodesFromFIle(const std::string& filename) {
 }
 
 GLuint ShaderCompiler::compile(const std::string& code, GLuint type) {
+  LOG_DEBUG("[Code]");
+  LOG_DEBUG(code);
+
   // Create a shader
   GLuint shaderId = glCreateShader(type);
+  LOG_DEBUG("Done. glCreateShader");
 
   // Compile a source code
   const char* codeChars = code.c_str();
   glShaderSource(shaderId, 1, &codeChars, NULL);
+  LOG_DEBUG("Done. glShaderSource");
   glCompileShader(shaderId);
+  LOG_DEBUG("Done. glCompileShader");
 
   // Check whther compile is successful
   GLint compileStatus;
@@ -72,7 +78,9 @@ GLuint ShaderCompiler::buildShaderProgram(const std::string& vertexShaderCode,
                                           const std::string& fragmentShaderCode) {
   // Compile shader files
   GLuint vertShaderId = ShaderCompiler::compile(vertexShaderCode, GL_VERTEX_SHADER);
+  LOG_DEBUG("Compiling vertex shader done.");
   GLuint fragShaderId = ShaderCompiler::compile(fragmentShaderCode, GL_FRAGMENT_SHADER);
+  LOG_DEBUG("Compiling fragment shader done.");
 
   // Link shader objects to the program
   GLuint programId = glCreateProgram();
@@ -105,5 +113,6 @@ GLuint ShaderCompiler::buildShaderProgram(const std::string& vertexShaderCode,
 
   // Disable shader program and return its ID
   glUseProgram(0);
+
   return programId;
 }

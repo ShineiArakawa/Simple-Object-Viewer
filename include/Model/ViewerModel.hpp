@@ -7,6 +7,7 @@
 #include <Model/Model.hpp>
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
+#include <Util/Logging.hpp>
 #include <array>
 #include <iostream>
 #include <memory>
