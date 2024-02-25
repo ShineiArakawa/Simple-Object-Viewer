@@ -86,23 +86,23 @@ void AxesCone::initVAO() {
   std::shared_ptr<std::vector<Vertex>> yConeVertices = std::make_shared<std::vector<Vertex>>();
   std::shared_ptr<std::vector<unsigned int>> yConeIndices = std::make_shared<std::vector<unsigned int>>();
   createXorientedCone(yConeVertices, yConeIndices, glm::vec3(0.0f, 1.0f, 0.0f));
-  rotateObject(yConeVertices, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+  ObjectLoader::rotateObject(yConeVertices, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
   // Z-axis cone
   std::shared_ptr<std::vector<Vertex>> zConeVertices = std::make_shared<std::vector<Vertex>>();
   std::shared_ptr<std::vector<unsigned int>> zConeIndices = std::make_shared<std::vector<unsigned int>>();
   createXorientedCone(zConeVertices, zConeIndices, glm::vec3(0.0f, 0.0f, 1.0f));
-  rotateObject(zConeVertices, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  ObjectLoader::rotateObject(zConeVertices, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
   std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
   std::shared_ptr<std::vector<unsigned int>> indices = std::make_shared<std::vector<unsigned int>>();
 
-  mergeVertices(xConeVertices, xConeIndices, vertices, indices);
-  mergeVertices(yConeVertices, yConeIndices, vertices, indices);
-  mergeVertices(zConeVertices, zConeIndices, vertices, indices);
+  ObjectLoader::mergeVertices(xConeVertices, xConeIndices, vertices, indices);
+  ObjectLoader::mergeVertices(yConeVertices, yConeIndices, vertices, indices);
+  ObjectLoader::mergeVertices(zConeVertices, zConeIndices, vertices, indices);
 
   // ObjectLoader::scaleObject(vertices, _scale);
-  ObjectLoader::move(vertices, _offsetX, _offsetY, _offsetZ);
+  ObjectLoader::translateObject(vertices, _offsetX, _offsetY, _offsetZ);
 
   // Create VAO
   glGenVertexArrays(1, &_vaoId);
@@ -164,6 +164,9 @@ void AxesCone::paintGL(const glm::mat4& mvMat,
         lightPos,
         shininess,
         ambientIntensity,
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
         getRenderType(false, Primitives::RenderType::SHADE),
         getWireFrameMode(),
         wireFrameColor,

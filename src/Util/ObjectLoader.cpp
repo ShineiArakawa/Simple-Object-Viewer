@@ -5,7 +5,12 @@
 #include <tiny_obj_loader.h>
 #endif
 
-void ObjectLoader::readFromFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
+void ObjectLoader::readFromFile(const std::string &filePath,
+                                std::shared_ptr<std::vector<Vertex>> vertices,
+                                std::shared_ptr<std::vector<uint32_t>> indices,
+                                const float offsetX,
+                                const float offsetY,
+                                const float offsetZ) {
   const std::string extension = FileUtil::extension(filePath);
 
   if (extension == ".obj") {
@@ -13,13 +18,18 @@ void ObjectLoader::readFromFile(const std::string &filePath, std::shared_ptr<std
   } else if (extension == ".las") {
     readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else {
-    std::cerr << "Unsupprted file type: " << filePath << std::endl;
+    LOG_ERROR("Unsupprted file type: " + filePath);
     return;
   }
 }
 
-void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
-  std::cout << "### Loaded obj file: " << filePath << std::endl;
+void ObjectLoader::readObjFile(const std::string &filePath,
+                               std::shared_ptr<std::vector<Vertex>> vertices,
+                               std::shared_ptr<std::vector<uint32_t>> indices,
+                               const float offsetX,
+                               const float offsetY,
+                               const float offsetZ) {
+  LOG_INFO("### Loaded obj file: " + filePath);
 
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
@@ -27,10 +37,20 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
   std::string warn;
   std::string err;
 
-  bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath.c_str());
+  bool success = tinyobj::LoadObj(
+      &attrib,
+      &shapes,
+      &materials,
+      &warn,
+      &err,
+      filePath.c_str());
+
+  if (!warn.empty()) {
+    LOG_WARN("[WARNING] " + warn);
+  }
 
   if (!err.empty()) {
-    std::cerr << "[WARNING] " << err << std::endl;
+    LOG_ERROR("[Error] " + err);
   }
 
   if (!success) {
@@ -84,7 +104,7 @@ void ObjectLoader::readObjFile(const std::string &filePath, std::shared_ptr<std:
   }
 
   ObjectLoader::moveToOrigin(vertices);
-  ObjectLoader::move(vertices, offsetX, offsetY, offsetZ);
+  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
 }
 
 void ObjectLoader::readLazFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
@@ -141,25 +161,152 @@ void ObjectLoader::readLazFile(const std::string &filePath, std::shared_ptr<std:
   // }
 }
 
+void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
+                                                MaterialGroups_t materialGroups,
+                                                const glm::vec3 offset,
+                                                const glm::vec3 scale) {
+  LOG_INFO("### Loaded obj file: " + filePath);
+
+  tinyobj::attrib_t attrib;
+  std::vector<tinyobj::shape_t> shapes;
+  std::vector<tinyobj::material_t> materials;
+  std::string warn;
+  std::string err;
+
+  bool success = tinyobj::LoadObj(
+      &attrib,
+      &shapes,
+      &materials,
+      &warn,
+      &err,
+      filePath.c_str(),
+      FileUtil::dirPath(filePath).c_str());
+
+  if (!warn.empty()) {
+    LOG_WARN("[WARNING] " + warn);
+  }
+
+  if (!err.empty()) {
+    LOG_ERROR("[Error] " + err);
+  }
+
+  if (!success) {
+    throw std::runtime_error("Failed to load OBJ file: " + filePath);
+  }
+
+  // Load Material
+  for (const auto &material : materials) {
+    auto materialGroup = std::make_shared<MaterialGroup>();
+
+    materialGroup->ambientColor = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]);
+    materialGroup->diffuseColor = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+    materialGroup->specularColor = glm::vec3(material.specular[0], material.specular[1], material.specular[2]);
+    materialGroup->shininess = material.shininess;
+
+    std::string diffuseTexturePath = material.diffuse_texname;
+    if (!diffuseTexturePath.empty() && !FileUtil::isAbsolute(diffuseTexturePath)) {
+      diffuseTexturePath = FileUtil::join(FileUtil::dirPath(filePath), diffuseTexturePath);
+    }
+    materialGroup->texturePath = diffuseTexturePath;
+
+    materialGroups->push_back(materialGroup);
+  }
+
+  LOG_INFO("Loaded " + std::to_string(materialGroups->size()) + " materials.");
+
+  bool isFoundMaterials = (int)materialGroups->size() != 0;
+  if (!isFoundMaterials) {
+    materialGroups->push_back(std::make_shared<MaterialGroup>());
+  }
+
+  // Load Object
+  for (const auto &shape : shapes) {
+    size_t indexOffset = 0;  // インデントのオフセット
+
+    for (size_t iFace = 0; iFace < shape.mesh.num_face_vertices.size(); iFace++) {
+      const int nVertices = shape.mesh.num_face_vertices[iFace];
+      const int materialID = isFoundMaterials ? shape.mesh.material_ids[iFace] : 0;
+
+      for (size_t iVertex = 0; iVertex < nVertices; iVertex++) {
+        // access to vertex
+        const tinyobj::index_t index = shape.mesh.indices[indexOffset + iVertex];
+
+        glm::vec3 position(0.0f), normal(0.0f), color(1.0f);
+        glm::vec2 texcoord(0.0f);
+
+        if (index.vertex_index >= 0) {
+          position = glm::vec3(
+              attrib.vertices[3 * index.vertex_index + 0],
+              attrib.vertices[3 * index.vertex_index + 1],
+              attrib.vertices[3 * index.vertex_index + 2]);
+          color = glm::vec3(
+              attrib.colors[3 * index.vertex_index + 0],
+              attrib.colors[3 * index.vertex_index + 1],
+              attrib.colors[3 * index.vertex_index + 2]);
+        }
+
+        if (index.normal_index >= 0) {
+          normal = glm::vec3(
+              attrib.normals[3 * index.normal_index + 0],
+              attrib.normals[3 * index.normal_index + 1],
+              attrib.normals[3 * index.normal_index + 2]);
+        }
+
+        if (index.texcoord_index >= 0) {
+          texcoord = glm::vec2(
+              attrib.texcoords[2 * index.texcoord_index + 0],
+              attrib.texcoords[2 * index.texcoord_index + 1]);
+        }
+
+        const Vertex vertex(position,
+                            color,
+                            normal,
+                            BARY_CENTER[iVertex % 3],
+                            texcoord,
+                            0.0f);
+
+        (*materialGroups)[materialID]->indices->push_back(uint32_t((*materialGroups)[materialID]->vertices->size()));
+        (*materialGroups)[materialID]->vertices->push_back(vertex);
+      }
+
+      indexOffset += nVertices;
+    }
+  }
+
+  // Scale and Translate
+  std::shared_ptr<std::vector<Vertex>> allVertices = std::make_shared<std::vector<Vertex>>();
+  std::shared_ptr<std::vector<uint32_t>> allIndices = std::make_shared<std::vector<uint32_t>>();
+  for (const auto &materialGroup : *materialGroups) {
+    mergeVertices(materialGroup->vertices, materialGroup->indices, allVertices, allIndices);
+  }
+
+  glm::vec3 minCoord, maxCoord;
+  std::tie(minCoord, maxCoord) = getCorners(allVertices);
+  glm::vec3 centerCoord = (minCoord + maxCoord) / 2.0f;
+
+  // To origin
+  for (auto &materialGroup : *materialGroups) {
+    ObjectLoader::translateObject(materialGroup->vertices, -centerCoord);
+  }
+
+  // Scale
+  for (auto &materialGroup : *materialGroups) {
+    ObjectLoader::scaleObject(materialGroup->vertices, scale);
+  }
+
+  // Translate
+  for (auto &materialGroup : *materialGroups) {
+    ObjectLoader::translateObject(materialGroup->vertices, offset);
+  }
+}
+
 void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, const float scale) {
   ObjectLoader::scaleObject(vertices, scale, scale, scale);
 }
 
 void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, const float scaleX, const float scaleY, const float scaleZ) {
-  glm::vec3 maxCoords(0.0f);
-  glm::vec3 minCoords(0.0f);
-
-  for (int i = 0; i < vertices->size(); i++) {
-    const Vertex &vertex = (*vertices)[i];
-    for (int direction = 0; direction < 3; direction++) {
-      if (vertex.position[direction] > maxCoords[direction]) {
-        maxCoords[direction] = vertex.position[direction];
-      }
-      if (vertex.position[direction] < minCoords[direction]) {
-        minCoords[direction] = vertex.position[direction];
-      }
-    }
-  }
+  glm::vec3 minCoords, maxCoords;
+  std::tie(minCoords, maxCoords) = getCorners(vertices);
 
   const glm::vec3 center = (maxCoords + minCoords) / 2.0f;
   const glm::vec3 range = maxCoords - minCoords;
@@ -185,21 +332,14 @@ void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, co
   }
 }
 
-void ObjectLoader::moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices) {
-  glm::vec3 maxCoords(0.0f);
-  glm::vec3 minCoords(0.0f);
+void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices,
+                               const glm::vec3 scale) {
+  ObjectLoader::scaleObject(vertices, scale.x, scale.y, scale.z);
+}
 
-  for (int i = 0; i < vertices->size(); i++) {
-    const Vertex &vertex = (*vertices)[i];
-    for (int direction = 0; direction < 3; direction++) {
-      if (vertex.position[direction] > maxCoords[direction]) {
-        maxCoords[direction] = vertex.position[direction];
-      }
-      if (vertex.position[direction] < minCoords[direction]) {
-        minCoords[direction] = vertex.position[direction];
-      }
-    }
-  }
+void ObjectLoader::moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices) {
+  glm::vec3 minCoords, maxCoords;
+  std::tie(minCoords, maxCoords) = getCorners(vertices);
 
   glm::vec3 center = (maxCoords + minCoords) / 2.0f;
 
@@ -223,10 +363,64 @@ void ObjectLoader::moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices) {
   }
 }
 
-void ObjectLoader::move(std::shared_ptr<std::vector<Vertex>> vertices, const float offsetX, const float offsetY, const float offsetZ) {
+void ObjectLoader::translateObject(std::shared_ptr<std::vector<Vertex>> vertices, const float offsetX, const float offsetY, const float offsetZ) {
   glm::vec3 offset(offsetX, offsetY, offsetZ);
 
   for (int i = 0; i < vertices->size(); i++) {
     (*vertices)[i].position = (*vertices)[i].position + offset;
   }
+}
+
+void ObjectLoader::translateObject(std::shared_ptr<std::vector<Vertex>> vertices,
+                                   const glm::vec3 offset) {
+  ObjectLoader::translateObject(vertices, offset.x, offset.y, offset.z);
+}
+
+void ObjectLoader::rotateObject(std::shared_ptr<std::vector<Vertex>> vertices, const float angle, const glm::vec3 axis) {
+  const int nVertices = vertices->size();
+  const glm::mat4 rotMat = glm::rotate(angle, axis);
+
+  for (int i_vertex = 0; i_vertex < nVertices; ++i_vertex) {
+    const glm::vec4 &position = rotMat * glm::vec4((*vertices)[i_vertex].position, 1.0f);
+    const glm::vec4 &normal = rotMat * glm::vec4((*vertices)[i_vertex].normal, 1.0f);
+    (*vertices)[i_vertex].position = glm::vec3(position.x, position.y, position.z);
+    (*vertices)[i_vertex].normal = glm::vec3(normal.x, normal.y, normal.z);
+  }
+};
+
+void ObjectLoader::mergeVertices(
+    const std::shared_ptr<std::vector<Vertex>> &sourceVertices,
+    const std::shared_ptr<std::vector<unsigned int>> &sourceIndices,
+    std::shared_ptr<std::vector<Vertex>> &distVertices,
+    std::shared_ptr<std::vector<unsigned int>> &distIndices) {
+  const int offsetIndex = distIndices->size();
+  const int nSourceVertices = sourceVertices->size();
+  const int distTotalSize = offsetIndex + nSourceVertices;
+
+  distVertices->resize(distTotalSize);
+  distIndices->resize(distTotalSize);
+
+  for (int i_vertex = 0; i_vertex < nSourceVertices; ++i_vertex) {
+    (*distVertices)[offsetIndex + i_vertex] = (*sourceVertices)[i_vertex];
+    (*distIndices)[offsetIndex + i_vertex] = (*sourceIndices)[i_vertex] + offsetIndex;
+  }
+};
+
+std::pair<glm::vec3, glm::vec3> ObjectLoader::getCorners(std::shared_ptr<std::vector<Vertex>> vertices) {
+  glm::vec3 maxCoords(0.0f);
+  glm::vec3 minCoords(0.0f);
+
+  for (int i = 0; i < vertices->size(); i++) {
+    const Vertex &vertex = (*vertices)[i];
+    for (int direction = 0; direction < 3; direction++) {
+      if (vertex.position[direction] > maxCoords[direction]) {
+        maxCoords[direction] = vertex.position[direction];
+      }
+      if (vertex.position[direction] < minCoords[direction]) {
+        minCoords[direction] = vertex.position[direction];
+      }
+    }
+  }
+
+  return {std::move(minCoords), std::move(maxCoords)};
 }

@@ -19,7 +19,7 @@ inline static const std::array<glm::vec3, 3> BARY_CENTER = {
     glm::vec3(0.0f, 0.0f, 1.0f)};
 
 struct Vertex {
-  Vertex(){};
+  Vertex() = default;
   Vertex(
       const glm::vec3& position_,
       const glm::vec3& color_,
@@ -27,7 +27,7 @@ struct Vertex {
       const glm::vec3& bary_,
       const glm::vec2& uv_,
       const float id_)
-      : position(position_), color(color_), normal(normal_), bary(bary_), uv(uv_), id(id_) {}
+      : position(position_), color(color_), normal(normal_), bary(bary_), uv(uv_), id(id_){};
 
   glm::vec3 position;
   glm::vec3 color;
@@ -36,6 +36,23 @@ struct Vertex {
   glm::vec2 uv;
   float id;
 };
+
+struct MaterialGroup {
+  MaterialGroup()
+      : vertices(std::shared_ptr<std::vector<Vertex>>(new std::vector<Vertex>)),
+        indices(std::shared_ptr<std::vector<uint32_t>>(new std::vector<uint32_t>)){};
+
+  std::shared_ptr<std::vector<Vertex>> vertices = nullptr;
+  std::shared_ptr<std::vector<uint32_t>> indices = nullptr;
+  std::string texturePath;
+  glm::vec3 ambientColor;
+  glm::vec3 diffuseColor;
+  glm::vec3 specularColor;
+  float shininess;
+};
+
+using MaterialGroup_t = std::shared_ptr<MaterialGroup>;
+using MaterialGroups_t = std::shared_ptr<std::vector<MaterialGroup_t>>;
 
 class Primitives {
   // ==================================================================================================
@@ -56,7 +73,8 @@ class Primitives {
     TEXTURE,
     VERT_NORMAL,
     SHADE,
-    SHADE_TEXTURE
+    SHADE_TEXTURE,
+    MATERIAL
   };
 
   static RenderType getRenderType(std::string string) {
@@ -103,31 +121,7 @@ class Primitives {
   // nothing
 
  protected:
-  void rotateObject(std::shared_ptr<std::vector<Vertex>> vertices, const float angle, const glm::vec3 axis) const {
-    const int nVertices = vertices->size();
-    const glm::mat4 rotMat = glm::rotate(angle, axis);
-
-    for (int i_vertex = 0; i_vertex < nVertices; ++i_vertex) {
-      const glm::vec4& position = rotMat * glm::vec4((*vertices)[i_vertex].position, 1.0f);
-      const glm::vec4& normal = rotMat * glm::vec4((*vertices)[i_vertex].normal, 1.0f);
-      (*vertices)[i_vertex].position = glm::vec3(position.x, position.y, position.z);
-      (*vertices)[i_vertex].normal = glm::vec3(normal.x, normal.y, normal.z);
-    }
-  };
-
-  void mergeVertices(
-      const std::shared_ptr<std::vector<Vertex>>& sourceVertices,
-      const std::shared_ptr<std::vector<unsigned int>>& sourceIndices,
-      std::shared_ptr<std::vector<Vertex>>& distVertices,
-      std::shared_ptr<std::vector<unsigned int>>& distIndices) {
-    const int offsetIndex = distIndices->size();
-    const int nSourceVertices = sourceVertices->size();
-
-    for (int i_vertex = 0; i_vertex < nSourceVertices; ++i_vertex) {
-      distVertices->push_back((*sourceVertices)[i_vertex]);
-      distIndices->push_back((*sourceIndices)[i_vertex] + offsetIndex);
-    }
-  };
+  // nothing
 
  public:
   void setMaskMode(bool maskMode) { _maskMode = maskMode; };
@@ -183,6 +177,8 @@ class Primitives {
       renderTypeValue = 2.0f;
     } else if (renderType == Primitives::RenderType::SHADE_TEXTURE) {
       renderTypeValue = 3.0f;
+    } else if (renderType == Primitives::RenderType::MATERIAL) {
+      renderTypeValue = 4.0f;
     }
 
     return renderTypeValue;
@@ -211,6 +207,9 @@ class Primitives {
       const glm::vec3& lightPos,
       const float& shininess,
       const float& ambientIntensity,
+      const glm::vec3& ambientColor,
+      const glm::vec3& diffuseColor,
+      const glm::vec3& specularColor,
       const float& renderType,
       const float& wireFrameMode,
       const glm::vec3& wireFrameColor,
@@ -228,22 +227,40 @@ class Primitives {
     // Transfer uniform variables
     uid = glGetUniformLocation(_shaderID, "u_mvMat");
     glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(mvMat));
+
     uid = glGetUniformLocation(_shaderID, "u_mvpMat");
     glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(mvpMat));
+
     uid = glGetUniformLocation(_shaderID, "u_normMat");
     glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(normMat));
+
     uid = glGetUniformLocation(_shaderID, "u_lightMat");
     glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(lightMat));
+
     uid = glGetUniformLocation(_shaderID, "u_lightPos");
     glUniform3fv(uid, 1, glm::value_ptr(lightPos));
+
     uid = glGetUniformLocation(_shaderID, "u_shininess");
     glUniform1f(uid, shininess);
+
     uid = glGetUniformLocation(_shaderID, "u_ambientIntensity");
     glUniform1f(uid, ambientIntensity);
+
+    uid = glGetUniformLocation(_shaderID, "u_ambientColor");
+    glUniform3fv(uid, 1, glm::value_ptr(ambientColor));
+
+    uid = glGetUniformLocation(_shaderID, "u_diffuseColor");
+    glUniform3fv(uid, 1, glm::value_ptr(diffuseColor));
+
+    uid = glGetUniformLocation(_shaderID, "u_specularColor");
+    glUniform3fv(uid, 1, glm::value_ptr(specularColor));
+
     uid = glGetUniformLocation(_shaderID, "u_wireFrameMode");
     glUniform1f(uid, wireFrameMode);
+
     uid = glGetUniformLocation(_shaderID, "u_wireFrameColor");
     glUniform3fv(uid, 1, glm::value_ptr(wireFrameColor));
+
     uid = glGetUniformLocation(_shaderID, "u_wireFrameWidth");
     glUniform1f(uid, wireFrameWidth);
 

@@ -38,7 +38,7 @@ void Box::initVAO() {
 
   ObjectLoader::moveToOrigin(vertices);
   ObjectLoader::scaleObject(vertices, _scaleX / 2.0f, _scaleY / 2.0f, _scaleZ / 2.0f);
-  ObjectLoader::move(vertices, _offsetX, _offsetY, _offsetZ);
+  ObjectLoader::translateObject(vertices, _offsetX, _offsetY, _offsetZ);
 
   // Create VAO
   glGenVertexArrays(1, &_vaoId);
@@ -98,6 +98,9 @@ void Box::paintGL(const glm::mat4& mvMat,
         lightPos,
         shininess,
         ambientIntensity,
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
         getRenderType(),
         getWireFrameMode(),
         wireFrameColor,

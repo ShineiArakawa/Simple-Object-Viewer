@@ -7,14 +7,14 @@ void Model::compileShaders() {
   std::string fragShaderCode;
 
   if (_vertShaderPath == nullptr) {
-    std::cout << "Use default vertex shader." << std::endl;
+    LOG_INFO("Use default vertex shader.");
     vertShaderCode = DefaultShaders::VERT_SHADER;
   } else {
     vertShaderCode = ShaderCompiler::readCodesFromFIle(*_vertShaderPath);
   }
 
   if (_fragShaderPath == nullptr) {
-    std::cout << "Use default fragment shader." << std::endl;
+    LOG_INFO("Use default fragment shader.");
     fragShaderCode = DefaultShaders::FRAG_SHADER;
   } else {
     fragShaderCode = ShaderCompiler::readCodesFromFIle(*_fragShaderPath);

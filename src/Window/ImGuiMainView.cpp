@@ -57,9 +57,8 @@ void ImGuiMainView::paintMenuBar() {
 
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("Quit")) {
-        std::cout << "Quit the program" << std::endl;
+        LOG_INFO("Quit the program");
         moveOn = false;
-        destroy();
         return;
       }
       ImGui::EndMenu();
@@ -83,7 +82,7 @@ void ImGuiMainView::paintSideBar() {
     if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
       // Render type
       static int renderType;
-      static const char* renderTypeItems = "Normal\0Color\0Texture\0Vertex Normal\0Shading\0Shading with texture\0";
+      static const char* renderTypeItems = "Normal\0Color\0Texture\0Vertex Normal\0Shading\0Shading with texture\0Material\0";
       ImGui::Combo("Render Type", &renderType, renderTypeItems);
       _sceneModel->setRenderType(static_cast<Primitives::RenderType>(renderType));
 

@@ -9,6 +9,7 @@ ObjectAddFileDialog::ObjectAddFileDialog(std::shared_ptr<ViewerModel> model) : _
   _objectTypes += Sphere::KEY_MODEL_SPHERE + "\0"s;
   _objectTypes += PointCloudPoly::KEY_MODEL_POINT_CLOUD_POLY + "\0"s;
   _objectTypes += PointCloud::KEY_MODEL_POINT_CLOUD + "\0"s;
+  _objectTypes += MaterialObject::KEY_MODEL_MATERIAL_OBJECT + "\0"s;
 }
 
 ObjectAddFileDialog::~ObjectAddFileDialog() {}
@@ -131,7 +132,7 @@ void ObjectAddFileDialog::paint() {
     ImGui::ColorEdit3("Color", color);
   } else if (objectTypeID == 5) {
     // ====================================================================
-    // Point cloud
+    // Point cloud with polygon
     // ====================================================================
     ImGui::InputText("Obj Name", objName, 256);
     ImGui::InputText("Point cloud file path", objFilePath, 256);
@@ -168,6 +169,25 @@ void ObjectAddFileDialog::paint() {
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat("Scale", &scale);
     ImGui::InputFloat("Point size", &pointSize, 0.0f, 0.0f, FLOAT_FORMAT);
+  } else if (objectTypeID == 7) {
+    // ====================================================================
+    // Materialed object
+    // ====================================================================
+    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Obj file path", objFilePath, 256);
+    ImGui::SameLine();
+    if (ImGui::Button("Browse Obj")) {
+      nfdchar_t* outPath;
+      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj"}};
+      nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
+
+      if (result == NFD_OKAY) {
+        strcpy(objFilePath, outPath);
+      }
+    }
+    ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
+    ImGui::InputFloat3("Offset (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);
+    ImGui::InputFloat("Point size", &pointSize, 0.0f, 0.0f, FLOAT_FORMAT);
   }
 
   // ========================================================================================================================
@@ -198,7 +218,11 @@ void ObjectAddFileDialog::paint() {
         // ====================================================================
         // Object
         // ====================================================================
-        auto object = std::make_shared<Object>(strObjFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scale);
+        auto object = std::make_shared<Object>(strObjFilePath,
+                                               offsetXYZ[0],
+                                               offsetXYZ[1],
+                                               offsetXYZ[2],
+                                               scale);
         if (!strTexFilePath.empty()) {
           object->loadTexture(strTexFilePath);
         }
@@ -208,7 +232,12 @@ void ObjectAddFileDialog::paint() {
         // ====================================================================
         // Box
         // ====================================================================
-        auto object = std::make_shared<Box>(offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]);
+        auto object = std::make_shared<Box>(offsetXYZ[0],
+                                            offsetXYZ[1],
+                                            offsetXYZ[2],
+                                            scaleXYZ[0],
+                                            scaleXYZ[1],
+                                            scaleXYZ[2]);
         if (!strTexFilePath.empty()) {
           object->loadTexture(strTexFilePath);
         }
@@ -218,7 +247,13 @@ void ObjectAddFileDialog::paint() {
         // ====================================================================
         // Terrain
         // ====================================================================
-        newObject = std::make_shared<Terrain>(strHeightMapFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]);
+        newObject = std::make_shared<Terrain>(strHeightMapFilePath,
+                                              offsetXYZ[0],
+                                              offsetXYZ[1],
+                                              offsetXYZ[2],
+                                              scaleXYZ[0],
+                                              scaleXYZ[1],
+                                              scaleXYZ[2]);
       } else if (objectTypeID == 3) {
         // ====================================================================
         // Backgound
@@ -228,25 +263,42 @@ void ObjectAddFileDialog::paint() {
         // ====================================================================
         // Sphere
         // ====================================================================
-        newObject = std::make_shared<Sphere>(
-            nDivs,
-            offsetXYZ[0],
-            offsetXYZ[1],
-            offsetXYZ[2],
-            scaleXYZ[0],
-            scaleXYZ[1],
-            scaleXYZ[2],
-            glm::vec3(color[0], color[1], color[2]));
+        newObject = std::make_shared<Sphere>(nDivs,
+                                             offsetXYZ[0],
+                                             offsetXYZ[1],
+                                             offsetXYZ[2],
+                                             scaleXYZ[0],
+                                             scaleXYZ[1],
+                                             scaleXYZ[2],
+                                             glm::vec3(color[0], color[1], color[2]));
       } else if (objectTypeID == 5) {
         // ====================================================================
-        // Point cloud
+        // Point cloud with polygon
         // ====================================================================
-        newObject = std::make_shared<PointCloudPoly>(objFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scale, pointSize, isDoubled);
+        newObject = std::make_shared<PointCloudPoly>(strObjFilePath,
+                                                     offsetXYZ[0],
+                                                     offsetXYZ[1],
+                                                     offsetXYZ[2],
+                                                     scale,
+                                                     pointSize,
+                                                     isDoubled);
       } else if (objectTypeID == 6) {
         // ====================================================================
         // Point cloud
         // ====================================================================
-        newObject = std::make_shared<PointCloud>(objFilePath, offsetXYZ[0], offsetXYZ[1], offsetXYZ[2], scale, pointSize);
+        newObject = std::make_shared<PointCloud>(strObjFilePath,
+                                                 offsetXYZ[0],
+                                                 offsetXYZ[1],
+                                                 offsetXYZ[2],
+                                                 scale,
+                                                 pointSize);
+      } else if (objectTypeID == 7) {
+        // ====================================================================
+        // Materialed object
+        // ====================================================================
+        newObject = std::make_shared<MaterialObject>(strObjFilePath,
+                                                     glm::vec3(offsetXYZ[0], offsetXYZ[1], offsetXYZ[2]),
+                                                     glm::vec3(scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]));
       }
 
       if (newObject != nullptr) {

@@ -3,6 +3,7 @@
 #define _TEXTURE_H_
 
 #include <OpenGL.hpp>
+#include <Util/Logging.hpp>
 #include <Util/StbAdapter.hpp>
 #include <memory>
 #include <string>

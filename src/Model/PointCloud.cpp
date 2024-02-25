@@ -16,7 +16,7 @@ void PointCloud::initVAO() {
   ObjectLoader::readFromFile(_filePath, points, indices, _offsetX, _offsetY, _offsetZ);
   ObjectLoader::moveToOrigin(points);
   ObjectLoader::scaleObject(points, _scale);
-  ObjectLoader::move(points, _offsetX, _offsetY, _offsetZ);
+  ObjectLoader::translateObject(points, _offsetX, _offsetY, _offsetZ);
 
   LOG_INFO("Loaded point cloud data with " + std::to_string(points->size()) + " points.");
 
@@ -80,7 +80,11 @@ void PointCloud::paintGL(const glm::mat4 &mvMat,
         lightMat,
         lightPos,
         shininess,
-        ambientIntensity, getRenderType(),
+        ambientIntensity,
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        getRenderType(),
         getWireFrameMode(),
         wireFrameColor,
         wireFrameWidth);

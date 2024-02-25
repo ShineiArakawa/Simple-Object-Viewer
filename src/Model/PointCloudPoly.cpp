@@ -17,7 +17,7 @@ void PointCloudPoly::initVAO() {
   ObjectLoader::readFromFile(_filePath, points, pointsIndices, _offsetX, _offsetY, _offsetZ);
   ObjectLoader::moveToOrigin(points);
   ObjectLoader::scaleObject(points, _scale);
-  ObjectLoader::move(points, _offsetX, _offsetY, _offsetZ);
+  ObjectLoader::translateObject(points, _offsetX, _offsetY, _offsetZ);
 
   std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
   std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
@@ -39,7 +39,7 @@ void PointCloudPoly::initVAO() {
     std::shared_ptr<std::vector<Vertex>> iVertices = std::make_shared<std::vector<Vertex>>(*primitiveVertices);
     std::shared_ptr<std::vector<uint32_t>> iIndices = std::make_shared<std::vector<uint32_t>>(*primitiveIndices);
 
-    ObjectLoader::move(iVertices, point.position[0], point.position[1], point.position[2]);
+    ObjectLoader::translateObject(iVertices, point.position[0], point.position[1], point.position[2]);
 
     for (int iVertex = 0; iVertex < (int)iVertices->size(); ++iVertex) {
       (*vertices)[index + iVertex] = (*iVertices)[iVertex];
@@ -109,7 +109,11 @@ void PointCloudPoly::paintGL(const glm::mat4 &mvMat,
         lightMat,
         lightPos,
         shininess,
-        ambientIntensity, getRenderType(),
+        ambientIntensity,
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        getRenderType(),
         getWireFrameMode(),
         wireFrameColor,
         wireFrameWidth);

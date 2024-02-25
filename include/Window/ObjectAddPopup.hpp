@@ -5,6 +5,7 @@
 #include <ImGui.hpp>
 #include <Model/Background.hpp>
 #include <Model/Box.hpp>
+#include <Model/MaterialObject.hpp>
 #include <Model/Object.hpp>
 #include <Model/PointCloud.hpp>
 #include <Model/PointCloudPoly.hpp>

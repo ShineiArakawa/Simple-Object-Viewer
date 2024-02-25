@@ -16,6 +16,7 @@ add_library(
   "PointCloud.cpp"
   "PointCloudPoly.cpp"
   "AxesCone.cpp"
+  "MaterialObject.cpp"
 )
 
 # =========================================================

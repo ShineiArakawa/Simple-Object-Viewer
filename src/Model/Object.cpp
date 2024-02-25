@@ -15,7 +15,12 @@ void Object::initVAO() {
   std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
   std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
 
-  ObjectLoader::readFromFile(_filePath, vertices, indices, _offsetX, _offsetY, _offsetZ);
+  ObjectLoader::readFromFile(_filePath,
+                             vertices,
+                             indices,
+                             _offsetX,
+                             _offsetY,
+                             _offsetZ);
   ObjectLoader::scaleObject(vertices, _scale);
 
   // Create VAO
@@ -78,6 +83,9 @@ void Object::paintGL(const glm::mat4 &mvMat,
         lightPos,
         shininess,
         ambientIntensity,
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
         getRenderType(),
         getWireFrameMode(),
         wireFrameColor,
