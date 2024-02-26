@@ -112,6 +112,10 @@ void ImGuiMainView::paintSideBar() {
 
       // Wire frame color
       ImGui::ColorEdit3("Wire Frame Color", _sceneModel->getPointerToWireFrameColor(), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+
+      // Bump map
+      ImGui::Checkbox("Bunm map", &_sceneView->isEnabledNormalMap);
+      _sceneModel->setIsEnabledNormalMap(_sceneView->isEnabledNormalMap);
     }
 
     // ========================================================================================

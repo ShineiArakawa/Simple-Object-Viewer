@@ -89,23 +89,22 @@ void Object::paintGL(const glm::mat4 &mvMat,
         getRenderType(),
         getWireFrameMode(),
         wireFrameColor,
-        wireFrameWidth);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _textureId);
-    const GLuint uid = glGetUniformLocation(_shaderID, "u_texture");
-    glUniform1i(uid, 0);
+        wireFrameWidth,
+        false,
+        _isEnabledNormalMap);
+    bindTexture(_textureId, UNIFORM_NAME_TEXTURE);
+    bindTexture(_normalMapId, UNIFORM_NAME_NORMAL_MAP);
 
     glBindVertexArray(_vaoId);
-
     glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
-
     glBindVertexArray(0);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-
+    unbindTexture();
+    unbindTexture();
     unbindShader();
   }
 }
 
 void Object::loadTexture(const std::string &filePath) { Texture::loadTexture(filePath, _textureId); }
+
+void Object::loadNormalMap(const std::string &filePath) { Texture::loadTexture(filePath, _normalMapId); }

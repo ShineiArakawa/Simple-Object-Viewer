@@ -108,11 +108,13 @@ class Primitives {
   Primitives::WireFrameMode _wireFrameMode = Primitives::WireFrameMode::OFF;
   bool _maskMode = false;
   bool _isVisible = true;
+  bool _isEnabledNormalMap = false;
   glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
   glm::vec3 _vecocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
  public:
-  // nothing
+  inline static const char* UNIFORM_NAME_TEXTURE = "u_texture";
+  inline static const char* UNIFORM_NAME_NORMAL_MAP = "u_normaMap";
 
   // ==================================================================================================
   // Function defines
@@ -126,6 +128,7 @@ class Primitives {
  public:
   void setMaskMode(bool maskMode) { _maskMode = maskMode; };
   void setVisible(bool isVisible) { _isVisible = isVisible; };
+  void setIsEnabledNormalMap(bool isEnabledNormalMap) { _isEnabledNormalMap = isEnabledNormalMap; };
   void setName(std::string name) { _name = name; };
   void setShader(GLuint shaderID) { _shaderID = shaderID; };
   std::string getName() { return _name; };
@@ -156,7 +159,7 @@ class Primitives {
 
   void setWireFrameMode(const Primitives::WireFrameMode& wireFrameMode) { _wireFrameMode = wireFrameMode; };
 
-  float getWireFrameMode() {
+  float getWireFrameMode() const {
     return getWireFrameMode(_wireFrameMode);
   };
 
@@ -214,7 +217,8 @@ class Primitives {
       const float& wireFrameMode,
       const glm::vec3& wireFrameColor,
       const float& wireFrameWidth,
-      const bool& disableDepthTest = false) {
+      const bool& disableDepthTest = false,
+      const bool& isEnabledNormalMap = false) const {
     GLuint uid;
 
     // Enable shader program
@@ -264,16 +268,30 @@ class Primitives {
     uid = glGetUniformLocation(_shaderID, "u_wireFrameWidth");
     glUniform1f(uid, wireFrameWidth);
 
-    uid = glGetUniformLocation(_shaderID, "u_toUseTexture");
+    uid = glGetUniformLocation(_shaderID, "u_renderType");
     glUniform1f(uid, renderType);
+
+    uid = glGetUniformLocation(_shaderID, "u_bumpMap");
+    glUniform1f(uid, (float)isEnabledNormalMap);
   };
 
-  inline void unbindShader() {
+  inline void unbindShader() const {
     glEnable(GL_DEPTH_TEST);
 
     // Disable shader program
     glUseProgram(0);
   };
+
+  inline void bindTexture(const GLuint& textureID, const char* uniformName) const {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    const GLuint uid = glGetUniformLocation(_shaderID, uniformName);
+    glUniform1i(uid, 0);
+  }
+
+  inline void unbindTexture() const {
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
 
   virtual void update() = 0;
   virtual void initVAO() = 0;

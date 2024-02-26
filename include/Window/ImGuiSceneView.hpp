@@ -63,6 +63,7 @@ class ImGuiSceneView {
 
   inline static bool isDragging = false;
   inline static bool isMaskMode = false;
+  inline static bool isEnabledNormalMap = false;
 
   inline static bool enabledModelRotationMode = false;
   inline static bool enabledLightRotationMode = false;

@@ -1,16 +1,15 @@
 #include <App/ViewerGUIMain.hpp>
 
-#ifdef defined(WIN32) && defined(ENABLE_LEAK_CHECK)
+#if defined(WIN32) && defined(ENABLE_LEAK_CHECK)
 #include <crtdbg.h>
 #endif  // ENABLE_LEAK_CHECK
 
 int main(int argc, char** argv) {
-#ifdef defined(WIN32) && defined(ENABLE_LEAK_CHECK)
+#if defined(WIN32) && defined(ENABLE_LEAK_CHECK)
   _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
 #endif  // ENABLE_LEAK_CHECK
 
-  std::shared_ptr<ViewerGUIApp>
-      app = std::make_shared<ViewerGUIApp>();
+  std::shared_ptr<ViewerGUIApp> app = std::make_shared<ViewerGUIApp>();
 
   app->launch();
 

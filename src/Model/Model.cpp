@@ -57,3 +57,9 @@ void Model::resetRenderType() {
     getObject(iModel)->resetRenderType();
   }
 }
+
+void Model::setIsEnabledNormalMap(bool isEnabledNormalMap) {
+  for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+    getObject(iModel)->setIsEnabledNormalMap(isEnabledNormalMap);
+  }
+}

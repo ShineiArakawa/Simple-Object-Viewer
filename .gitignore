@@ -1,7 +1,5 @@
 .vs
 .vscode
-**/*.png
-**/*.mtl
 **/*.zip
 **/*.7z
 **/imgui.ini

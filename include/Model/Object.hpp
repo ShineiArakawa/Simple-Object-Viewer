@@ -23,6 +23,7 @@ class Object : public Primitives {
   GLuint _vertexBufferId;
   GLuint _indexBufferId;
   GLuint _textureId;
+  GLuint _normalMapId;
 
  protected:
   // nothing
@@ -43,6 +44,7 @@ class Object : public Primitives {
   Object(const std::string& filePath, float offsetX, float offsetY, float offsetZ, float scale = 1.0f);
   ~Object();
   void loadTexture(const std::string& filePath);
+  void loadNormalMap(const std::string& filePath);
   void update() override{};
   void initVAO() override;
   void paintGL(const glm::mat4& mvMat,

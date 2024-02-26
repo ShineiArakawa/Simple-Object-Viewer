@@ -20,6 +20,7 @@ void ObjectAddFileDialog::paint() {
   static char objFilePath[256];
   static char textureFilePath[256];
   static char heightMapFilePath[256];
+  static char normalMapFilePath[256];
   static float offsetXYZ[3] = {0.0f, 0.0f, 0.0f};
   static float scale = 1.0f;
   static float scaleXYZ[3] = {1.0f, 1.0f, 1.0f};
@@ -62,6 +63,18 @@ void ObjectAddFileDialog::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(textureFilePath, outPath);
+      }
+    }
+
+    ImGui::InputText("Normal map file path", normalMapFilePath, 256);
+    ImGui::SameLine();
+    if (ImGui::Button("Browse Normal Map")) {
+      nfdchar_t* outPath;
+      nfdfilteritem_t filterItem[1] = {{"Normal map", "png,jpg"}};
+      nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
+
+      if (result == NFD_OKAY) {
+        strcpy(normalMapFilePath, outPath);
       }
     }
 
@@ -209,6 +222,7 @@ void ObjectAddFileDialog::paint() {
     std::string strObjFilePath(objFilePath);
     std::string strTexFilePath(textureFilePath);
     std::string strHeightMapFilePath(heightMapFilePath);
+    std::string strNormalMapFilePath(normalMapFilePath);
     std::string strTextureFilePath(textureFilePath);
 
     try {
@@ -225,6 +239,10 @@ void ObjectAddFileDialog::paint() {
                                                scale);
         if (!strTexFilePath.empty()) {
           object->loadTexture(strTexFilePath);
+        }
+
+        if (!strNormalMapFilePath.empty()) {
+          object->loadNormalMap(strNormalMapFilePath);
         }
 
         newObject = object;

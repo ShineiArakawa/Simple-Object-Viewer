@@ -90,6 +90,7 @@ class Model {
 
   void setMaskMode(bool maskMode);
   void setRenderType(Primitives::RenderType renderType);
+  void setIsEnabledNormalMap(bool isEnabledNormalMap);
   void setWireFrameMode(Primitives::WireFrameMode wireFrameMode);
   void setBackgroundIDtoDraw(const int index) { _backgroundIDtoDraw = index; };
   void resetRenderType();
