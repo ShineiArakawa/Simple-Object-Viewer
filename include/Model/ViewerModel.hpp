@@ -20,7 +20,12 @@ class ViewerModel : public Model {
   ~ViewerModel();
 
   void initVAO() override;
-  void paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) override;
+
+  void paintGL(const glm::mat4 &mvMat,
+               const glm::mat4 &mvpMat,
+               const glm::mat4 &normMat,
+               const glm::mat4 &lightMat) override;
+
   void tick(float time) override { _time += time; };
 
   void setAxesConeState(const bool isShown);

@@ -79,8 +79,36 @@ set(NFD_INCLUDE_DIR ${PROJECT_LIB_DIR}/nativefiledialog-extended/src/include)
 # #### spdlog
 set(SPD_LOG_INCLUDE_DIR ${PROJECT_LIB_DIR}/spdlog/include)
 
+# #### assimp
+set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_DIR}/lib/assimp/include)
+
+######################################################
+# External libralies
+######################################################
+set(
+  EXTERNAL_INCLUDE_DIR
+  ${EIGEN_INCLUDE_DIR}
+  ${GLAD_INCLUDE_DIR}
+  ${GLFW_INCLUDE_DIR}
+  ${GLM_INCLUDE_DIR}
+  ${PICOJSON_INCLUDE_DIR}
+  ${STB_INCLUDE_DIR}
+  ${TINYOBJLOADER_INCLUDE_DIR}
+  ${IMGUI_INCLUDE_DIR}
+  ${NFD_INCLUDE_DIR}
+  ${SPD_LOG_INCLUDE_DIR}
+  ${ASSIMP_INCLUDE_DIR}
+)
+
+set(
+  EXTERNAL_LIBS
+  glad
+  glfw
+  nfd
+  assimp
+)
+
 # #### Add subdirectory
-add_subdirectory(pybind11)
 add_subdirectory(src)
 add_subdirectory(lib)
 
@@ -93,6 +121,9 @@ message("# =====================================================================
 message("#  [CMake]")
 message("#    CMake version                        : ${CMAKE_VERSION}")
 message("#    CMake build type                     : ${CMAKE_BUILD_TYPE}")
+message("#    CMAKE_CXX_FLAGS                      : ${CMAKE_CXX_FLAGS}")
+message("#    CMAKE_CXX_FLAGS_DEBUG                : ${CMAKE_CXX_FLAGS_DEBUG}")
+message("#    CMAKE_CXX_FLAGS_RELEASE              : ${CMAKE_CXX_FLAGS_RELEASE}")
 message("# ")
 message("#  [C/C++]")
 message("#    C++ Compiler                         : ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} ${CMAKE_CXX_COMPILER_WRAPPER} ${CMAKE_CXX_COMPILER}")
@@ -117,4 +148,8 @@ message("#    IMGUI_SOURCE_DIR                     : ${IMGUI_SOURCE_DIR}")
 message("#    IMGUI_BACKENDS_DIR                   : ${IMGUI_BACKENDS_DIR}")
 message("#    NFD_INCLUDE_DIR                      : ${NFD_INCLUDE_DIR}")
 message("#    SPD_LOG_INCLUDE_DIR                  : ${SPD_LOG_INCLUDE_DIR}")
+message("#    ASSIMP_INCLUDE_DIR                   : ${ASSIMP_INCLUDE_DIR}")
 message("# =======================================================================================================")
+
+
+

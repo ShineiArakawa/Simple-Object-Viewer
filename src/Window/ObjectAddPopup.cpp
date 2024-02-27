@@ -17,7 +17,7 @@ ObjectAddFileDialog::~ObjectAddFileDialog() {}
 void ObjectAddFileDialog::paint() {
   static int objectTypeID = 0;
   static char objName[256];
-  static char objFilePath[256];
+  static char objFilePath[256] = "/home/shinaraka/Projects/OpenGLTemplate/data/Assets/11-obj/Room1.obj";
   static char textureFilePath[256];
   static char heightMapFilePath[256];
   static char normalMapFilePath[256];

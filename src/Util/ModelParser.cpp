@@ -170,7 +170,7 @@ void ModelParser::parseModelBackground(const std::shared_ptr<picojson::value> js
         ModelParser::autoCompPath(filePath, rootDirPath);
         std::shared_ptr<Background> background = std::make_shared<Background>(*filePath);
         background->setName(objectName);
-        model->addBackground(std::move(background));
+        model->addBackground(background);
       }
     }
   }

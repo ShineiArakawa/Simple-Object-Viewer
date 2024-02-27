@@ -17,3 +17,7 @@ add_subdirectory(
 add_subdirectory(
     spdlog
 )
+
+add_subdirectory(
+    assimp
+)

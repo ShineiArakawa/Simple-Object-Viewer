@@ -92,19 +92,38 @@ void Object::paintGL(const glm::mat4 &mvMat,
         wireFrameWidth,
         false,
         _isEnabledNormalMap);
-    bindTexture(_textureId, UNIFORM_NAME_TEXTURE);
-    bindTexture(_normalMapId, UNIFORM_NAME_NORMAL_MAP);
+
+    {
+      // Activate texture image
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, _textureId);
+      const GLuint uid = glGetUniformLocation(_shaderID, UNIFORM_NAME_TEXTURE);
+      glUniform1i(uid, 0);
+    }
+
+    {
+      // Activate normal map
+      glActiveTexture(GL_TEXTURE1);
+      glBindTexture(GL_TEXTURE_2D, _normalMapId);
+      const GLuint uid = glGetUniformLocation(_shaderID, UNIFORM_NAME_NORMAL_MAP);
+      glUniform1i(uid, 1);
+    }
 
     glBindVertexArray(_vaoId);
     glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
-    unbindTexture();
-    unbindTexture();
+    glBindTexture(GL_TEXTURE_2D, 0);
     unbindShader();
   }
 }
 
-void Object::loadTexture(const std::string &filePath) { Texture::loadTexture(filePath, _textureId); }
+void Object::loadTexture(const std::string &filePath) {
+  Texture::loadTexture(filePath, _textureId);
+  LOG_INFO("_textureId=" + std::to_string(_textureId));
+}
 
-void Object::loadNormalMap(const std::string &filePath) { Texture::loadTexture(filePath, _normalMapId); }
+void Object::loadNormalMap(const std::string &filePath) {
+  Texture::loadTexture(filePath, _normalMapId);
+  LOG_INFO("_normalMapId=" + std::to_string(_normalMapId));
+}

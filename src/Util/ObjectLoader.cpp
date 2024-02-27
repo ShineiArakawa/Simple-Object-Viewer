@@ -165,7 +165,122 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
                                                 MaterialGroups_t materialGroups,
                                                 const glm::vec3 offset,
                                                 const glm::vec3 scale) {
-  LOG_INFO("### Loaded obj file: " + filePath);
+#if defined(USE_ASSIMP)
+  Assimp::Importer importer;
+  unsigned int flag = 0;
+  flag |= aiProcess_Triangulate;
+  // flag |= aiProcess_PreTransformVertices;
+  flag |= aiProcess_CalcTangentSpace;
+  // flag |= aiProcess_GenSmoothNormals;
+  // flag |= aiProcess_GenUVCoords;
+  flag |= aiProcess_RemoveRedundantMaterials;
+  // flag |= aiProcess_OptimizeMeshes;
+
+  const aiScene *scene = importer.ReadFile(filePath, flag);
+
+  if (scene == nullptr) {
+    LOG_ERROR("[ERROR] " + std::string(importer.GetErrorString()));
+    return;
+  }
+
+  const std::string mtlFileDir = FileUtil::dirPath(filePath);
+  for (int iMaterial = 0; iMaterial < scene->mNumMaterials; ++iMaterial) {
+    aiMaterial *material = scene->mMaterials[iMaterial];
+    auto materialGroup = std::make_shared<MaterialGroup>();
+
+    // Name
+    aiString name;
+    material->Get(AI_MATKEY_NAME, name);
+    LOG_INFO("Material name: " + std::string(name.C_Str()));
+
+    // Colors
+    aiColor3D ambientColor, diffuseColor, specularColor;
+    material->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
+    material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
+    material->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
+
+    materialGroup->ambientColor = glm::vec3(ambientColor.r, ambientColor.g, ambientColor.b);
+    materialGroup->diffuseColor = glm::vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b);
+    materialGroup->specularColor = glm::vec3(specularColor.r, specularColor.g, specularColor.b);
+
+    material->Get(AI_MATKEY_SHININESS, materialGroup->shininess);
+
+    aiString ambientTexturePath;
+    aiString diffuseTexturePath;
+    aiString specularTexturePath;
+    aiString specularReflectionTexturePath;
+    aiString opacityTexturePath;
+    aiString roughnessTexturePath;
+    aiString bumpTexturePath;
+    aiString reflectionDiffuseTexturePath;
+
+    material->GetTexture(aiTextureType_AMBIENT, 0, &ambientTexturePath);
+    material->GetTexture(aiTextureType_DIFFUSE, 0, &diffuseTexturePath);
+    material->GetTexture(aiTextureType_SPECULAR, 0, &specularTexturePath);
+    material->GetTexture(aiTextureType_METALNESS, 0, &specularReflectionTexturePath);
+    material->GetTexture(aiTextureType_OPACITY, 0, &opacityTexturePath);
+    material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &roughnessTexturePath);
+    material->GetTexture(aiTextureType_NORMALS, 0, &bumpTexturePath);
+    material->GetTexture(aiTextureType_REFLECTION, 0, &reflectionDiffuseTexturePath);
+
+    materialGroup->ambientTexturePath = FileUtil::join(mtlFileDir, std::string(ambientTexturePath.C_Str()));
+    materialGroup->diffuseTexturePath = FileUtil::join(mtlFileDir, std::string(diffuseTexturePath.C_Str()));
+    materialGroup->specularTexturePath = FileUtil::join(mtlFileDir, std::string(specularTexturePath.C_Str()));
+    materialGroup->specularReflectionTexturePath = FileUtil::join(mtlFileDir, std::string(specularReflectionTexturePath.C_Str()));
+    materialGroup->opacityTexturePath = FileUtil::join(mtlFileDir, std::string(opacityTexturePath.C_Str()));
+    materialGroup->roughnessTexturePath = FileUtil::join(mtlFileDir, std::string(roughnessTexturePath.C_Str()));
+    materialGroup->bumpTexturePath = FileUtil::join(mtlFileDir, std::string(bumpTexturePath.C_Str()));
+    materialGroup->reflectionDiffuseTexturePath = FileUtil::join(mtlFileDir, std::string(reflectionDiffuseTexturePath.C_Str()));
+
+    materialGroups->push_back(materialGroup);
+  }
+
+  bool isFoundMaterials = (int)materialGroups->size() != 0;
+  if (!isFoundMaterials) {
+    materialGroups->push_back(std::make_shared<MaterialGroup>());
+  }
+
+  for (int iMesh = 0; iMesh < scene->mNumMeshes; ++iMesh) {
+    aiMesh *mesh = scene->mMeshes[iMesh];
+
+    for (int iFace = 0; iFace < mesh->mNumFaces; ++iFace) {
+      aiFace face = mesh->mFaces[iFace];
+
+      for (int iVertex = 0; iVertex < face.mNumIndices; ++iVertex) {
+        const unsigned int index = face.mIndices[iVertex];
+
+        glm::vec3 position = glm::vec3(mesh->mVertices[index].x, mesh->mVertices[index].y, mesh->mVertices[index].z);
+        glm::vec3 normal(0.0f), color(1.0f);
+        glm::vec2 texcoord(0.0f);
+
+        if (mesh->HasNormals()) {
+          normal = glm::vec3(mesh->mNormals[index].x, mesh->mNormals[index].y, mesh->mNormals[index].z);
+        }
+
+        if (mesh->HasTextureCoords(0)) {
+          texcoord = glm::vec2(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
+        }
+
+        const unsigned int materialID = mesh->mMaterialIndex;
+
+        const Vertex vertex(position,
+                            color,
+                            normal,
+                            BARY_CENTER[iVertex % 3],
+                            texcoord,
+                            0.0f);
+
+        (*materialGroups)[materialID]->indices->push_back(uint32_t((*materialGroups)[materialID]->vertices->size()));
+        (*materialGroups)[materialID]->vertices->push_back(vertex);
+      }
+    }
+  }
+
+#else
+  const std::string mtlFileDir = FileUtil::dirPath(filePath);
+
+  LOG_INFO("### Load obj file: " + filePath);
+  LOG_INFO("### Mtl file dir : " + mtlFileDir);
 
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
@@ -180,7 +295,7 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
       &warn,
       &err,
       filePath.c_str(),
-      FileUtil::dirPath(filePath).c_str());
+      mtlFileDir.c_str());
 
   if (!warn.empty()) {
     LOG_WARN("[WARNING] " + warn);
@@ -207,7 +322,7 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
     if (!diffuseTexturePath.empty() && !FileUtil::isAbsolute(diffuseTexturePath)) {
       diffuseTexturePath = FileUtil::join(FileUtil::dirPath(filePath), diffuseTexturePath);
     }
-    materialGroup->texturePath = diffuseTexturePath;
+    materialGroup->diffuseTexturePath = diffuseTexturePath;
 
     materialGroups->push_back(materialGroup);
   }
@@ -272,6 +387,7 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
       indexOffset += nVertices;
     }
   }
+#endif
 
   // Scale and Translate
   std::shared_ptr<std::vector<Vertex>> allVertices = std::make_shared<std::vector<Vertex>>();

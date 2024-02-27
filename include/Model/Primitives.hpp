@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include <OpenGL.hpp>
+#include <Util/Logging.hpp>
 #include <array>
 #include <fstream>
 #include <iostream>
@@ -44,11 +45,23 @@ struct MaterialGroup {
 
   std::shared_ptr<std::vector<Vertex>> vertices = nullptr;
   std::shared_ptr<std::vector<uint32_t>> indices = nullptr;
-  std::string texturePath;
-  glm::vec3 ambientColor;
-  glm::vec3 diffuseColor;
-  glm::vec3 specularColor;
-  float shininess;
+
+  float shininess;          // Ns
+  glm::vec3 ambientColor;   // Ka
+  glm::vec3 diffuseColor;   // Kd
+  glm::vec3 specularColor;  // Ks
+  glm::vec3 emissiveColor;  // Ke
+  float refractiveIndex;    // Ni
+  float opacity;            // d
+
+  std::string ambientTexturePath;             // map_Ka
+  std::string diffuseTexturePath;             // map_Kd
+  std::string specularTexturePath;            // map_Ks
+  std::string specularReflectionTexturePath;  // map_Ns
+  std::string opacityTexturePath;             // map_d
+  std::string roughnessTexturePath;           // disp
+  std::string bumpTexturePath;                // map_Bump
+  std::string reflectionDiffuseTexturePath;   // refl
 };
 
 using MaterialGroup_t = std::shared_ptr<MaterialGroup>;
@@ -114,7 +127,7 @@ class Primitives {
 
  public:
   inline static const char* UNIFORM_NAME_TEXTURE = "u_texture";
-  inline static const char* UNIFORM_NAME_NORMAL_MAP = "u_normaMap";
+  inline static const char* UNIFORM_NAME_NORMAL_MAP = "u_normalMap";
 
   // ==================================================================================================
   // Function defines
@@ -271,8 +284,9 @@ class Primitives {
     uid = glGetUniformLocation(_shaderID, "u_renderType");
     glUniform1f(uid, renderType);
 
+    const float fIsEnabledNormalMap = isEnabledNormalMap ? 1.0f : 0.0f;
     uid = glGetUniformLocation(_shaderID, "u_bumpMap");
-    glUniform1f(uid, (float)isEnabledNormalMap);
+    glUniform1f(uid, fIsEnabledNormalMap);
   };
 
   inline void unbindShader() const {
@@ -281,17 +295,6 @@ class Primitives {
     // Disable shader program
     glUseProgram(0);
   };
-
-  inline void bindTexture(const GLuint& textureID, const char* uniformName) const {
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    const GLuint uid = glGetUniformLocation(_shaderID, uniformName);
-    glUniform1i(uid, 0);
-  }
-
-  inline void unbindTexture() const {
-    glBindTexture(GL_TEXTURE_2D, 0);
-  }
 
   virtual void update() = 0;
   virtual void initVAO() = 0;

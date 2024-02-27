@@ -61,8 +61,8 @@ void MaterialObject::initVAO() {
     glBindVertexArray(0);
 
     // Load texture
-    if (FileUtil::exists(materialGroup->texturePath)) {
-      Texture::loadTexture(materialGroup->texturePath, buffer->textureId);
+    if (FileUtil::exists(materialGroup->diffuseTexturePath)) {
+      Texture::loadTexture(materialGroup->diffuseTexturePath, buffer->textureId);
     }
 
     _materialObjectBuffers->push_back(buffer);
