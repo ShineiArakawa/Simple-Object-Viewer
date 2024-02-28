@@ -22,6 +22,8 @@ void FileUtil::mkdirs(const std::string path) {
 
 bool FileUtil::exists(const std::string path) { return generic_fs::exists(generic_fs::absolute(tPath(path))); }
 
+bool FileUtil::isFile(const std::string path) { return generic_fs::is_regular_file(generic_fs::absolute(tPath(path))); }
+
 bool FileUtil::isAbsolute(const std::string path) { return tPath(path).is_absolute(); }
 
 std::string FileUtil::getTimeStamp() {

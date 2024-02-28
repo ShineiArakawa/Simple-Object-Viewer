@@ -61,8 +61,24 @@ void MaterialObject::initVAO() {
     glBindVertexArray(0);
 
     // Load texture
-    if (FileUtil::exists(materialGroup->diffuseTexturePath)) {
-      Texture::loadTexture(materialGroup->diffuseTexturePath, buffer->textureId);
+    if (FileUtil::exists(materialGroup->ambientTexturePath) && FileUtil::isFile(materialGroup->ambientTexturePath)) {
+      Texture::loadTexture(materialGroup->ambientTexturePath, buffer->ambientTextureId);
+      buffer->enabledAmbientTexture = true;
+    }
+
+    if (FileUtil::exists(materialGroup->diffuseTexturePath) && FileUtil::isFile(materialGroup->diffuseTexturePath)) {
+      Texture::loadTexture(materialGroup->diffuseTexturePath, buffer->diffuseTextureId);
+      buffer->enabledDiffuseTexture = true;
+    }
+
+    if (FileUtil::exists(materialGroup->specularTexturePath) && FileUtil::isFile(materialGroup->specularTexturePath)) {
+      Texture::loadTexture(materialGroup->specularTexturePath, buffer->specularTextureId);
+      buffer->enabledSpecularTexture = true;
+    }
+
+    if (FileUtil::exists(materialGroup->bumpTexturePath) && FileUtil::isFile(materialGroup->bumpTexturePath)) {
+      Texture::loadTexture(materialGroup->bumpTexturePath, buffer->bumpTextureId);
+      buffer->enabledBumpTexture = true;
     }
 
     _materialObjectBuffers->push_back(buffer);
@@ -83,36 +99,72 @@ void MaterialObject::paintGL(const glm::mat4& mvMat,
     const glm::mat4& mvptMat = mvpMat * glm::translate(_position);
 
     for (const auto& object : *_materialObjectBuffers) {
-      bindShader(
-          mvtMat,
-          mvptMat,
-          normMat,
-          lightMat,
-          lightPos,
-          object->materialGroup->shininess,
-          ambientIntensity,
-          object->materialGroup->ambientColor,
-          object->materialGroup->diffuseColor,
-          object->materialGroup->specularColor,
-          getRenderType(),
-          getWireFrameMode(),
-          wireFrameColor,
-          wireFrameWidth);
+      {
+        // Prepare
+        bindShader(
+            mvtMat,
+            mvptMat,
+            normMat,
+            lightMat,
+            lightPos,
+            object->materialGroup->shininess,
+            ambientIntensity,
+            object->materialGroup->ambientColor,
+            object->materialGroup->diffuseColor,
+            object->materialGroup->specularColor,
+            getRenderType(),
+            getWireFrameMode(),
+            wireFrameColor,
+            wireFrameWidth,
+            false,
+            object->enabledBumpTexture);
 
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, object->textureId);
-      const GLuint uid = glGetUniformLocation(_shaderID, "u_texture");
-      glUniform1i(uid, 0);
+        GLuint uid;
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, object->diffuseTextureId);
+        uid = glGetUniformLocation(_shaderID, "u_ambientTexture");
+        glUniform1i(uid, 0);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, object->diffuseTextureId);
+        uid = glGetUniformLocation(_shaderID, "u_diffuseTexture");
+        glUniform1i(uid, 1);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, object->diffuseTextureId);
+        uid = glGetUniformLocation(_shaderID, "u_specularTexture");
+        glUniform1i(uid, 2);
+
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, object->diffuseTextureId);
+        uid = glGetUniformLocation(_shaderID, "u_normalMap");
+        glUniform1i(uid, 3);
+
+        uid = glGetUniformLocation(_shaderID, "u_hasAmbientTexture");
+        glUniform1f(uid, (float)object->enabledAmbientTexture);
+
+        uid = glGetUniformLocation(_shaderID, "u_hasDiffuseTexture");
+        glUniform1f(uid, (float)object->enabledDiffuseTexture);
+
+        uid = glGetUniformLocation(_shaderID, "u_hasSpecularTexture");
+        glUniform1f(uid, (float)object->enabledSpecularTexture);
+      }
+
+      // Draw
       glBindVertexArray(object->vaoId);
-
       glDrawElements(GL_TRIANGLES, object->indexBufferSize, GL_UNSIGNED_INT, 0);
-
       glBindVertexArray(0);
 
-      glBindTexture(GL_TEXTURE_2D, 0);
+      {
+        // Post process
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-      unbindShader();
+        unbindShader();
+      }
     }
   }
 }

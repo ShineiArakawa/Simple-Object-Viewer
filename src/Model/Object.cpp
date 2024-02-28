@@ -95,10 +95,14 @@ void Object::paintGL(const glm::mat4 &mvMat,
 
     {
       // Activate texture image
+      GLuint uid;
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, _textureId);
-      const GLuint uid = glGetUniformLocation(_shaderID, UNIFORM_NAME_TEXTURE);
+      uid = glGetUniformLocation(_shaderID, UNIFORM_NAME_DIFFUSE_TEXTURE);
       glUniform1i(uid, 0);
+
+      uid = glGetUniformLocation(_shaderID, "u_hasDiffuseTexture");
+      glUniform1f(uid, 1.0f);
     }
 
     {
@@ -120,10 +124,10 @@ void Object::paintGL(const glm::mat4 &mvMat,
 
 void Object::loadTexture(const std::string &filePath) {
   Texture::loadTexture(filePath, _textureId);
-  LOG_INFO("_textureId=" + std::to_string(_textureId));
+  // LOG_INFO("_textureId=" + std::to_string(_textureId));
 }
 
 void Object::loadNormalMap(const std::string &filePath) {
   Texture::loadTexture(filePath, _normalMapId);
-  LOG_INFO("_normalMapId=" + std::to_string(_normalMapId));
+  // LOG_INFO("_normalMapId=" + std::to_string(_normalMapId));
 }

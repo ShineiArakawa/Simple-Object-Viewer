@@ -126,7 +126,9 @@ class Primitives {
   glm::vec3 _vecocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
  public:
-  inline static const char* UNIFORM_NAME_TEXTURE = "u_texture";
+  inline static const char* UNIFORM_NAME_AMBIENT_TEXTURE = "u_ambientTexture";
+  inline static const char* UNIFORM_NAME_DIFFUSE_TEXTURE = "u_diffuseTexture";
+  inline static const char* UNIFORM_NAME_SPECULAR_TEXTURE = "u_specularTexture";
   inline static const char* UNIFORM_NAME_NORMAL_MAP = "u_normalMap";
 
   // ==================================================================================================

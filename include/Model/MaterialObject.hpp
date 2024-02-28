@@ -12,13 +12,28 @@
 class MaterialObject : public Primitives {
  public:
   struct MaterialObjectBuffer {
-    MaterialObjectBuffer(){};
+    MaterialObjectBuffer()
+        : indexBufferSize(0),
+          enabledAmbientTexture(false),
+          enabledDiffuseTexture(false),
+          enabledSpecularTexture(false),
+          enabledBumpTexture(false),
+          materialGroup(nullptr){};
 
     int indexBufferSize;
     GLuint vaoId;
     GLuint vertexBufferId;
     GLuint indexBufferId;
-    GLuint textureId;
+
+    GLuint ambientTextureId;
+    GLuint diffuseTextureId;
+    GLuint specularTextureId;
+    GLuint bumpTextureId;
+
+    bool enabledAmbientTexture;
+    bool enabledDiffuseTexture;
+    bool enabledSpecularTexture;
+    bool enabledBumpTexture;
 
     MaterialGroup_t materialGroup;
   };

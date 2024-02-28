@@ -86,8 +86,11 @@ void Background::paintGL(const glm::mat4& mvMat,
         true);
 
     glBindTexture(GL_TEXTURE_2D, _textureId);
-    uid = glGetUniformLocation(_shaderID, "u_texture");
+    uid = glGetUniformLocation(_shaderID, UNIFORM_NAME_DIFFUSE_TEXTURE);
     glUniform1i(uid, 0);
+
+    uid = glGetUniformLocation(_shaderID, "u_hasDiffuseTexture");
+    glUniform1f(uid, 1.0f);
 
     glBindVertexArray(_vaoId);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

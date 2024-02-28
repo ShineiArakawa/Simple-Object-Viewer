@@ -106,10 +106,15 @@ void Box::paintGL(const glm::mat4& mvMat,
         wireFrameColor,
         wireFrameWidth);
 
+    GLuint uid;
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _textureId);
-    const GLuint uid = glGetUniformLocation(_shaderID, "u_texture");
+    uid = glGetUniformLocation(_shaderID, UNIFORM_NAME_DIFFUSE_TEXTURE);
     glUniform1i(uid, 0);
+
+    uid = glGetUniformLocation(_shaderID, "u_hasDiffuseTexture");
+    glUniform1f(uid, 1.0f);
 
     // Enable VAO
     glBindVertexArray(_vaoId);

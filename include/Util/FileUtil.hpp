@@ -19,6 +19,7 @@ class FileUtil {
   static std::string cwd();
   static void mkdirs(const std::string);
   static bool exists(const std::string);
+  static bool isFile(const std::string);
   static bool isAbsolute(const std::string);
   static std::string getTimeStamp();
 };

@@ -193,6 +193,10 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
     material->Get(AI_MATKEY_NAME, name);
     LOG_INFO("Material name: " + std::string(name.C_Str()));
 
+    ai_int illuminationModel;
+    material->Get(AI_MATKEY_SHADING_MODEL, illuminationModel);
+    LOG_INFO("Material name: " + std::string(name.C_Str()) + ", illum: " + std::to_string(illuminationModel));
+
     // Colors
     aiColor3D ambientColor, diffuseColor, specularColor;
     material->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
