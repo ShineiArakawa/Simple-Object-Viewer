@@ -5,6 +5,7 @@ add_library(
   ${PROJECT_NAME}
   OBJECT
   "Renderer.cpp"
+  "ShadowMapping.cpp"
 )
 
 # =========================================================
