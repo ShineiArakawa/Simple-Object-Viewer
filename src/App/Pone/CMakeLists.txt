@@ -23,6 +23,7 @@ target_link_libraries(
   $<TARGET_OBJECTS:Model_object>
   $<TARGET_OBJECTS:Util_object>
   $<TARGET_OBJECTS:Window_object>
+  $<TARGET_OBJECTS:Shader_object>
   ${CMAKE_DL_LIBS}
 )
 

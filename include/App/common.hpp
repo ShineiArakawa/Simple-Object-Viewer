@@ -8,7 +8,6 @@
 #include <Model/Object.hpp>
 #include <Model/PoneModel.hpp>
 #include <Model/Primitives.hpp>
-#include <Model/ShaderCompiler.hpp>
 #include <Model/Terrain.hpp>
 #include <Model/ViewerModel.hpp>
 #include <OpenGL.hpp>

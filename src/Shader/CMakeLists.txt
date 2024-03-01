@@ -1,21 +1,13 @@
 # Project Name
-project(Model_object CXX)
+project(Shader_object CXX)
 
 add_library(
   ${PROJECT_NAME}
   OBJECT
-  "Box.cpp"
-  "Object.cpp"
-  "Background.cpp"
-  "Terrain.cpp"
-  "ViewerModel.cpp"
-  "Model.cpp"
-  "PoneModel.cpp"
-  "Sphere.cpp"
-  "PointCloud.cpp"
-  "PointCloudPoly.cpp"
-  "AxesCone.cpp"
-  "MaterialObject.cpp"
+  "DepthShader.cpp"
+  "ModelShader.cpp"
+  "Shader.cpp"
+  "ShaderCompiler.cpp"
 )
 
 # =========================================================

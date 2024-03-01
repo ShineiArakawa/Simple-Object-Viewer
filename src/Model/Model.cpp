@@ -3,35 +3,59 @@
 Model::~Model() {}
 
 void Model::compileShaders() {
-  std::string vertShaderCode;
-  std::string fragShaderCode;
+  {
+    std::string modelVertShaderCode;
+    std::string modelFragShaderCode;
 
-  if (_vertShaderPath == nullptr) {
-    LOG_INFO("Use default vertex shader.");
-    vertShaderCode = DefaultShaders::VERT_SHADER;
-  } else {
-    vertShaderCode = ShaderCompiler::readCodesFromFile(*_vertShaderPath);
+    if (_modelVertMShaderPath == nullptr) {
+      LOG_INFO("Use default vertex model shader.");
+      modelVertShaderCode = DefaultModelShader::VERT_SHADER;
+    } else {
+      modelVertShaderCode = ShaderCompiler::readCodesFromFile(*_modelVertMShaderPath);
+    }
+
+    if (_modelFragShaderPath == nullptr) {
+      LOG_INFO("Use default fragment model shader.");
+      modelFragShaderCode = DefaultModelShader::FRAG_SHADER;
+    } else {
+      modelFragShaderCode = ShaderCompiler::readCodesFromFile(*_modelFragShaderPath);
+    }
+
+    _shader = std::make_shared<ModelShader>(modelVertShaderCode, modelFragShaderCode);
   }
 
-  if (_fragShaderPath == nullptr) {
-    LOG_INFO("Use default fragment shader.");
-    fragShaderCode = DefaultShaders::FRAG_SHADER;
-  } else {
-    fragShaderCode = ShaderCompiler::readCodesFromFile(*_fragShaderPath);
+  {
+    std::string depthVertShaderCode;
+    std::string depthFragShaderCode;
+
+    if (_depthVertMShaderPath == nullptr) {
+      LOG_INFO("Use default vertex depth shader.");
+      depthVertShaderCode = DefaultDepthShader::VERT_SHADER;
+    } else {
+      depthVertShaderCode = ShaderCompiler::readCodesFromFile(*_depthVertMShaderPath);
+    }
+
+    if (_depthFragShaderPath == nullptr) {
+      LOG_INFO("Use default fragment depth shader.");
+      depthFragShaderCode = DefaultDepthShader::FRAG_SHADER;
+    } else {
+      depthFragShaderCode = ShaderCompiler::readCodesFromFile(*_depthFragShaderPath);
+    }
+
+    _depthShader = std::make_shared<DepthShader>(depthVertShaderCode, depthFragShaderCode);
   }
+}
 
-  LOG_INFO("Start compiling shaders");
-
-  _shaderID = ShaderCompiler::buildShaderProgram(vertShaderCode, fragShaderCode);
-
-  for (t_object object : *_objects) {
-    object->setShader(_shaderID);
+void Model::setModelShader(Primitives::ModelShader_t shader) {
+  for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+    getObject(iModel)->setModelShader(shader);
   }
-  for (t_object backgrounds : *_backgrounds) {
-    backgrounds->setShader(_shaderID);
-  }
+}
 
-  LOG_INFO("Finish compiling shaders");
+void Model::setDepthShader(Primitives::DepthShader_t shader) {
+  for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+    getObject(iModel)->setDepthShader(shader);
+  }
 }
 
 void Model::setMaskMode(const bool maskMode) {

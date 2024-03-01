@@ -58,20 +58,19 @@ void Background::initVAO() {
 
 void Background::paintGL(const glm::mat4& mvMat,
                          const glm::mat4& mvpMat,
-                         const glm::mat4& normMat,
                          const glm::mat4& lightMat,
                          const glm::vec3& lightPos,
                          const float& shininess,
                          const float& ambientIntensity,
                          const glm::vec3& wireFrameColor,
-                         const float& wireFrameWidth) {
+                         const float& wireFrameWidth,
+                         const GLuint& depthTextureId,
+                         const glm::mat4& lightMvpMat) {
   if (_isVisible) {
-    GLuint uid;
-
     bindShader(
         glm::mat4(1.0f),
         glm::mat4(1.0f),
-        normMat,
+        glm::mat4(1.0f),
         lightMat,
         lightPos,
         shininess,
@@ -83,21 +82,25 @@ void Background::paintGL(const glm::mat4& mvMat,
         getWireFrameMode(),
         wireFrameColor,
         wireFrameWidth,
+        depthTextureId,
+        lightMvpMat,
         true);
 
-    glBindTexture(GL_TEXTURE_2D, _textureId);
-    uid = glGetUniformLocation(_shaderID, UNIFORM_NAME_DIFFUSE_TEXTURE);
-    glUniform1i(uid, 0);
+    _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, _textureId);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, 1.0f);
 
-    uid = glGetUniformLocation(_shaderID, "u_hasDiffuseTexture");
-    glUniform1f(uid, 1.0f);
-
-    glBindVertexArray(_vaoId);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
+    drawGL();
 
     unbindShader();
   }
+}
+
+void Background::drawGL(const int& index) {
+  glBindVertexArray(_vaoId);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  glBindVertexArray(0);
+}
+
+void Background::drawAllGL(const glm::mat4& lightMvpMat) {
+  drawGL();
 }

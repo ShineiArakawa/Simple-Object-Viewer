@@ -1,11 +1,35 @@
 #pragma once
-#ifndef _DEFAULT_SHADERS_H_
-#define _DEFAULT_SHADERS_H_
 
 #include <string>
 
-class DefaultShaders {
+class DefaultModelShader {
  public:
+  inline static const char* UNIFORM_NAME_MV_MAT = "u_mvMat";
+  inline static const char* UNIFORM_NAME_MVP_MAT = "u_mvpMat";
+  inline static const char* UNIFORM_NAME_NORM_MAT = "u_normMat";
+  inline static const char* UNIFORM_NAME_LIGHT_MAT = "u_lightMat";
+  inline static const char* UNIFORM_NAME_LIGHT_POS = "u_lightPos";
+  inline static const char* UNIFORM_NAME_SHININESS = "u_shininess";
+  inline static const char* UNIFORM_NAME_AMBIENT_INTENSITY = "u_ambientIntensity";
+  inline static const char* UNIFORM_NAME_AMBIENT_COLOR = "u_ambientColor";
+  inline static const char* UNIFORM_NAME_DIFFUSE_COLOR = "u_diffuseColor";
+  inline static const char* UNIFORM_NAME_SPECULAR_COLOR = "u_specularColor";
+  inline static const char* UNIFORM_NAME_WIRE_FRAME_MODE = "u_wireFrameMode";
+  inline static const char* UNIFORM_NAME_WIRE_FRAME_COLOR = "u_wireFrameColor";
+  inline static const char* UNIFORM_NAME_WIRE_FRAME_WIDTH = "u_wireFrameWidth";
+  inline static const char* UNIFORM_NAME_RENDER_TYPE = "u_renderType";
+  inline static const char* UNIFORM_NAME_BUMP_MAP = "u_bumpMap";
+  inline static const char* UNIFORM_NAME_LIGHT_MVP_MAT = "u_lightMvpMat";
+
+  inline static const char* UNIFORM_NAME_AMBIENT_TEXTURE = "u_ambientTexture";
+  inline static const char* UNIFORM_NAME_DIFFUSE_TEXTURE = "u_diffuseTexture";
+  inline static const char* UNIFORM_NAME_SPECULAR_TEXTURE = "u_specularTexture";
+  inline static const char* UNIFORM_NAME_NORMAL_MAP = "u_normalMap";
+  inline static const char* UNIFORM_NAME_AMBIENT_TEXTURE_FLAG = "u_hasAmbientTexture";
+  inline static const char* UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG = "u_hasDiffuseTexture";
+  inline static const char* UNIFORM_NAME_SPECULAR_TEXTURE_FLAG = "u_hasSpecularTexture";
+  inline static const char* UNIFORM_NAME_DEPTH_TEXTURE = "u_depthTexture";
+
   inline static const std::string VERT_SHADER =
       "#version 330\n"
       "\n"
@@ -75,6 +99,7 @@ class DefaultShaders {
       "uniform sampler2D u_diffuseTexture;\n"
       "uniform sampler2D u_specularTexture;\n"
       "uniform sampler2D u_normalMap;\n"
+      "uniform sampler2D u_depthTexture;\n"
       "\n"
       "uniform float u_hasAmbientTexture;\n"
       "uniform float u_hasDiffuseTexture;\n"
@@ -210,4 +235,26 @@ class DefaultShaders {
       "    }\n"
       "}\n";
 };
-#endif
+
+class DefaultDepthShader {
+ public:
+  inline static const char* UNIFORM_NAME_LIGHT_MVP_MAT = "u_lightMvpMat";
+
+  inline static const std::string VERT_SHADER =
+      "#version 330\n"
+      "\n"
+      "layout(location = 0) in vec3 in_position;\n"
+      "\n"
+      "uniform mat4 u_lightMvpMat;\n"
+      "\n"
+      "void main() {\n"
+      "    gl_Position = u_lightMvpMat * vec4(in_position, 1.0);\n"
+      "}\n";
+
+  inline static const std::string FRAG_SHADER =
+      "#version 330\n"
+      "\n"
+      "void main() {\n"
+      "}\n";
+  ;
+};

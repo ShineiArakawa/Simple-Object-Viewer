@@ -34,17 +34,22 @@ class Sphere : public Primitives {
  public:
   Sphere(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ, const glm::vec3 color);
   ~Sphere();
+
   void update() override{};
   void initVAO() override;
   void paintGL(const glm::mat4& mvMat,
                const glm::mat4& mvpMat,
-               const glm::mat4& normMat,
                const glm::mat4& lightMat,
                const glm::vec3& lightPos,
                const float& shininess,
                const float& ambientIntensity,
                const glm::vec3& wireFrameColor,
-               const float& wireFrameWidth) override;
+               const float& wireFrameWidth,
+               const GLuint& depthTextureId,
+               const glm::mat4& lightMvpMat) override;
+  void drawGL(const int& index = 0) override;
+  void drawAllGL(const glm::mat4& lightMvpMat) override;
+
   std::string getObjectType() override { return KEY_MODEL_SPHERE; };
 
   static void createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled = false);

@@ -6,7 +6,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel
   // ====================================================================
   // Initialize Renderer
   // ====================================================================
-  _renderer = std::make_shared<Renderer>(&ImGuiSceneView::WIN_WIDTH, &ImGuiSceneView::WIN_HEIGHT, _sceneModel);
+  _renderer = std::make_shared<Renderer>(&ImGuiSceneView::WIN_WIDTH, &ImGuiSceneView::WIN_HEIGHT, _sceneModel, true);
 
   // ====================================================================
   // Initialize scene window
@@ -92,7 +92,7 @@ void ImGuiMainView::paintSideBar() {
 
       // Background color
       const auto& arrayBackgroundRGBA = _sceneModel->getBackgroundColor();
-      float backgroundRGBA[4] = {arrayBackgroundRGBA[0], arrayBackgroundRGBA[1], arrayBackgroundRGBA[2], arrayBackgroundRGBA[3]};
+      float backgroundRGBA[4] = {arrayBackgroundRGBA.x, arrayBackgroundRGBA.y, arrayBackgroundRGBA.z, arrayBackgroundRGBA.w};
       ImGui::ColorEdit4("Background Color", &backgroundRGBA[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
       _sceneModel->setBackgroundColor(backgroundRGBA[0], backgroundRGBA[1], backgroundRGBA[2], backgroundRGBA[3]);
 
@@ -108,10 +108,15 @@ void ImGuiMainView::paintSideBar() {
       _sceneModel->setWireFrameMode(static_cast<Primitives::WireFrameMode>(wireFrameMode));
 
       // Wire frame width
-      ImGui::DragFloat("Wire Frame Width", _sceneModel->getPointerToWireFrameWidth(), 0.001f, 0.0f, 0.1f, FLOAT_FORMAT);
+      float wireFrameWidth = _sceneModel->getWireFrameWidth();
+      ImGui::DragFloat("Wire Frame Width", &wireFrameWidth, 0.001f, 0.0f, 0.1f, FLOAT_FORMAT);
+      _sceneModel->setWireFrameWidth(wireFrameWidth);
 
       // Wire frame color
-      ImGui::ColorEdit3("Wire Frame Color", _sceneModel->getPointerToWireFrameColor(), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+      const auto& arrayWireFrameColor = _sceneModel->getWireFrameColor();
+      float wireFrameColor[3] = {arrayWireFrameColor.x, arrayWireFrameColor.y, arrayWireFrameColor.z};
+      ImGui::ColorEdit3("Wire Frame Color", &wireFrameColor[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+      _sceneModel->setWireFrameColor(wireFrameColor[0], wireFrameColor[1], wireFrameColor[2]);
 
       // Bump map
       ImGui::Checkbox("Bunm map", &_sceneView->isEnabledNormalMap);
@@ -148,13 +153,20 @@ void ImGuiMainView::paintSideBar() {
     // ========================================================================================
     if (ImGui::CollapsingHeader("Lighting", ImGuiTreeNodeFlags_DefaultOpen)) {
       // Specular
-      ImGui::InputFloat("Specular", _sceneModel->getPointerToShininess(), 1.0f, 0.0f, FLOAT_FORMAT);
+      float shininess = _sceneModel->getShininess();
+      ImGui::InputFloat("Specular", &shininess, 1.0f, 0.0f, FLOAT_FORMAT);
+      _sceneModel->setShiniess(shininess);
 
       // Light pos
-      ImGui::InputFloat3("Light position", _sceneModel->getPointerToLightPos(), FLOAT_FORMAT);
+      const auto& arrayLightPos = _sceneModel->getLightPos();
+      float lightPos[3] = {arrayLightPos.x, arrayLightPos.y, arrayLightPos.z};
+      ImGui::InputFloat3("Light position", lightPos, FLOAT_FORMAT);
+      _sceneModel->setLightPosition(lightPos[0], lightPos[1], lightPos[2]);
 
       // Ambient intensity
-      ImGui::DragFloat("Ambient intensity", _sceneModel->getPointerToAmbientIntensity(), 0.001f, 0.0f, 1.0f, FLOAT_FORMAT);
+      float ambientIntensity = _sceneModel->getAmbientIntensity();
+      ImGui::DragFloat("Ambient intensity", &ambientIntensity, 0.001f, 0.0f, 1.0f, FLOAT_FORMAT);
+      _sceneModel->setAmbientIntensity(ambientIntensity);
     }
 
     // ========================================================================================

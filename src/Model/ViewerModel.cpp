@@ -26,13 +26,14 @@ void ViewerModel::initVAO() {
   }
 }
 
-void ViewerModel::paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) {
-  const glm::vec3 lightPosition = glm::vec3(_lightPosition[0], _lightPosition[1], _lightPosition[2]);
-  const glm::vec3 wireFrameColor = glm::vec3(_wireFrameColor[0], _wireFrameColor[1], _wireFrameColor[2]);
-
+void ViewerModel::paintGL(const glm::mat4 &mvMat,
+                          const glm::mat4 &mvpMat,
+                          const glm::mat4 &lightMat,
+                          const glm::mat4 &lightMvpMat,
+                          const GLuint &depthMapId) {
   if (_backgroundIDtoDraw >= 0 && _backgroundIDtoDraw < _backgrounds->size()) {
     getBackground(_backgroundIDtoDraw)->update();
-    getBackground(_backgroundIDtoDraw)->paintGL(mvMat, mvpMat, normMat, lightMat, lightPosition, _shininess, _ambientIntensity, wireFrameColor, _wireFrameWidth);
+    getBackground(_backgroundIDtoDraw)->paintGL(mvMat, mvpMat, lightMat, _lightPosition.xyz(), _shininess, _ambientIntensity, _wireFrameColor, _wireFrameWidth, depthMapId, lightMvpMat);
   }
 
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
@@ -40,13 +41,14 @@ void ViewerModel::paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const
     getObject(iModel)->paintGL(
         mvMat,
         mvpMat,
-        normMat,
         lightMat,
-        lightPosition,
+        _lightPosition.xyz(),
         _shininess,
         _ambientIntensity,
-        wireFrameColor,
-        _wireFrameWidth);
+        _wireFrameColor,
+        _wireFrameWidth,
+        depthMapId,
+        lightMvpMat);
   }
 }
 
@@ -61,7 +63,8 @@ void ViewerModel::setAxesConeState(const bool isShown) {
 
     auto axesCone = std::make_shared<AxesCone>(32, -10.0f, -10.0f, -10.0f, 1.0f);
     axesCone->setName("Axes cone");
-    axesCone->setShader(_shaderID);
+    axesCone->setModelShader(_shader);
+    axesCone->setDepthShader(_depthShader);
     axesCone->initVAO();
     addObject(axesCone);
   } else {

@@ -54,7 +54,11 @@ class PoneModel : public Model {
   ~PoneModel();
 
   void initVAO() override;
-  void paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) override;
+  void paintGL(const glm::mat4 &mvMat,
+               const glm::mat4 &mvpMat,
+               const glm::mat4 &lightMat,
+               const glm::mat4 &lightMvpMat,
+               const GLuint &depthMapId = 0) override;
   void tick(float time) override;
 
   void setPhase(GamePhase phase) { _phase = phase; };

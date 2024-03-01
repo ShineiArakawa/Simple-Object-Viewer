@@ -137,8 +137,8 @@ void ModelParser::parseShader(const pValue jsonValueShader, pModel model, const 
     ModelParser::autoCompPath(fragShaderPath, rootDirPath);
   }
 
-  model->setVertShaderPath(vertShaderPath);
-  model->setFragShaderPath(fragShaderPath);
+  model->setModelVertShaderPath(vertShaderPath);
+  model->setModelFragShaderPath(fragShaderPath);
 }
 
 void ModelParser::parseBackgroundColor(const std::shared_ptr<picojson::value> jsonValueBackground, std::shared_ptr<Model> model, const pString rootDirPath) {
@@ -152,7 +152,7 @@ void ModelParser::parseBackgroundColor(const std::shared_ptr<picojson::value> js
       }
     }
 
-    model->setBackgroundColor(rgba);
+    model->setBackgroundColor(glm::vec4(rgba[0], rgba[1], rgba[2], rgba[3]));
   }
 }
 

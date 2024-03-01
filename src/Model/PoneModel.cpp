@@ -46,71 +46,77 @@ void PoneModel::initVAO() {
   reset();
 }
 
-void PoneModel::paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat, const glm::mat4 &normMat, const glm::mat4 &lightMat) {
-  const glm::vec3 lightPosition = glm::vec3(_lightPosition[0], _lightPosition[1], _lightPosition[2]);
-  const glm::vec3 wireFrameColor = glm::vec3(_wireFrameColor[0], _wireFrameColor[1], _wireFrameColor[2]);
-
+void PoneModel::paintGL(const glm::mat4 &mvMat,
+                        const glm::mat4 &mvpMat,
+                        const glm::mat4 &lightMat,
+                        const glm::mat4 &lightMvpMat,
+                        const GLuint &depthMapId) {
   if (_phase == GamePhase::START) {
     _backgroundStart->paintGL(
         mvMat,
         mvpMat,
-        normMat,
         lightMat,
-        lightPosition,
+        _lightPosition.xyz(),
         _shininess,
         _ambientIntensity,
-        wireFrameColor,
-        _wireFrameWidth);
+        _wireFrameColor,
+        _wireFrameWidth,
+        depthMapId,
+        lightMvpMat);
   } else if (_phase == GamePhase::PLAYING) {
     for (int iWall = 0; iWall < (int)_walls->size(); iWall++) {
       (*_walls)[iWall]->update();
       (*_walls)[iWall]->paintGL(
           mvMat,
           mvpMat,
-          normMat,
           lightMat,
-          lightPosition,
+          _lightPosition.xyz(),
           _shininess,
           _ambientIntensity,
-          wireFrameColor,
-          _wireFrameWidth);
+          _wireFrameColor,
+          _wireFrameWidth,
+          depthMapId,
+          lightMvpMat);
     }
 
     _sphere->update();
     _sphere->paintGL(
         mvMat,
         mvpMat,
-        normMat,
         lightMat,
-        lightPosition,
+        _lightPosition.xyz(),
         _shininess,
         _ambientIntensity,
-        wireFrameColor,
-        _wireFrameWidth);
+        _wireFrameColor,
+        _wireFrameWidth,
+        depthMapId,
+        lightMvpMat);
 
     _paddle->update();
     _paddle->paintGL(
         mvMat,
         mvpMat,
-        normMat,
         lightMat,
-        lightPosition,
+        _lightPosition.xyz(),
         _shininess,
         _ambientIntensity,
-        wireFrameColor,
-        _wireFrameWidth);
+        _wireFrameColor,
+        _wireFrameWidth,
+        depthMapId,
+        lightMvpMat);
 
   } else if (_phase == GamePhase::GAME_OVER) {
     _backgroundGameOver->paintGL(
         mvMat,
         mvpMat,
-        normMat,
         lightMat,
-        lightPosition,
+        _lightPosition.xyz(),
         _shininess,
         _ambientIntensity,
-        wireFrameColor,
-        _wireFrameWidth);
+        _wireFrameColor,
+        _wireFrameWidth,
+        depthMapId,
+        lightMvpMat);
   }
 }
 

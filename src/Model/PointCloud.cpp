@@ -61,17 +61,19 @@ void PointCloud::initVAO() {
 
 void PointCloud::paintGL(const glm::mat4 &mvMat,
                          const glm::mat4 &mvpMat,
-                         const glm::mat4 &normMat,
                          const glm::mat4 &lightMat,
                          const glm::vec3 &lightPos,
                          const float &shininess,
                          const float &ambientIntensity,
                          const glm::vec3 &wireFrameColor,
-                         const float &wireFrameWidth) {
+                         const float &wireFrameWidth,
+                         const GLuint &depthTextureId,
+                         const glm::mat4 &lightMvpMat) {
   if (_isVisible) {
-    GLuint uid;
     const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
+    const glm::mat4 &normMat = glm::transpose(glm::inverse(mvtMat));
+    const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
 
     bindShader(
         mvtMat,
@@ -87,20 +89,33 @@ void PointCloud::paintGL(const glm::mat4 &mvMat,
         getRenderType(),
         getWireFrameMode(),
         wireFrameColor,
-        wireFrameWidth);
+        wireFrameWidth,
+        depthTextureId,
+        lightMvptMat);
 
-    // Enable VAO
-    glBindVertexArray(_vaoId);
-
-    glPointSize(_pointSize);
-
-    // Draw triangles
-    // (GLenum mode, GLsizei count, GLenum type, const void *indices)
-    glDrawElements(GL_POINTS, _indexBufferSize, GL_UNSIGNED_INT, 0);
-
-    // Disable VAO
-    glBindVertexArray(0);
+    drawGL();
 
     unbindShader();
   }
+}
+
+void PointCloud::drawGL(const int &index) {
+  // Enable VAO
+  glBindVertexArray(_vaoId);
+
+  glPointSize(_pointSize);
+
+  // Draw triangles
+  // (GLenum mode, GLsizei count, GLenum type, const void *indices)
+  glDrawElements(GL_POINTS, _indexBufferSize, GL_UNSIGNED_INT, 0);
+
+  // Disable VAO
+  glBindVertexArray(0);
+}
+
+void PointCloud::drawAllGL(const glm::mat4 &lightMvpMat) {
+  const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+  _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+
+  drawGL();
 }

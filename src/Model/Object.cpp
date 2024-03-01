@@ -64,16 +64,19 @@ void Object::initVAO() {
 
 void Object::paintGL(const glm::mat4 &mvMat,
                      const glm::mat4 &mvpMat,
-                     const glm::mat4 &normMat,
                      const glm::mat4 &lightMat,
                      const glm::vec3 &lightPos,
                      const float &shininess,
                      const float &ambientIntensity,
                      const glm::vec3 &wireFrameColor,
-                     const float &wireFrameWidth) {
+                     const float &wireFrameWidth,
+                     const GLuint &depthTextureId,
+                     const glm::mat4 &lightMvpMat) {
   if (_isVisible) {
     const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
+    const glm::mat4 &normMat = glm::transpose(glm::inverse(mvtMat));
+    const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
 
     bindShader(
         mvtMat,
@@ -90,44 +93,49 @@ void Object::paintGL(const glm::mat4 &mvMat,
         getWireFrameMode(),
         wireFrameColor,
         wireFrameWidth,
+        depthTextureId,
+        lightMvptMat,
         false,
         _isEnabledNormalMap);
 
     {
       // Activate texture image
-      GLuint uid;
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, _textureId);
-      uid = glGetUniformLocation(_shaderID, UNIFORM_NAME_DIFFUSE_TEXTURE);
-      glUniform1i(uid, 0);
+      _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE, _textureId);
+      _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, 1.0f);
 
-      uid = glGetUniformLocation(_shaderID, "u_hasDiffuseTexture");
-      glUniform1f(uid, 1.0f);
+      _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, _textureId);
+      _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, 1.0f);
     }
 
     {
       // Activate normal map
-      glActiveTexture(GL_TEXTURE1);
-      glBindTexture(GL_TEXTURE_2D, _normalMapId);
-      const GLuint uid = glGetUniformLocation(_shaderID, UNIFORM_NAME_NORMAL_MAP);
-      glUniform1i(uid, 1);
+      _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_NORMAL_MAP, _normalMapId);
     }
 
-    glBindVertexArray(_vaoId);
-    glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    drawGL();
 
-    glBindTexture(GL_TEXTURE_2D, 0);
     unbindShader();
   }
 }
 
+void Object::drawGL(const int &index) {
+  // Draw
+  glBindVertexArray(_vaoId);
+  glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
+  glBindVertexArray(0);
+}
+
+void Object::drawAllGL(const glm::mat4 &lightMvpMat) {
+  const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+  _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+
+  drawGL();
+}
+
 void Object::loadTexture(const std::string &filePath) {
   Texture::loadTexture(filePath, _textureId);
-  // LOG_INFO("_textureId=" + std::to_string(_textureId));
 }
 
 void Object::loadNormalMap(const std::string &filePath) {
   Texture::loadTexture(filePath, _normalMapId);
-  // LOG_INFO("_normalMapId=" + std::to_string(_normalMapId));
 }

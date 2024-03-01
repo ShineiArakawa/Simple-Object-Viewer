@@ -1,16 +1,28 @@
 #include <Renderer/Renderer.hpp>
 #include <iostream>
 
-Renderer::Renderer(const int* windowWidth, const int* windowHeight, std::shared_ptr<Model> model) {
+Renderer::Renderer(const int* windowWidth,
+                   const int* windowHeight,
+                   std::shared_ptr<Model> model,
+                   const bool renderToFrameBuffer) {
   _windowWidth = windowWidth;
   _windowHeight = windowHeight;
   _model = model;
+
+  if (renderToFrameBuffer) {
+    _frameBuffer = std::make_shared<FrameBuffer>(*_windowWidth, *_windowHeight);
+  }
+
+  _depthRenderer = std::make_shared<DepthRenderer>(_model->getDepthShader());
 }
 
 Renderer::~Renderer() {}
 
 void Renderer::initModelMatrices() {
-  _projMat = glm::perspective(glm::radians(45.0f), (float)*_windowWidth / (float)*_windowHeight, 0.1f, 1000.0f);
+  _projMat = glm::perspective(glm::radians(45.0f),
+                              (float)*_windowWidth / (float)*_windowHeight,
+                              0.1f,
+                              1000.0f);
   _acRotMat = glm::mat4(1.0);
   _acTransMat = glm::mat4(1.0);
   _acScaleMat = glm::mat4(1.0);
@@ -18,6 +30,11 @@ void Renderer::initModelMatrices() {
 
 void Renderer::initLightMatrices() {
   _lightTrasMat = glm::mat4(1.0);
+  // _lightProjMat = glm::perspective(glm::radians(45.0f),
+  //                                  (float)_depthRenderer->DEPTH_MAP_WIDTH / (float)_depthRenderer->DEPTH_MAP_HEIGHT,
+  //                                  0.1f,
+  //                                  1000.0f);
+  _lightProjMat = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
 }
 
 void Renderer::initializeGL() {
@@ -32,25 +49,82 @@ void Renderer::initializeGL() {
 }
 
 void Renderer::paintGL() {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_MULTISAMPLE);
+
+  const glm::mat4 modelMat = _acTransMat * _acRotMat * _acScaleMat;
+
+  // ====================================================================
+  // Render depth map for shadow maping
+  // ====================================================================
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glViewport(0, 0, _depthRenderer->DEPTH_MAP_WIDTH, _depthRenderer->DEPTH_MAP_HEIGHT);
+
+  const glm::mat4& lightMvpMat = _lightProjMat * getLightViewMat(modelMat) * glm::mat4(1.0f);
+
+  {
+    _depthRenderer->bind();
+    _model->drawGL(lightMvpMat);
+    _depthRenderer->unbind();
+  }
+
+  const GLuint& depthMapId = _depthRenderer->getDepthMapId();
+
+  // ====================================================================
+  // Render scene
+  // ====================================================================
+  if (_frameBuffer != nullptr) {
+    _frameBuffer->bind();
+  }
+
+  glViewport(0, 0, *_windowWidth, *_windowHeight);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   const auto& RGBA = _model->getBackgroundColor();
   glClearColor(RGBA[0], RGBA[1], RGBA[2], RGBA[3]);
 
-  const glm::mat4 modelMat = _acTransMat * _acRotMat * _acScaleMat;
   const glm::mat4 mvMat = _viewMat * modelMat;
   const glm::mat4 mvpMat = _projMat * mvMat;
-  const glm::mat4 normMat = glm::transpose(glm::inverse(mvMat));
   const glm::mat4 lightMat = mvMat * _lightTrasMat;
 
-  _model->paintGL(mvMat, mvpMat, normMat, lightMat);
+  {
+    _model->paintGL(mvMat,
+                    mvpMat,
+                    lightMat,
+                    lightMvpMat,
+                    depthMapId);
+  }
+
+  if (_frameBuffer != nullptr) {
+    _frameBuffer->unbind();
+  }
+
+  // ====================================================================
+  // Update time state
+  // ====================================================================
   _model->tick(TICK_VALUE);
 }
 
-void Renderer::updateScale(float acScale) { _acScaleMat = glm::scale(glm::vec3(acScale, acScale, acScale)); }
+void Renderer::resizeGL() {
+  const float fWindowWidth = (float)*_windowWidth;
+  const float fWindowHeight = (float)*_windowHeight;
+
+  // Update projection matrix
+  _projMat = glm::perspective(glm::radians(45.0f), fWindowWidth / fWindowHeight, 0.1f, 1000.0f);
+
+  // Update frame buffer size
+  if (_frameBuffer != nullptr) {
+    _frameBuffer->rescaleFrameBuffer(fWindowWidth, fWindowHeight);
+  }
+}
+
+Renderer::pFrameBuffer Renderer::getFrameBuffer() {
+  return _frameBuffer;
+}
+
+void Renderer::updateScale(const float acScale) {
+  _acScaleMat = glm::scale(glm::vec3(acScale, acScale, acScale));
+}
 
 void Renderer::updateTranslate(const glm::vec4& newPosScreenSpace, const glm::vec4& oldPosScreenSpace) {
   glm::mat4 invMvpMat = glm::inverse(_projMat * _viewMat);
@@ -73,10 +147,6 @@ void Renderer::updateRotate(const glm::vec3& u, const glm::vec3& v) {
   rotateModel((float)(1.0 * angle), rotAxisWorldSpace);
 }
 
-void Renderer::resizeGL() {
-  _projMat = glm::perspective(glm::radians(45.0f), (float)*_windowWidth / (float)*_windowHeight, 0.1f, 1000.0f);
-}
-
 void Renderer::rotateModel(const float angle, const glm::vec3& rotAxisWorldSpace) {
   _acRotMat = glm::rotate(angle, rotAxisWorldSpace) * _acRotMat;
 }
@@ -85,6 +155,20 @@ void Renderer::rotateLight(const float angle, const glm::vec3& rotAxisWorldSpace
   _lightTrasMat = glm::rotate(angle, rotAxisWorldSpace) * _lightTrasMat;
 }
 
-void Renderer::setViewMat(const glm::mat4& viewMat) { _viewMat = viewMat; }
+void Renderer::setViewMat(const glm::mat4& viewMat) {
+  _viewMat = viewMat;
+}
 
-glm::vec4 Renderer::getOriginScreenSpace() { return (_projMat * _viewMat) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); }
+glm::vec4 Renderer::getOriginScreenSpace() {
+  return (_projMat * _viewMat) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+glm::vec3 Renderer::getLightPosInWorldSpace() {
+  return (_lightTrasMat * _model->getLightPos()).xyz();
+}
+
+glm::mat4 Renderer::getLightViewMat(const glm::mat4& modelMat) {
+  return glm::lookAt((modelMat * _lightTrasMat * _model->getLightPos()).xyz(),
+                     glm::vec3(0.0f),
+                     glm::vec3(0.0f, 1.0f, 0.0f));
+}

@@ -8,33 +8,13 @@
 #include <string>
 #include <vector>
 
-#define USE_MIP_MAP
-
-class FrameBuffer {
- public:
-  FrameBuffer(){};
-  FrameBuffer(float width, float height);
-  ~FrameBuffer();
-  unsigned int getFrameTexture();
-  void rescaleFrameBuffer(float width, float height);
-  void bind() const;
-  void unbind() const;
-
- private:
-  GLuint _fbo;
-  GLuint _texture;
-  GLuint _rbo;
-};
-
 class ImGuiSceneView {
  public:
   typedef std::shared_ptr<Renderer> pRenderer;
-  typedef std::shared_ptr<FrameBuffer> pFrameBuffer;
 
  private:
-  inline static pRenderer _renderer = nullptr;
-  inline static pFrameBuffer _frameBuffer = nullptr;
-  inline static GLFWwindow* _parentWindow = nullptr;
+  pRenderer _renderer = nullptr;
+  GLFWwindow* _parentWindow = nullptr;
 
  public:
   // ========================================================================
@@ -84,7 +64,7 @@ class ImGuiSceneView {
   ImGuiSceneView(GLFWwindow* parentWindow, pRenderer renderer);
   ~ImGuiSceneView();
 
-  pFrameBuffer getFrameBuffer();
+  Renderer::pFrameBuffer getFrameBuffer();
 
   void paintGL();
   void resetCameraPose();

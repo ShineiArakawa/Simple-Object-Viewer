@@ -1,4 +1,4 @@
-#include <Model/ShaderCompiler.hpp>
+#include <Shader/ShaderCompiler.hpp>
 
 std::string ShaderCompiler::readCodesFromFile(const std::string& filename) {
   // Load source file

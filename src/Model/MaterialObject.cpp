@@ -87,18 +87,23 @@ void MaterialObject::initVAO() {
 
 void MaterialObject::paintGL(const glm::mat4& mvMat,
                              const glm::mat4& mvpMat,
-                             const glm::mat4& normMat,
                              const glm::mat4& lightMat,
                              const glm::vec3& lightPos,
                              const float& shininess,
                              const float& ambientIntensity,
                              const glm::vec3& wireFrameColor,
-                             const float& wireFrameWidth) {
+                             const float& wireFrameWidth,
+                             const GLuint& depthTextureId,
+                             const glm::mat4& lightMvpMat) {
   if (_isVisible) {
     const glm::mat4& mvtMat = mvMat * glm::translate(_position);
     const glm::mat4& mvptMat = mvpMat * glm::translate(_position);
+    const glm::mat4& normMat = glm::transpose(glm::inverse(mvtMat));
+    const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
 
-    for (const auto& object : *_materialObjectBuffers) {
+    for (int iObject = 0; iObject < (int)_materialObjectBuffers->size(); ++iObject) {
+      const MaterialObjectBuffer_t& object = (*_materialObjectBuffers)[iObject];
+
       {
         // Prepare
         bindShader(
@@ -116,55 +121,45 @@ void MaterialObject::paintGL(const glm::mat4& mvMat,
             getWireFrameMode(),
             wireFrameColor,
             wireFrameWidth,
+            depthTextureId,
+            lightMvptMat,
             false,
             object->enabledBumpTexture);
 
-        GLuint uid;
+        _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE, object->ambientTextureId);
+        _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, object->enabledAmbientTexture);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, object->diffuseTextureId);
-        uid = glGetUniformLocation(_shaderID, "u_ambientTexture");
-        glUniform1i(uid, 0);
+        _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, object->diffuseTextureId);
+        _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, object->enabledDiffuseTexture);
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, object->diffuseTextureId);
-        uid = glGetUniformLocation(_shaderID, "u_diffuseTexture");
-        glUniform1i(uid, 1);
+        _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_SPECULAR_TEXTURE, object->specularTextureId);
+        _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_SPECULAR_TEXTURE_FLAG, object->enabledSpecularTexture);
 
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, object->diffuseTextureId);
-        uid = glGetUniformLocation(_shaderID, "u_specularTexture");
-        glUniform1i(uid, 2);
-
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, object->diffuseTextureId);
-        uid = glGetUniformLocation(_shaderID, "u_normalMap");
-        glUniform1i(uid, 3);
-
-        uid = glGetUniformLocation(_shaderID, "u_hasAmbientTexture");
-        glUniform1f(uid, (float)object->enabledAmbientTexture);
-
-        uid = glGetUniformLocation(_shaderID, "u_hasDiffuseTexture");
-        glUniform1f(uid, (float)object->enabledDiffuseTexture);
-
-        uid = glGetUniformLocation(_shaderID, "u_hasSpecularTexture");
-        glUniform1f(uid, (float)object->enabledSpecularTexture);
+        _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_NORMAL_MAP, object->bumpTextureId);
       }
 
-      // Draw
-      glBindVertexArray(object->vaoId);
-      glDrawElements(GL_TRIANGLES, object->indexBufferSize, GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
+      drawGL(iObject);
 
       {
         // Post process
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-
         unbindShader();
       }
     }
+  }
+}
+
+void MaterialObject::drawGL(const int& index) {
+  // Draw
+  glBindVertexArray((*_materialObjectBuffers)[index]->vaoId);
+  glDrawElements(GL_TRIANGLES, (*_materialObjectBuffers)[index]->indexBufferSize, GL_UNSIGNED_INT, 0);
+  glBindVertexArray(0);
+}
+
+void MaterialObject::drawAllGL(const glm::mat4& lightMvpMat) {
+  const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
+  _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+
+  for (int iObject = 0; iObject < (int)_materialObjectBuffers->size(); ++iObject) {
+    drawGL(iObject);
   }
 }

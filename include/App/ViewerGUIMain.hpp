@@ -66,7 +66,27 @@ class ViewerGUIApp {
     // Initialize Model
     // ====================================================================
     model = std::make_shared<ViewerModel>();
+
+    model->setModelVertShaderPath(std::make_shared<std::string>("C:/Users/araka/Projects/OpenGLTemplate/include/Shader/model.vert"));
+    model->setModelFragShaderPath(std::make_shared<std::string>("C:/Users/araka/Projects/OpenGLTemplate/include/Shader/model.frag"));
+    model->setDepthVertShaderPath(std::make_shared<std::string>("C:/Users/araka/Projects/OpenGLTemplate/include/Shader/depth.vert"));
+    model->setDepthFragShaderPath(std::make_shared<std::string>("C:/Users/araka/Projects/OpenGLTemplate/include/Shader/depth.frag"));
+
     model->compileShaders();
+
+    auto box = std::make_shared<Box>(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+    box->setModelShader(model->getModelShader());
+    box->setDepthShader(model->getDepthShader());
+    box->initVAO();
+    model->addObject(box);
+
+    auto plane = std::make_shared<Box>(0.0f, -10.0f, 0.0f, 40.0f, 0.05f, 40.0f);
+    plane->setModelShader(model->getModelShader());
+    plane->setDepthShader(model->getDepthShader());
+    plane->initVAO();
+    model->addObject(plane);
+
+    model->setLightPosition(0.0f, 10.0f, 0.0f);
 
     // ====================================================================
     // Initialize UI

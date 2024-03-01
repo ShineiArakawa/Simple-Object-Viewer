@@ -64,16 +64,19 @@ void Sphere::initVAO() {
 
 void Sphere::paintGL(const glm::mat4 &mvMat,
                      const glm::mat4 &mvpMat,
-                     const glm::mat4 &normMat,
                      const glm::mat4 &lightMat,
                      const glm::vec3 &lightPos,
                      const float &shininess,
                      const float &ambientIntensity,
                      const glm::vec3 &wireFrameColor,
-                     const float &wireFrameWidth) {
+                     const float &wireFrameWidth,
+                     const GLuint &depthTextureId,
+                     const glm::mat4 &lightMvpMat) {
   if (_isVisible) {
     const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
+    const glm::mat4 &normMat = glm::transpose(glm::inverse(mvtMat));
+    const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
 
     bindShader(
         mvtMat,
@@ -89,19 +92,32 @@ void Sphere::paintGL(const glm::mat4 &mvMat,
         getRenderType(),
         getWireFrameMode(),
         wireFrameColor,
-        wireFrameWidth);
+        wireFrameWidth,
+        depthTextureId,
+        lightMvptMat);
 
-    // Enable VAO
-    glBindVertexArray(_vaoId);
-
-    // Draw triangles
-    glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
-
-    // Disable VAO
-    glBindVertexArray(0);
+    drawGL();
 
     unbindShader();
   }
+}
+
+void Sphere::drawGL(const int &index) {
+  // Enable VAO
+  glBindVertexArray(_vaoId);
+
+  // Draw triangles
+  glDrawElements(GL_TRIANGLES, _indexBufferSize, GL_UNSIGNED_INT, 0);
+
+  // Disable VAO
+  glBindVertexArray(0);
+}
+
+void Sphere::drawAllGL(const glm::mat4 &lightMvpMat) {
+  const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+  _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+
+  drawGL();
 }
 
 void Sphere::createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled) {

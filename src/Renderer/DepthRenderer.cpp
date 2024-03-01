@@ -1,13 +1,22 @@
-#include <Renderer/ShadowMapping.hpp>
+#include <Renderer/DepthRenderer.hpp>
 
-ShadowMapping::ShadowMapping() {
+DepthRenderer::DepthRenderer(DepthShader_t shader) : _shader(shader) {
   initDepthMap();
 }
 
-ShadowMapping::~ShadowMapping() {
+DepthRenderer::~DepthRenderer() {
 }
 
-void ShadowMapping::initDepthMap() {
+void DepthRenderer::bind() {
+  glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
+  glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void DepthRenderer::unbind() {
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void DepthRenderer::initDepthMap() {
   glGenFramebuffers(1, &_depthMapFBO);
 
   glGenTextures(1, &_depthMap);
@@ -27,12 +36,6 @@ void ShadowMapping::initDepthMap() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ShadowMapping::bind() {
-  glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
-  glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
-  glClear(GL_DEPTH_BUFFER_BIT);
-}
-
-void ShadowMapping::unbind() {
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+GLuint DepthRenderer::getDepthMapId() {
+  return _depthMap;
 }

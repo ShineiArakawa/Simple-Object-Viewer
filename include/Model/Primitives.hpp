@@ -6,6 +6,9 @@
 #include <math.h>
 
 #include <OpenGL.hpp>
+#include <Shader/DefaultShaders.hpp>
+#include <Shader/DepthShader.hpp>
+#include <Shader/ModelShader.hpp>
 #include <Util/Logging.hpp>
 #include <array>
 #include <fstream>
@@ -72,6 +75,9 @@ class Primitives {
   // Type defines
   // ==================================================================================================
  public:
+  using ModelShader_t = std::shared_ptr<ModelShader>;
+  using DepthShader_t = std::shared_ptr<DepthShader>;
+
   template <class dtype>
   using vec4_t = std::array<dtype, 4>;
   using vec4f_t = vec4_t<float>;
@@ -115,7 +121,8 @@ class Primitives {
   // nothing
  protected:
   std::string _name;
-  GLuint _shaderID;
+  ModelShader_t _shader = nullptr;
+  DepthShader_t _depthShader = nullptr;
   Primitives::RenderType _defaultRenderType = Primitives::RenderType::COLOR;
   Primitives::RenderType _renderType = Primitives::RenderType::COLOR;
   Primitives::WireFrameMode _wireFrameMode = Primitives::WireFrameMode::OFF;
@@ -126,10 +133,7 @@ class Primitives {
   glm::vec3 _vecocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
  public:
-  inline static const char* UNIFORM_NAME_AMBIENT_TEXTURE = "u_ambientTexture";
-  inline static const char* UNIFORM_NAME_DIFFUSE_TEXTURE = "u_diffuseTexture";
-  inline static const char* UNIFORM_NAME_SPECULAR_TEXTURE = "u_specularTexture";
-  inline static const char* UNIFORM_NAME_NORMAL_MAP = "u_normalMap";
+  // nothing
 
   // ==================================================================================================
   // Function defines
@@ -145,7 +149,8 @@ class Primitives {
   void setVisible(bool isVisible) { _isVisible = isVisible; };
   void setIsEnabledNormalMap(bool isEnabledNormalMap) { _isEnabledNormalMap = isEnabledNormalMap; };
   void setName(std::string name) { _name = name; };
-  void setShader(GLuint shaderID) { _shaderID = shaderID; };
+  void setModelShader(ModelShader_t shader) { _shader = shader; };
+  void setDepthShader(DepthShader_t shader) { _depthShader = shader; };
   std::string getName() { return _name; };
   glm::vec3 getPosition() { return _position; };
   void setPosition(glm::vec3 position) { _position = position; };
@@ -232,70 +237,38 @@ class Primitives {
       const float& wireFrameMode,
       const glm::vec3& wireFrameColor,
       const float& wireFrameWidth,
+      const GLuint& depthTextureId,
+      const glm::mat4& lightMvpMat,
+      const bool& disableShadowMapping = false,
       const bool& disableDepthTest = false,
       const bool& isEnabledNormalMap = false) const {
     GLuint uid;
 
-    // Enable shader program
-    glUseProgram(_shaderID);
-
-    if (disableDepthTest) {
-      glDisable(GL_DEPTH_TEST);
-    }
+    _shader->bind(disableDepthTest);
 
     // Transfer uniform variables
-    uid = glGetUniformLocation(_shaderID, "u_mvMat");
-    glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(mvMat));
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_MV_MAT, mvMat);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_MVP_MAT, mvpMat);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_NORM_MAT, normMat);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_LIGHT_MAT, lightMat);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_LIGHT_POS, lightPos);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_SHININESS, shininess);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_INTENSITY, ambientIntensity);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_COLOR, ambientColor);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_COLOR, diffuseColor);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_SPECULAR_COLOR, specularColor);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_MODE, wireFrameMode);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_COLOR, wireFrameColor);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_WIDTH, wireFrameWidth);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, renderType);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_BUMP_MAP, isEnabledNormalMap);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvpMat);
 
-    uid = glGetUniformLocation(_shaderID, "u_mvpMat");
-    glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(mvpMat));
-
-    uid = glGetUniformLocation(_shaderID, "u_normMat");
-    glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(normMat));
-
-    uid = glGetUniformLocation(_shaderID, "u_lightMat");
-    glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(lightMat));
-
-    uid = glGetUniformLocation(_shaderID, "u_lightPos");
-    glUniform3fv(uid, 1, glm::value_ptr(lightPos));
-
-    uid = glGetUniformLocation(_shaderID, "u_shininess");
-    glUniform1f(uid, shininess);
-
-    uid = glGetUniformLocation(_shaderID, "u_ambientIntensity");
-    glUniform1f(uid, ambientIntensity);
-
-    uid = glGetUniformLocation(_shaderID, "u_ambientColor");
-    glUniform3fv(uid, 1, glm::value_ptr(ambientColor));
-
-    uid = glGetUniformLocation(_shaderID, "u_diffuseColor");
-    glUniform3fv(uid, 1, glm::value_ptr(diffuseColor));
-
-    uid = glGetUniformLocation(_shaderID, "u_specularColor");
-    glUniform3fv(uid, 1, glm::value_ptr(specularColor));
-
-    uid = glGetUniformLocation(_shaderID, "u_wireFrameMode");
-    glUniform1f(uid, wireFrameMode);
-
-    uid = glGetUniformLocation(_shaderID, "u_wireFrameColor");
-    glUniform3fv(uid, 1, glm::value_ptr(wireFrameColor));
-
-    uid = glGetUniformLocation(_shaderID, "u_wireFrameWidth");
-    glUniform1f(uid, wireFrameWidth);
-
-    uid = glGetUniformLocation(_shaderID, "u_renderType");
-    glUniform1f(uid, renderType);
-
-    const float fIsEnabledNormalMap = isEnabledNormalMap ? 1.0f : 0.0f;
-    uid = glGetUniformLocation(_shaderID, "u_bumpMap");
-    glUniform1f(uid, fIsEnabledNormalMap);
+    _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DEPTH_TEXTURE, depthTextureId);
   };
 
   inline void unbindShader() const {
-    glEnable(GL_DEPTH_TEST);
-
-    // Disable shader program
-    glUseProgram(0);
+    _shader->unbind();
   };
 
   virtual void update() = 0;
@@ -303,12 +276,15 @@ class Primitives {
   virtual void paintGL(
       const glm::mat4& mvMat,
       const glm::mat4& mvpMat,
-      const glm::mat4& normMat,
       const glm::mat4& lightMat,
       const glm::vec3& lightPos,
       const float& shininess,
       const float& ambientIntensity,
       const glm::vec3& wireFrameColor,
-      const float& wireFrameWidth) = 0;
+      const float& wireFrameWidth,
+      const GLuint& depthTextureId,
+      const glm::mat4& lightMvpMat) = 0;
+  virtual void drawGL(const int& index) = 0;
+  virtual void drawAllGL(const glm::mat4& lightMvpMat) = 0;
 };
 #endif

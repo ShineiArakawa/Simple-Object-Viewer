@@ -23,8 +23,9 @@ class ViewerModel : public Model {
 
   void paintGL(const glm::mat4 &mvMat,
                const glm::mat4 &mvpMat,
-               const glm::mat4 &normMat,
-               const glm::mat4 &lightMat) override;
+               const glm::mat4 &lightMat,
+               const glm::mat4 &lightMvpMat,
+               const GLuint &depthMapId = 0) override;
 
   void tick(float time) override { _time += time; };
 
