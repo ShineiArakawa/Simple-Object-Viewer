@@ -15,8 +15,8 @@ class DepthRenderer {
   DepthShader_t _shader = nullptr;
 
  public:
-  inline static const unsigned int DEPTH_MAP_WIDTH = 1024;
-  inline static const unsigned int DEPTH_MAP_HEIGHT = 1024;
+  inline static const unsigned int DEPTH_MAP_WIDTH = 2048;
+  inline static const unsigned int DEPTH_MAP_HEIGHT = 2048;
 
  private:
   // Nothing

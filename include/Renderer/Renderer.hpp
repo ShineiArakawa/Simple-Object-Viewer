@@ -61,6 +61,7 @@ class Renderer {
   void resizeGL();
 
   pFrameBuffer getFrameBuffer();
+  pDepthRenderer getDepthRenderer();
 
   void updateScale(const float);
   void updateTranslate(const glm::vec4& newPosScreenSpace, const glm::vec4& oldPosScreenSpace);

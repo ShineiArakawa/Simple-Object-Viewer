@@ -7,6 +7,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel
   // Initialize Renderer
   // ====================================================================
   _renderer = std::make_shared<Renderer>(&ImGuiSceneView::WIN_WIDTH, &ImGuiSceneView::WIN_HEIGHT, _sceneModel, true);
+  _renderer->initializeGL();
 
   // ====================================================================
   // Initialize scene window

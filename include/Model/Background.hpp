@@ -34,6 +34,7 @@ class Background : public Primitives {
   inline static const std::string KEY_MODEL_BACKGROUND = "Background";
   inline static const std::string KEY_MODEL_BACKGROUND_PATH = "Path";
 
+  explicit Background(const GLuint&);
   explicit Background(const std::string& filePath);
   ~Background();
   void update() override{};

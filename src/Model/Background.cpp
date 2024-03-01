@@ -1,5 +1,10 @@
 #include <Model/Background.hpp>
 
+Background::Background(const GLuint& textureId) {
+  _textureId = textureId;
+  setDefaultRenderType(RenderType::TEXTURE);
+}
+
 Background::Background(const std::string& filePath) {
   Texture::loadTexture(filePath, _textureId);
   setDefaultRenderType(RenderType::TEXTURE);

@@ -23,16 +23,15 @@ out float f_id;
 out vec3 f_positionCameraSpace;
 out vec3 f_normalCameraSpace;
 out vec3 f_lightPosCameraSpace;
-out vec3 f_positionLightScreenSpace;
+out vec4 f_positionLightScreenSpace;
 
 void main() {
-    // gl_Position = u_mvpMat * vec4(in_position, 1.0);
-    gl_Position = u_lightMvpMat * vec4(in_position, 1.0);
+    gl_Position = u_mvpMat * vec4(in_position, 1.0);
 
     f_positionCameraSpace = (u_mvMat * vec4(in_position, 1.0)).xyz;
     f_normalCameraSpace = (u_normMat * vec4(in_normal, 0.0)).xyz;
     f_lightPosCameraSpace = (u_lightMat * vec4(u_lightPos, 1.0)).xyz;
-    f_positionLightScreenSpace = (u_lightMvpMat * vec4(in_position, 1.0)).xyz;
+    f_positionLightScreenSpace = u_lightMvpMat * vec4(in_position, 1.0);
 
     f_worldPos = in_position;
     f_color = in_color;

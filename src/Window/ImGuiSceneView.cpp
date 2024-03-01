@@ -5,8 +5,6 @@ ImGuiSceneView::ImGuiSceneView(GLFWwindow* parentWindow, pRenderer renderer) {
   _renderer = renderer;
 
   resetCameraPose();
-
-  renderer->initializeGL();
 }
 
 ImGuiSceneView::~ImGuiSceneView() {}
