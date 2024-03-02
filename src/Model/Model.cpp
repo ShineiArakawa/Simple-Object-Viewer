@@ -2,23 +2,28 @@
 
 Model::~Model() {}
 
-void Model::compileShaders() {
+void Model::compileShaders(const bool& isQuad) {
   {
     std::string modelVertShaderCode;
     std::string modelFragShaderCode;
 
-    if (_modelVertMShaderPath == nullptr) {
-      LOG_INFO("Use default vertex model shader.");
-      modelVertShaderCode = DefaultModelShader::VERT_SHADER;
+    if (isQuad) {
+      modelVertShaderCode = DefaultDepthQuadShader::VERT_SHADER;
+      modelFragShaderCode = DefaultDepthQuadShader::FRAG_SHADER;
     } else {
-      modelVertShaderCode = ShaderCompiler::readCodesFromFile(*_modelVertMShaderPath);
-    }
+      if (_modelVertMShaderPath == nullptr) {
+        LOG_INFO("Use default vertex model shader.");
+        modelVertShaderCode = DefaultModelShader::VERT_SHADER;
+      } else {
+        modelVertShaderCode = ShaderCompiler::readCodesFromFile(*_modelVertMShaderPath);
+      }
 
-    if (_modelFragShaderPath == nullptr) {
-      LOG_INFO("Use default fragment model shader.");
-      modelFragShaderCode = DefaultModelShader::FRAG_SHADER;
-    } else {
-      modelFragShaderCode = ShaderCompiler::readCodesFromFile(*_modelFragShaderPath);
+      if (_modelFragShaderPath == nullptr) {
+        LOG_INFO("Use default fragment model shader.");
+        modelFragShaderCode = DefaultModelShader::FRAG_SHADER;
+      } else {
+        modelFragShaderCode = ShaderCompiler::readCodesFromFile(*_modelFragShaderPath);
+      }
     }
 
     _shader = std::make_shared<ModelShader>(modelVertShaderCode, modelFragShaderCode);
@@ -85,5 +90,11 @@ void Model::resetRenderType() {
 void Model::setIsEnabledNormalMap(bool isEnabledNormalMap) {
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->setIsEnabledNormalMap(isEnabledNormalMap);
+  }
+}
+
+void Model::setIsEnabledShadowMapping(bool isEnabledShadowMapping) {
+  for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+    getObject(iModel)->setIsEnabledShadowMapping(isEnabledShadowMapping);
   }
 }

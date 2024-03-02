@@ -21,7 +21,7 @@ uniform vec3 u_ambientColor;
 uniform vec3 u_diffuseColor;
 uniform vec3 u_specularColor;
 uniform float u_shininess;
-uniform vec3 u_lightPos;
+uniform float u_shadowMapping;
 
 uniform sampler2D u_ambientTexture;
 uniform sampler2D u_diffuseTexture;
@@ -111,7 +111,7 @@ vec4 shading(
     vec3 specular = specularColor * pow(ndoth, u_shininess);
     vec3 ambient = u_ambientIntensity * ambientColor;
 
-    float shadow = calcShadow(f_positionLightScreenSpace);
+    float shadow = u_shadowMapping > 0.5 ? calcShadow(f_positionLightScreenSpace) : 1.0;
 
     return vec4((1.0 - shadow) * (diffuse + specular) + ambient, 1.0);
 }

@@ -1,8 +1,16 @@
 #include <Window/ImGuiSceneView.hpp>
 
-ImGuiSceneView::ImGuiSceneView(GLFWwindow* parentWindow, pRenderer renderer) {
+ImGuiSceneView::ImGuiSceneView(GLFWwindow* parentWindow, pModel model) {
   _parentWindow = parentWindow;
-  _renderer = renderer;
+
+  // ====================================================================
+  // Initialize Renderer
+  // ====================================================================
+  _renderer = std::make_shared<Renderer>(&WIN_WIDTH,
+                                         &WIN_HEIGHT,
+                                         model,
+                                         true);
+  _renderer->initializeGL();
 
   resetCameraPose();
 }
@@ -11,6 +19,10 @@ ImGuiSceneView::~ImGuiSceneView() {}
 
 Renderer::pFrameBuffer ImGuiSceneView::getFrameBuffer() {
   return _renderer->getFrameBuffer();
+}
+
+ImGuiSceneView::pRenderer ImGuiSceneView::getRenderer() {
+  return _renderer;
 }
 
 void ImGuiSceneView::resetCameraPose() {

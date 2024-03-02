@@ -72,7 +72,7 @@ void Terrain::initVAO() {
     }
   }
 
-  std::cout << "### Initialized terrain with " << vertices->size() / 3 << " polygons" << std::endl;
+  LOG_INFO("### Initialized terrain with " + std::to_string(vertices->size() / 3) + " polygons");
 
   ObjectLoader::moveToOrigin(vertices);
   ObjectLoader::scaleObject(vertices, _scaleX, _scaleH, _scaleY);
@@ -118,7 +118,8 @@ void Terrain::initVAO() {
 
   const auto endTime = std::chrono::system_clock::now();
   const double elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-  printf("Elapsed time: %.3lf [sec]\n", elapsedTime / 1000.0);
+
+  LOG_INFO("Elapsed time: " + std::to_string(elapsedTime / 1000.0) + " [sec]\n");
 }
 
 void Terrain::paintGL(const glm::mat4 &mvMat,

@@ -4,15 +4,24 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel
   _sceneModel = sceneModel;
 
   // ====================================================================
-  // Initialize Renderer
-  // ====================================================================
-  _renderer = std::make_shared<Renderer>(&ImGuiSceneView::WIN_WIDTH, &ImGuiSceneView::WIN_HEIGHT, _sceneModel, true);
-  _renderer->initializeGL();
-
-  // ====================================================================
   // Initialize scene window
   // ====================================================================
-  _sceneView = std::make_shared<ImGuiSceneView>(mainWindow, _renderer);
+  _sceneView = std::make_shared<ImGuiSceneView>(mainWindow, _sceneModel);
+
+  // ====================================================================
+  // Initialize depth scene model
+  // ====================================================================
+  _depthSceneModel = std::make_shared<ViewerModel>();
+  _depthSceneModel->compileShaders(true);
+
+  // ====================================================================
+  // Initialize depth scene window
+  // ====================================================================
+  _depthSceneView = std::make_shared<ImGuiSceneView>(mainWindow, _depthSceneModel);
+
+  auto background = std::make_shared<Background>(_sceneView->getRenderer()->getDepthRenderer()->getDepthMapId());
+
+  _depthSceneModel->addBackground(background);
 
   // ====================================================================
   // Initialize popup
@@ -122,6 +131,10 @@ void ImGuiMainView::paintSideBar() {
       // Bump map
       ImGui::Checkbox("Bunm map", &_sceneView->isEnabledNormalMap);
       _sceneModel->setIsEnabledNormalMap(_sceneView->isEnabledNormalMap);
+
+      // Shadow mapping
+      ImGui::Checkbox("Shadow mapping", &_sceneView->isEnabledShadowMapping);
+      _sceneModel->setIsEnabledShadowMapping(_sceneView->isEnabledShadowMapping);
     }
 
     // ========================================================================================
@@ -320,6 +333,33 @@ void ImGuiMainView::paintSceneWindow() {
   ImGui::End();
 }
 
+void ImGuiMainView::paintDepthSceneWindow() {
+  if (_depthSceneView != nullptr) {
+    const ImVec2 viewportPos = ImGui::GetWindowViewport()->Pos;
+    ImGui::SetNextWindowPos(ImVec2(viewportPos.x + SIDEBAR_WIDTH, viewportPos.y + _menuBarHeight), ImGuiCond_Once);
+    const ImVec2 sceneWindowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - SIDEBAR_WIDTH, ImGui::GetWindowViewport()->Size.y - _menuBarHeight);
+    ImGui::SetNextWindowSize(sceneWindowSize, ImGuiCond_Once);
+
+    ImGui::Begin("Depth");
+
+    const ImVec2 sceneAreaSize = ImGui::GetContentRegionAvail();
+    const ImVec2 sceneAreaOrigin = ImGui::GetCursorScreenPos();
+    const ImVec2 sceneAreaMin = ImVec2(sceneAreaOrigin.x, sceneAreaOrigin.y);
+    const ImVec2 sceneAreaMax = ImVec2(sceneAreaOrigin.x + sceneAreaSize.x, sceneAreaOrigin.y + sceneAreaSize.y);
+
+    _depthSceneView->resizeGL(sceneAreaSize.x, sceneAreaSize.y);
+
+    ImGui::GetWindowDrawList()->AddImage(
+        reinterpret_cast<void*>(_depthSceneView->getFrameBuffer()->getFrameTexture()),
+        sceneAreaMin,
+        sceneAreaMax,
+        ImVec2(0, 1),
+        ImVec2(1, 0));
+
+    ImGui::End();
+  }
+}
+
 void ImGuiMainView::paint() {
   glClear(GL_COLOR_BUFFER_BIT);
   ImGui_ImplOpenGL3_NewFrame();
@@ -340,6 +380,9 @@ void ImGuiMainView::paint() {
 
     // Scene window
     paintSceneWindow();
+
+    // Depth scene window
+    paintDepthSceneWindow();
   }
 
   ImGui::Render();
@@ -348,6 +391,10 @@ void ImGuiMainView::paint() {
   // Render OpenGL scene
   // ====================================================================
   _sceneView->paintGL();
+
+  if (_depthSceneView != nullptr) {
+    _depthSceneView->paintGL();
+  }
 
   // ====================================================================
   // Post process
@@ -385,29 +432,29 @@ void ImGuiMainView::listenEvent() {
       if (ImGui::IsKeyPressed(ImGuiKey_W)) {
         // Camera move forward
         _sceneView->cameraPos += cameraDirection * _sceneView->CAMERA_MOVE_STEP;
-        _renderer->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
+        _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
       } else if (ImGui::IsKeyPressed(ImGuiKey_A)) {
         // Camera move left
         const glm::vec3 moveVec = glm::cross(_sceneView->cameraUp, cameraDirection) * _sceneView->CAMERA_MOVE_STEP;
         _sceneView->cameraPos += moveVec;
         _sceneView->cameraLookAt += moveVec;
-        _renderer->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
+        _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
       } else if (ImGui::IsKeyPressed(ImGuiKey_S)) {
         // Camera move backward
         _sceneView->cameraPos += -cameraDirection * _sceneView->CAMERA_MOVE_STEP;
-        _renderer->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
+        _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
       } else if (ImGui::IsKeyPressed(ImGuiKey_D)) {
         // Camera move right
         const glm::vec3 moveVec = glm::cross(cameraDirection, _sceneView->cameraUp) * _sceneView->CAMERA_MOVE_STEP;
         _sceneView->cameraPos += moveVec;
         _sceneView->cameraLookAt += moveVec;
-        _renderer->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
+        _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
       } else if (ImGui::IsKeyPressed(ImGuiKey_Q)) {
         // Camera rotate left
-        _renderer->rotateModel(_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
+        _sceneView->getRenderer()->rotateModel(_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
       } else if (ImGui::IsKeyPressed(ImGuiKey_E)) {
         // Camera rotate right
-        _renderer->rotateModel(-_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
+        _sceneView->getRenderer()->rotateModel(-_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
       } else if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
         _sceneView->resetCameraPose();
         _sceneView->resetLightPose();

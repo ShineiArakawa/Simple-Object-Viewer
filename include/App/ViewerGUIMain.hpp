@@ -70,10 +70,10 @@ class ViewerGUIApp {
     model = std::make_shared<ViewerModel>();
 
 #ifdef DEBUG_SHADOW_MAPPING
-    model->setModelVertShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/model.vert"));
-    model->setModelFragShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/model.frag"));
-    model->setDepthVertShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/depth.vert"));
-    model->setDepthFragShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/depth.frag"));
+    // model->setModelVertShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/model.vert"));
+    // model->setModelFragShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/model.frag"));
+    // model->setDepthVertShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/depth.vert"));
+    // model->setDepthFragShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/depth.frag"));
 #endif
 
     model->compileShaders();
@@ -84,19 +84,22 @@ class ViewerGUIApp {
     view = std::make_shared<ImGuiMainView>(window, model);
 
 #ifdef DEBUG_SHADOW_MAPPING
-    // auto box = std::make_shared<Box>(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
-    // box->setModelShader(model->getModelShader());
-    // box->setDepthShader(model->getDepthShader());
-    // box->initVAO();
-    // model->addObject(box);
+    auto box = std::make_shared<Box>(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+    box->setModelShader(model->getModelShader());
+    box->setDepthShader(model->getDepthShader());
+    box->initVAO();
+    model->addObject(box);
 
-    auto plane = std::make_shared<Box>(0.0f, -20.0f, 0.0f, 100.0f, 0.5f, 100.0f);
+    auto plane = std::make_shared<Box>(0.0f, -10.0f, 0.0f, 100.0f, 0.5f, 100.0f);
     plane->setModelShader(model->getModelShader());
     plane->setDepthShader(model->getDepthShader());
     plane->initVAO();
     model->addObject(plane);
 
-        // model->setLightPosition(20.0f, 0.0f, 0.0f);
+    model->setLightPosition(0.0f, 20.0f, 0.0f);
+
+    view->getSceneView()->isEnabledShadowMapping = true;
+    model->setIsEnabledShadowMapping(view->getSceneView()->isEnabledShadowMapping);
 #endif
   }
 

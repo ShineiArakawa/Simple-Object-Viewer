@@ -129,6 +129,7 @@ class Primitives {
   bool _maskMode = false;
   bool _isVisible = true;
   bool _isEnabledNormalMap = false;
+  bool _isEnabledShadowMapping = false;
   glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
   glm::vec3 _vecocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -148,6 +149,7 @@ class Primitives {
   void setMaskMode(bool maskMode) { _maskMode = maskMode; };
   void setVisible(bool isVisible) { _isVisible = isVisible; };
   void setIsEnabledNormalMap(bool isEnabledNormalMap) { _isEnabledNormalMap = isEnabledNormalMap; };
+  void setIsEnabledShadowMapping(bool isEnabledShadowMapping) { _isEnabledShadowMapping = isEnabledShadowMapping; };
   void setName(std::string name) { _name = name; };
   void setModelShader(ModelShader_t shader) { _shader = shader; };
   void setDepthShader(DepthShader_t shader) { _depthShader = shader; };
@@ -242,8 +244,6 @@ class Primitives {
       const bool& disableShadowMapping = false,
       const bool& disableDepthTest = false,
       const bool& isEnabledNormalMap = false) const {
-    GLuint uid;
-
     _shader->bind(disableDepthTest);
 
     // Transfer uniform variables
@@ -263,6 +263,7 @@ class Primitives {
     _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, renderType);
     _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_BUMP_MAP, isEnabledNormalMap);
     _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvpMat);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_SHADOW_MAPPING, _isEnabledShadowMapping);
 
     _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DEPTH_TEXTURE, depthTextureId);
   };

@@ -30,10 +30,11 @@ void Renderer::initModelMatrices() {
 
 void Renderer::initLightMatrices() {
   _lightTrasMat = glm::mat4(1.0);
-  _lightProjMat = glm::perspective(glm::radians(45.0f),
+  _lightProjMat = glm::perspective(glm::radians(90.0f),
                                    (float)_depthRenderer->DEPTH_MAP_WIDTH / (float)_depthRenderer->DEPTH_MAP_HEIGHT,
                                    0.1f,
                                    1000.0f);
+  // _lightProjMat = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
 }
 
 void Renderer::initializeGL() {
@@ -59,12 +60,20 @@ void Renderer::paintGL() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glViewport(0, 0, _depthRenderer->DEPTH_MAP_WIDTH, _depthRenderer->DEPTH_MAP_HEIGHT);
 
-  const glm::mat4& lightMvpMat = _lightProjMat * getLightViewMat(modelMat) * glm::mat4(1.0f);
+  const glm::mat4& lightMvpMat = _lightProjMat * getLightViewMat(modelMat) * modelMat;
   // const glm::mat4& lightMvpMat = _lightProjMat * getLightViewMat(modelMat) * modelMat;
 
   {
     _depthRenderer->bind();
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
     _model->drawGL(lightMvpMat);
+
+    glDisable(GL_CULL_FACE);
     _depthRenderer->unbind();
   }
 
@@ -172,7 +181,7 @@ glm::vec3 Renderer::getLightPosInWorldSpace() {
 }
 
 glm::mat4 Renderer::getLightViewMat(const glm::mat4& modelMat) {
-  return glm::lookAt((_lightTrasMat * _model->getLightPos()).xyz(),
+  return glm::lookAt((modelMat * _model->getLightPos()).xyz(),
                      glm::vec3(0.0f),
                      glm::vec3(0.0f, 1.0f, 0.0f));
 }

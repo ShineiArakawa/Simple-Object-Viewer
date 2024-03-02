@@ -24,9 +24,11 @@ class ImGuiMainView {
   ImVec2 _sceneAreaMax = ImVec2(0.0f, 0.0f);
   ImGuiIO* _io;
 
-  std::shared_ptr<Renderer> _renderer = nullptr;
   std::shared_ptr<ImGuiSceneView> _sceneView = nullptr;
   std::shared_ptr<ViewerModel> _sceneModel = nullptr;
+
+  std::shared_ptr<ImGuiSceneView> _depthSceneView = nullptr;
+  std::shared_ptr<ViewerModel> _depthSceneModel = nullptr;
 
   std::shared_ptr<ObjectAddFileDialog> _objectAddDialog = nullptr;
 
@@ -37,6 +39,7 @@ class ImGuiMainView {
   void paintMenuBar();
   void paintSideBar();
   void paintSceneWindow();
+  void paintDepthSceneWindow();
 
  public:
   ImGuiMainView(GLFWwindow*, std::shared_ptr<ViewerModel>);
@@ -47,7 +50,6 @@ class ImGuiMainView {
 
   void destroy();
 
-  std::shared_ptr<Renderer> getRenderer() { return _renderer; };
   std::shared_ptr<ImGuiSceneView> getSceneView() { return _sceneView; };
   std::shared_ptr<ViewerModel> getSceneModel() { return _sceneModel; };
   std::shared_ptr<ObjectAddFileDialog> getObjectAddDialog() { return _objectAddDialog; };

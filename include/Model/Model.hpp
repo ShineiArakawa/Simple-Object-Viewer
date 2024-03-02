@@ -69,15 +69,28 @@ class Model {
     }
   }
 
-  void compileShaders();
+  void compileShaders(const bool &isQuad = false);
 
-  void addBackground(const t_background &background) { _backgrounds->push_back(background); };
-  void addObject(const t_object &object) { _objects->push_back(object); };
+  void addBackground(const t_background &background) {
+    background->setModelShader(getModelShader());
+    background->setDepthShader(getDepthShader());
+    background->initVAO();
+    _backgrounds->push_back(background);
+  };
+
+  void addObject(const t_object &object) {
+    object->setModelShader(getModelShader());
+    object->setDepthShader(getDepthShader());
+    object->initVAO();
+    _objects->push_back(object);
+  };
+
   void removeObject(const int index) {
     if (index >= 0 && index < getNumObjects()) {
       _objects->erase(_objects->begin() + index);
     }
   }
+
   void removeBackground(const int index) {
     if (index >= 0 && index < getNumBackgrounds()) {
       _backgrounds->erase(_backgrounds->begin() + index);
@@ -85,55 +98,90 @@ class Model {
   }
 
   t_objects getBackgrounds() { return _backgrounds; };
+
   Primitives::ModelShader_t getModelShader() { return _shader; };
+
   Primitives::DepthShader_t getDepthShader() { return _depthShader; };
+
   t_object getBackground(const int index) { return (*_backgrounds)[index]; };
+
   int getNumBackgrounds() { return (int)_backgrounds->size(); };
+
   t_objects getObjects() { return _objects; };
+
   t_object getObject(const int index) { return (*_objects)[index]; };
+
   int getNumObjects() { return (int)_objects->size(); };
+
   int getBackgroundIDtoDraw() { return _backgroundIDtoDraw; };
+
   glm::vec4 getBackgroundColor() { return _backgroundColor; };
+
   glm::vec4 getLightPos() { return _lightPosition; };
+
   float getShininess() { return _shininess; };
+
   float getAmbientIntensity() { return _ambientIntensity; };
+
   glm::vec3 getWireFrameColor() { return _wireFrameColor; };
+
   float getWireFrameWidth() { return _wireFrameWidth; };
 
   void setModelVertShaderPath(const t_string &vertShaderPath) { _modelVertMShaderPath = vertShaderPath; };
+
   void setModelFragShaderPath(const t_string &fragShaderPath) { _modelFragShaderPath = fragShaderPath; };
+
   void setDepthVertShaderPath(const t_string &vertShaderPath) { _depthVertMShaderPath = vertShaderPath; };
+
   void setDepthFragShaderPath(const t_string &fragShaderPath) { _depthFragShaderPath = fragShaderPath; };
+
   void setModelShader(Primitives::ModelShader_t shader);
+
   void setDepthShader(Primitives::DepthShader_t shader);
 
   void setMaskMode(bool maskMode);
+
   void setRenderType(Primitives::RenderType renderType);
+
   void setIsEnabledNormalMap(bool isEnabledNormalMap);
+
+  void setIsEnabledShadowMapping(bool isEnabledShadowMapping);
+
   void setWireFrameMode(Primitives::WireFrameMode wireFrameMode);
+
   void setBackgroundIDtoDraw(const int index) { _backgroundIDtoDraw = index; };
+
   void resetRenderType();
+
   void setBackgroundColor(const float &r, const float &g, const float &b, const float &a) {
     _backgroundColor.x = r;
     _backgroundColor.y = g;
     _backgroundColor.z = b;
     _backgroundColor.w = a;
   }
+
   void setWireFrameColor(const float &r, const float &g, const float &b) {
     _wireFrameColor.x = r;
     _wireFrameColor.y = g;
     _wireFrameColor.z = b;
   }
+
   void setLightPosition(const float &x, const float &y, const float &z, const float &w = 1.0f) {
     _lightPosition.x = x;
     _lightPosition.y = y;
     _lightPosition.z = z;
     _lightPosition.w = w;
   }
+
   void setBackgroundColor(const glm::vec4 &rgba) { _backgroundColor = rgba; }
+
   void setLightPosition(const glm::vec4 &lightPos) { _lightPosition = lightPos; }
+
   void setShiniess(const float &shininess) { _shininess = shininess; }
+
   void setAmbientIntensity(const float &ambientIntensity) { _ambientIntensity = ambientIntensity; }
+
   void setWireFrameColor(const glm::vec3 &wireFrameColor) { _wireFrameColor = wireFrameColor; }
+
   void setWireFrameWidth(const float &wireFrameWidth) { _wireFrameWidth = wireFrameWidth; }
 };

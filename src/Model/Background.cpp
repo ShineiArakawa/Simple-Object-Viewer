@@ -89,6 +89,7 @@ void Background::paintGL(const glm::mat4& mvMat,
         wireFrameWidth,
         depthTextureId,
         lightMvpMat,
+        true,
         true);
 
     _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, _textureId);

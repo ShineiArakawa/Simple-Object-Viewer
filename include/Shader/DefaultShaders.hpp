@@ -20,6 +20,7 @@ class DefaultModelShader {
   inline static const char* UNIFORM_NAME_RENDER_TYPE = "u_renderType";
   inline static const char* UNIFORM_NAME_BUMP_MAP = "u_bumpMap";
   inline static const char* UNIFORM_NAME_LIGHT_MVP_MAT = "u_lightMvpMat";
+  inline static const char* UNIFORM_NAME_SHADOW_MAPPING = "u_shadowMapping";
 
   inline static const char* UNIFORM_NAME_AMBIENT_TEXTURE = "u_ambientTexture";
   inline static const char* UNIFORM_NAME_DIFFUSE_TEXTURE = "u_diffuseTexture";
@@ -45,6 +46,7 @@ class DefaultModelShader {
       "uniform mat4 u_normMat;\n"
       "uniform mat4 u_lightMat;\n"
       "uniform vec3 u_lightPos;\n"
+      "uniform mat4 u_lightMvpMat;\n"
       "\n"
       "out vec2 f_uv;\n"
       "out vec3 f_worldPos;\n"
@@ -55,13 +57,15 @@ class DefaultModelShader {
       "out vec3 f_positionCameraSpace;\n"
       "out vec3 f_normalCameraSpace;\n"
       "out vec3 f_lightPosCameraSpace;\n"
+      "out vec4 f_positionLightScreenSpace;\n"
       "\n"
       "void main() {\n"
       "    gl_Position = u_mvpMat * vec4(in_position, 1.0);\n"
       "\n"
-      "f_positionCameraSpace = (u_mvMat * vec4(in_position, 1.0)).xyz;\n"
-      "f_normalCameraSpace = (u_normMat * vec4(in_normal, 0.0)).xyz;\n"
-      "f_lightPosCameraSpace = (u_lightMat * vec4(u_lightPos, 1.0)).xyz;\n"
+      "    f_positionCameraSpace = (u_mvMat * vec4(in_position, 1.0)).xyz;\n"
+      "    f_normalCameraSpace = (u_normMat * vec4(in_normal, 0.0)).xyz;\n"
+      "    f_lightPosCameraSpace = (u_lightMat * vec4(u_lightPos, 1.0)).xyz;\n"
+      "    f_positionLightScreenSpace = u_lightMvpMat * vec4(in_position, 1.0);\n"
       "\n"
       "    f_worldPos = in_position;\n"
       "    f_color = in_color;\n"
@@ -83,6 +87,7 @@ class DefaultModelShader {
       "in vec3 f_positionCameraSpace;\n"
       "in vec3 f_normalCameraSpace;\n"
       "in vec3 f_lightPosCameraSpace;\n"
+      "in vec4 f_positionLightScreenSpace;\n"
       "\n"
       "uniform float u_renderType;\n"
       "uniform float u_bumpMap;\n"
@@ -94,6 +99,7 @@ class DefaultModelShader {
       "uniform vec3 u_diffuseColor;\n"
       "uniform vec3 u_specularColor;\n"
       "uniform float u_shininess;\n"
+      "uniform float u_shadowMapping;\n"
       "\n"
       "uniform sampler2D u_ambientTexture;\n"
       "uniform sampler2D u_diffuseTexture;\n"
@@ -151,6 +157,21 @@ class DefaultModelShader {
       "    return normalize(normalFromMap.x * localX + normalFromMap.y * localY + normalFromMap.z * localZ);\n"
       "}\n"
       "\n"
+      "float calcShadow(vec4 fragPosLightSpace) {\n"
+      "    // perform perspective divide\n"
+      "    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;\n"
+      "    // transform to [0,1] range\n"
+      "    projCoords = projCoords * 0.5 + 0.5;\n"
+      "    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)\n"
+      "    float closestDepth = texture(u_depthTexture, projCoords.xy).r; \n"
+      "    // get depth of current fragment from light's perspective\n"
+      "    float currentDepth = projCoords.z;\n"
+      "    // check whether current frag pos is in shadow\n"
+      "    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;\n"
+      "\n"
+      "    return shadow;\n"
+      "}\n"
+      "\n"
       "vec4 shading(\n"
       "    vec3 diffuseColor,\n"
       "    vec3 specularColor,\n"
@@ -168,7 +189,9 @@ class DefaultModelShader {
       "    vec3 specular = specularColor * pow(ndoth, u_shininess);\n"
       "    vec3 ambient = u_ambientIntensity * ambientColor;\n"
       "\n"
-      "    return vec4(diffuse + specular + ambient, 1.0);\n"
+      "    float shadow = u_shadowMapping > 0.5 ? calcShadow(f_positionLightScreenSpace) : 0.0;\n"
+      "\n"
+      "    return vec4((1.0 - shadow) * (diffuse + specular) + ambient, 1.0);\n"
       "}\n"
       "\n"
       "void main() {\n"
@@ -257,4 +280,39 @@ class DefaultDepthShader {
       "void main() {\n"
       "}\n";
   ;
+};
+
+class DefaultDepthQuadShader {
+ public:
+  inline static const std::string VERT_SHADER =
+      "#version 330\n"
+      "\n"
+      "layout(location = 0) in vec3 in_position;\n"
+      "layout(location = 1) in vec3 in_color;\n"
+      "layout(location = 2) in vec3 in_normal;\n"
+      "layout(location = 3) in vec3 in_bary;\n"
+      "layout(location = 4) in vec2 in_uv;\n"
+      "layout(location = 5) in float in_id;\n"
+      "\n"
+      "out vec2 f_uv;\n"
+      "\n"
+      "void main() {\n"
+      "    gl_Position = vec4(in_position, 1.0);\n"
+      "    f_uv = in_uv;\n"
+      "}\n";
+
+  inline static const std::string FRAG_SHADER =
+      "#version 330\n"
+      "\n"
+      "in vec2 f_uv;\n"
+      "\n"
+      "uniform sampler2D u_diffuseTexture;\n"
+      "\n"
+      "out vec4 out_color;\n"
+      "\n"
+      "void main() {\n"
+      "    float depthValue = texture(u_diffuseTexture, f_uv).r;\n"
+      "    out_color = vec4(vec3(depthValue), 1.0);\n"
+      "    // out_color = vec4(1.0f, 1.0f, 1.0f, 1.0);\n"
+      "}\n";
 };
