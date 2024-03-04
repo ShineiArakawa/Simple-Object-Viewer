@@ -108,6 +108,13 @@ set(
   assimp
 )
 
+set(
+  OpenGLTemplate_INCLUDE_DIR
+  ${PROJECT_INCLUDE_DIR}
+  ${EXTERNAL_INCLUDE_DIR}
+  PARENT_SCOPE
+)
+
 # #### Add subdirectory
 add_subdirectory(src)
 add_subdirectory(lib)
@@ -149,6 +156,8 @@ message("#    IMGUI_BACKENDS_DIR                   : ${IMGUI_BACKENDS_DIR}")
 message("#    NFD_INCLUDE_DIR                      : ${NFD_INCLUDE_DIR}")
 message("#    SPD_LOG_INCLUDE_DIR                  : ${SPD_LOG_INCLUDE_DIR}")
 message("#    ASSIMP_INCLUDE_DIR                   : ${ASSIMP_INCLUDE_DIR}")
+message("# ")
+message("#    OpenGLTemplate_INCLUDE_DIR           : ${OpenGLTemplate_INCLUDE_DIR}")
 message("# =======================================================================================================")
 
 

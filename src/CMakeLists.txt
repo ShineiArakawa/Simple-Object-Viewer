@@ -34,7 +34,7 @@ add_subdirectory(
 # Lib =====================================================
 # =========================================================
 # Project Name
-project(libsimpleviewer CXX)
+project(libOpenGLTemplate CXX)
 
 add_library(
   ${PROJECT_NAME}
@@ -76,8 +76,7 @@ add_library(
 target_include_directories(
   ${PROJECT_NAME}
   PUBLIC
-  ${PROJECT_INCLUDE_DIR}
-  ${EXTERNAL_INCLUDE_DIR}
+  ${OpenGLTemplate_INCLUDE_DIR}
 )
 
 target_link_libraries(
