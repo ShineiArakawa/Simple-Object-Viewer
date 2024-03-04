@@ -13,55 +13,15 @@ Object::Object(const std::string &filePath,
       _scale(scale) {
 }
 
-Object::Object(const std::shared_ptr<std::vector<vec3f_t>> positions,
-               const std::shared_ptr<std::vector<vec3f_t>> colors = nullptr,
-               const std::shared_ptr<std::vector<vec3f_t>> normals = nullptr,
-               const std::shared_ptr<std::vector<vec2f_t>> uvCoords = nullptr,
-               const std::shared_ptr<std::vector<int>> ids = nullptr) {
-  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
-
-  const int nVetiices = positions->size();
-
-  for (int iVertex = 0; iVertex < nVetiices; ++iVertex) {
-    int id = -1;
-
-    const glm::vec3 position = glm::vec3((*positions)[iVertex][0], (*positions)[iVertex][1], (*positions)[iVertex][2]);
-
-    glm::vec3 color(0.0f);
-    if (colors != nullptr) {
-      color = glm::vec3((*colors)[iVertex][0], (*colors)[iVertex][1], (*colors)[iVertex][2]);
-    }
-
-    glm::vec3 normal(0.0f);
-    if (normals != nullptr) {
-      normal = glm::vec3((*normals)[iVertex][0], (*normals)[iVertex][1], (*normals)[iVertex][2]);
-    }
-
-    const int iBary = iVertex % 3;
-    const glm::vec3 bary = BARY_CENTER[iBary];
-
-    glm::vec2 uvCoord;
-    if (normals != nullptr) {
-      uvCoord = glm::vec2((*uvCoords)[iVertex][0], (*uvCoords)[iVertex][1]);
-    }
-
-    int id = -1;
-    if (ids != nullptr) {
-      id = (*ids)[iVertex];
-    }
-
-    const Vertex vertex(position, color, normal, bary, uvCoord, id);
-
-    vertices->push_back(vertex);
-    indices->push_back(iVertex);
-  }
-
-  ObjectLoader::moveToOrigin(vertices);
-  ObjectLoader::scaleObject(vertices, _scale);
-  ObjectLoader::translateObject(vertices, _offsetX, _offsetY, _offsetZ);
-
-  initVAO(vertices, indices);
+Object::Object(const float offsetX,
+               const float offsetY,
+               const float offsetZ,
+               const float scale)
+    : _filePath(""),
+      _offsetX(offsetX),
+      _offsetY(offsetY),
+      _offsetZ(offsetZ),
+      _scale(scale) {
 }
 
 Object::~Object() {}
@@ -120,6 +80,55 @@ void Object::initVAO(const std::shared_ptr<std::vector<Vertex>> &vertices,
 
   // Temporarily disable VAO
   glBindVertexArray(0);
+}
+
+void Object::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
+                     const std::shared_ptr<std::vector<vec3f_t>> colors,
+                     const std::shared_ptr<std::vector<vec3f_t>> normals,
+                     const std::shared_ptr<std::vector<vec2f_t>> uvCoords,
+                     const std::shared_ptr<std::vector<int>> ids) {
+  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
+  std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
+
+  const int nVetiices = positions->size();
+
+  for (int iVertex = 0; iVertex < nVetiices; ++iVertex) {
+    const glm::vec3 position = glm::vec3((*positions)[iVertex][0], (*positions)[iVertex][1], (*positions)[iVertex][2]);
+
+    glm::vec3 color(0.0f);
+    if (colors != nullptr) {
+      color = glm::vec3((*colors)[iVertex][0], (*colors)[iVertex][1], (*colors)[iVertex][2]);
+    }
+
+    glm::vec3 normal(0.0f);
+    if (normals != nullptr) {
+      normal = glm::vec3((*normals)[iVertex][0], (*normals)[iVertex][1], (*normals)[iVertex][2]);
+    }
+
+    const int iBary = iVertex % 3;
+    const glm::vec3 bary = BARY_CENTER[iBary];
+
+    glm::vec2 uvCoord;
+    if (normals != nullptr) {
+      uvCoord = glm::vec2((*uvCoords)[iVertex][0], (*uvCoords)[iVertex][1]);
+    }
+
+    int id = -1;
+    if (ids != nullptr) {
+      id = (*ids)[iVertex];
+    }
+
+    const Vertex vertex(position, color, normal, bary, uvCoord, id);
+
+    vertices->push_back(vertex);
+    indices->push_back(iVertex);
+  }
+
+  ObjectLoader::moveToOrigin(vertices);
+  ObjectLoader::scaleObject(vertices, _scale);
+  ObjectLoader::translateObject(vertices, _offsetX, _offsetY, _offsetZ);
+
+  initVAO(vertices, indices);
 }
 
 void Object::paintGL(const glm::mat4 &mvMat,

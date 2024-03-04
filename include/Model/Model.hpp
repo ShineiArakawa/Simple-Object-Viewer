@@ -78,10 +78,12 @@ class Model {
     _backgrounds->push_back(background);
   };
 
-  void addObject(const t_object &object) {
+  void addObject(const t_object &object, bool toInitializeVAO = true) {
     object->setModelShader(getModelShader());
     object->setDepthShader(getDepthShader());
-    object->initVAO();
+    if (toInitializeVAO) {
+      object->initVAO();
+    }
     _objects->push_back(object);
   };
 

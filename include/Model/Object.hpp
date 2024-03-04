@@ -42,15 +42,14 @@ class Object : public Primitives {
   // nothing
  public:
   Object(const std::string& filePath,
-         float offsetX,
-         float offsetY,
-         float offsetZ,
-         float scale = 1.0f);
-  Object(const std::shared_ptr<std::vector<vec3f_t>> positions,
-         const std::shared_ptr<std::vector<vec3f_t>> colors = nullptr,
-         const std::shared_ptr<std::vector<vec3f_t>> normals = nullptr,
-         const std::shared_ptr<std::vector<vec2f_t>> uvCoords = nullptr,
-         const std::shared_ptr<std::vector<int>> ids = nullptr);
+         const float offsetX,
+         const float offsetY,
+         const float offsetZ,
+         const float scale = 1.0f);
+  Object(const float offsetX,
+         const float offsetY,
+         const float offsetZ,
+         const float scale = 1.0f);
   ~Object();
   void loadTexture(const std::string& filePath);
   void loadNormalMap(const std::string& filePath);
@@ -58,6 +57,11 @@ class Object : public Primitives {
   void initVAO() override;
   void initVAO(const std::shared_ptr<std::vector<Vertex>>&,
                const std::shared_ptr<std::vector<uint32_t>>&);
+  void initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
+               const std::shared_ptr<std::vector<vec3f_t>> colors = nullptr,
+               const std::shared_ptr<std::vector<vec3f_t>> normals = nullptr,
+               const std::shared_ptr<std::vector<vec2f_t>> uvCoords = nullptr,
+               const std::shared_ptr<std::vector<int>> ids = nullptr);
   void paintGL(const glm::mat4& mvMat,
                const glm::mat4& mvpMat,
                const glm::mat4& lightMat,

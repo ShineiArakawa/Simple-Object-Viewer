@@ -24,4 +24,6 @@ class ViewerGUIApp {
   ~ViewerGUIApp();
 
   void launch();
+  void addObject(const Model::t_object& object, bool toInitializeVAO = true);
+  void addBackground(const Model::t_background& background);
 };
