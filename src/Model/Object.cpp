@@ -13,17 +13,6 @@ Object::Object(const std::string &filePath,
       _scale(scale) {
 }
 
-Object::Object(const float offsetX,
-               const float offsetY,
-               const float offsetZ,
-               const float scale)
-    : _filePath(""),
-      _offsetX(offsetX),
-      _offsetY(offsetY),
-      _offsetZ(offsetZ),
-      _scale(scale) {
-}
-
 Object::~Object() {}
 
 void Object::initVAO() {
@@ -39,47 +28,6 @@ void Object::initVAO() {
   ObjectLoader::scaleObject(vertices, _scale);
 
   initVAO(vertices, indices);
-}
-
-void Object::initVAO(const std::shared_ptr<std::vector<Vertex>> &vertices,
-                     const std::shared_ptr<std::vector<uint32_t>> &indices) {
-  // Create VAO
-  glGenVertexArrays(1, &_vaoId);
-  glBindVertexArray(_vaoId);
-
-  // Create vertex buffer object
-  glGenBuffers(1, &_vertexBufferId);
-  glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferId);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices->size(), vertices->data(), GL_STATIC_DRAW);
-
-  // Setup attributes for vertex buffer object
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, position));
-
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
-
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
-
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, bary));
-
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
-
-  glEnableVertexAttribArray(5);
-  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, id));
-
-  // Create index buffer object
-  glGenBuffers(1, &_indexBufferId);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices->size(), indices->data(), GL_STATIC_DRAW);
-
-  _indexBufferSize = (int)indices->size();
-
-  // Temporarily disable VAO
-  glBindVertexArray(0);
 }
 
 void Object::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
@@ -128,7 +76,51 @@ void Object::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
   ObjectLoader::scaleObject(vertices, _scale);
   ObjectLoader::translateObject(vertices, _offsetX, _offsetY, _offsetZ);
 
+  LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
+  LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
+
   initVAO(vertices, indices);
+}
+
+void Object::initVAO(const std::shared_ptr<std::vector<Vertex>> &vertices,
+                     const std::shared_ptr<std::vector<uint32_t>> &indices) {
+  // Create VAO
+  glGenVertexArrays(1, &_vaoId);
+  glBindVertexArray(_vaoId);
+
+  // Create vertex buffer object
+  glGenBuffers(1, &_vertexBufferId);
+  glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferId);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices->size(), vertices->data(), GL_STATIC_DRAW);
+
+  // Setup attributes for vertex buffer object
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, position));
+
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
+
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
+
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, bary));
+
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
+
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, id));
+
+  // Create index buffer object
+  glGenBuffers(1, &_indexBufferId);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices->size(), indices->data(), GL_STATIC_DRAW);
+
+  _indexBufferSize = (int)indices->size();
+
+  // Temporarily disable VAO
+  glBindVertexArray(0);
 }
 
 void Object::paintGL(const glm::mat4 &mvMat,

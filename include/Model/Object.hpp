@@ -41,14 +41,10 @@ class Object : public Primitives {
  protected:
   // nothing
  public:
-  Object(const std::string& filePath,
-         const float offsetX,
-         const float offsetY,
-         const float offsetZ,
-         const float scale = 1.0f);
-  Object(const float offsetX,
-         const float offsetY,
-         const float offsetZ,
+  Object(const std::string& filePath = "",
+         const float offsetX = 0.0f,
+         const float offsetY = 0.0f,
+         const float offsetZ = 0.0f,
          const float scale = 1.0f);
   ~Object();
   void loadTexture(const std::string& filePath);
