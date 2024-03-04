@@ -321,9 +321,6 @@ void ObjectAddFileDialog::paint() {
 
       if (newObject != nullptr) {
         newObject->setName(strObjName);
-        newObject->setModelShader(_model->getModelShader());
-        newObject->setDepthShader(_model->getDepthShader());
-        newObject->initVAO();
 
         if (objectTypeID == 3) {
           _model->addBackground(std::move(std::static_pointer_cast<Background>(newObject)));

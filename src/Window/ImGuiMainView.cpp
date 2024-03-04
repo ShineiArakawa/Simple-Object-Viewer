@@ -334,7 +334,7 @@ void ImGuiMainView::paintSceneWindow() {
 }
 
 void ImGuiMainView::paintDepthSceneWindow() {
-  if (_depthSceneView != nullptr) {
+  if (_sceneView->isEnabledShadowMapping && _depthSceneView != nullptr) {
     const ImVec2 viewportPos = ImGui::GetWindowViewport()->Pos;
     ImGui::SetNextWindowPos(ImVec2(viewportPos.x + SIDEBAR_WIDTH, viewportPos.y + _menuBarHeight), ImGuiCond_Once);
     const ImVec2 sceneWindowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - SIDEBAR_WIDTH, ImGui::GetWindowViewport()->Size.y - _menuBarHeight);
@@ -392,7 +392,7 @@ void ImGuiMainView::paint() {
   // ====================================================================
   _sceneView->paintGL();
 
-  if (_depthSceneView != nullptr) {
+  if (_sceneView->isEnabledShadowMapping && _depthSceneView != nullptr) {
     _depthSceneView->paintGL();
   }
 

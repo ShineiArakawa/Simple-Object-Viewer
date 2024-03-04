@@ -105,6 +105,9 @@ void ObjectLoader::readObjFile(const std::string &filePath,
 
   ObjectLoader::moveToOrigin(vertices);
   ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
+
+  LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
+  LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
 }
 
 void ObjectLoader::readLazFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
@@ -165,6 +168,10 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
                                                 MaterialGroups_t materialGroups,
                                                 const glm::vec3 offset,
                                                 const glm::vec3 scale) {
+  unsigned int nMaterials = 0;
+  unsigned int nFaces = 0;
+  unsigned int nVertices = 0;
+
 #if defined(USE_ASSIMP)
   Assimp::Importer importer;
   unsigned int flag = 0;
@@ -184,7 +191,10 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   }
 
   const std::string mtlFileDir = FileUtil::dirPath(filePath);
+
   for (int iMaterial = 0; iMaterial < scene->mNumMaterials; ++iMaterial) {
+    nMaterials++;
+
     aiMaterial *material = scene->mMaterials[iMaterial];
     auto materialGroup = std::make_shared<MaterialGroup>();
 
@@ -248,9 +258,13 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
     aiMesh *mesh = scene->mMeshes[iMesh];
 
     for (int iFace = 0; iFace < mesh->mNumFaces; ++iFace) {
+      nFaces++;
+
       aiFace face = mesh->mFaces[iFace];
 
       for (int iVertex = 0; iVertex < face.mNumIndices; ++iVertex) {
+        nVertices++;
+
         const unsigned int index = face.mIndices[iVertex];
 
         glm::vec3 position = glm::vec3(mesh->mVertices[index].x, mesh->mVertices[index].y, mesh->mVertices[index].z);
@@ -315,6 +329,8 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
 
   // Load Material
   for (const auto &material : materials) {
+    nMaterials++;
+
     auto materialGroup = std::make_shared<MaterialGroup>();
 
     materialGroup->ambientColor = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]);
@@ -343,10 +359,14 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
     size_t indexOffset = 0;  // インデントのオフセット
 
     for (size_t iFace = 0; iFace < shape.mesh.num_face_vertices.size(); iFace++) {
+      nFaces++;
+
       const int nVertices = shape.mesh.num_face_vertices[iFace];
       const int materialID = isFoundMaterials ? shape.mesh.material_ids[iFace] : 0;
 
       for (size_t iVertex = 0; iVertex < nVertices; iVertex++) {
+        nVertices++;
+
         // access to vertex
         const tinyobj::index_t index = shape.mesh.indices[indexOffset + iVertex];
 
@@ -418,6 +438,10 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   for (auto &materialGroup : *materialGroups) {
     ObjectLoader::translateObject(materialGroup->vertices, offset);
   }
+
+  LOG_INFO("Num of vertices : " + std::to_string(nVertices));
+  LOG_INFO("Num of triangles: " + std::to_string(nFaces));
+  LOG_INFO("Num of materials: " + std::to_string(nMaterials));
 }
 
 void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, const float scale) {

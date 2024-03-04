@@ -1,11 +1,20 @@
-add_subdirectory(
-  Pone
+# Project Name
+project(App_object CXX)
+
+add_library(
+  ${PROJECT_NAME}
+  OBJECT
+  "PoneApp.cpp"
+  "ViewerApp.cpp"
+  "ViewerGUIApp.cpp"
 )
 
-add_subdirectory(
-  Viewer
-)
-
-add_subdirectory(
-  ViewerGUI
+# =========================================================
+# Set Libraries ===========================================
+# =========================================================
+target_include_directories(
+  ${PROJECT_NAME}
+  PUBLIC
+  ${PROJECT_INCLUDE_DIR}
+  ${EXTERNAL_INCLUDE_DIR}
 )
