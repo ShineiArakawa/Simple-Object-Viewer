@@ -1,4 +1,4 @@
-project(Window_object CXX)
+project(OpenGLTemplate_Window_object CXX)
 
 add_library(
   ${PROJECT_NAME}

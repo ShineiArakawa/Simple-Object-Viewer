@@ -1,5 +1,5 @@
 # Project Name
-project(Renderer_object CXX)
+project(OpenGLTemplate_Renderer_object CXX)
 
 add_library(
   ${PROJECT_NAME}
