@@ -41,12 +41,23 @@ class Object : public Primitives {
  protected:
   // nothing
  public:
-  Object(const std::string& filePath, float offsetX, float offsetY, float offsetZ, float scale = 1.0f);
+  Object(const std::string& filePath,
+         float offsetX,
+         float offsetY,
+         float offsetZ,
+         float scale = 1.0f);
+  Object(const std::shared_ptr<std::vector<vec3f_t>> positions,
+         const std::shared_ptr<std::vector<vec3f_t>> colors = nullptr,
+         const std::shared_ptr<std::vector<vec3f_t>> normals = nullptr,
+         const std::shared_ptr<std::vector<vec2f_t>> uvCoords = nullptr,
+         const std::shared_ptr<std::vector<int>> ids = nullptr);
   ~Object();
   void loadTexture(const std::string& filePath);
   void loadNormalMap(const std::string& filePath);
   void update() override{};
   void initVAO() override;
+  void initVAO(const std::shared_ptr<std::vector<Vertex>>&,
+               const std::shared_ptr<std::vector<uint32_t>>&);
   void paintGL(const glm::mat4& mvMat,
                const glm::mat4& mvpMat,
                const glm::mat4& lightMat,

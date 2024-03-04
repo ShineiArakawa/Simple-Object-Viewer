@@ -86,6 +86,10 @@ class Primitives {
   using vec3_t = std::array<dtype, 3>;
   using vec3f_t = vec3_t<float>;
 
+  template <class dtype>
+  using vec2_t = std::array<dtype, 2>;
+  using vec2f_t = vec2_t<float>;
+
   enum class RenderType {
     NORMAL,
     COLOR,
