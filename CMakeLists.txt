@@ -112,7 +112,9 @@ set(
   OpenGLTemplate_INCLUDE_DIR
   ${PROJECT_INCLUDE_DIR}
   ${EXTERNAL_INCLUDE_DIR}
-  PARENT_SCOPE
+  CACHE
+  STRING
+  "All include directories for OpenGL Template library"
 )
 
 # #### Add subdirectory
