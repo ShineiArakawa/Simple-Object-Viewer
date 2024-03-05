@@ -34,7 +34,7 @@ class DefaultModelShader {
   inline static const char* UNIFORM_NAME_DEPTH_TEXTURE = "u_depthTexture";
 
   inline static const std::string VERT_SHADER =
-      "#version 330\n"
+      "#version 460\n"
       "\n"
       "layout(location = 0) in vec3 in_position;\n"
       "layout(location = 1) in vec3 in_color;\n"
@@ -78,7 +78,7 @@ class DefaultModelShader {
       "}\n";
 
   inline static const std::string FRAG_SHADER =
-      "#version 330\n"
+      "#version 460\n"
       "\n"
       "in vec2 f_uv;\n"
       "in vec3 f_worldPos;\n"
@@ -266,7 +266,7 @@ class DefaultDepthShader {
   inline static const char* UNIFORM_NAME_LIGHT_MVP_MAT = "u_lightMvpMat";
 
   inline static const std::string VERT_SHADER =
-      "#version 330\n"
+      "#version 460\n"
       "\n"
       "layout(location = 0) in vec3 in_position;\n"
       "\n"
@@ -277,7 +277,7 @@ class DefaultDepthShader {
       "}\n";
 
   inline static const std::string FRAG_SHADER =
-      "#version 330\n"
+      "#version 460\n"
       "\n"
       "void main() {\n"
       "}\n";
@@ -287,7 +287,7 @@ class DefaultDepthShader {
 class DefaultDepthQuadShader {
  public:
   inline static const std::string VERT_SHADER =
-      "#version 330\n"
+      "#version 460\n"
       "\n"
       "layout(location = 0) in vec3 in_position;\n"
       "layout(location = 1) in vec3 in_color;\n"
@@ -304,7 +304,7 @@ class DefaultDepthQuadShader {
       "}\n";
 
   inline static const std::string FRAG_SHADER =
-      "#version 330\n"
+      "#version 460\n"
       "\n"
       "in vec2 f_uv;\n"
       "\n"
