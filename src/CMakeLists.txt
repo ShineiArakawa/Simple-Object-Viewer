@@ -34,7 +34,7 @@ add_subdirectory(
 # Lib =====================================================
 # =========================================================
 # Project Name
-project(libOpenGLTemplate CXX)
+project(OpenGLTemplate CXX)
 
 add_library(
   ${PROJECT_NAME}

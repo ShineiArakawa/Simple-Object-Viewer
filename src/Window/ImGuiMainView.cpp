@@ -483,5 +483,9 @@ void ImGuiMainView::listenEvent() {
   }
 }
 
+void ImGuiMainView::setRenderType(const model::Primitives::RenderType renderType) {
+  _renderTypeID = static_cast<int>(renderType);
+}
+
 }  // namespace window
 }  // namespace oglt

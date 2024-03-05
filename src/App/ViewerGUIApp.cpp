@@ -105,7 +105,7 @@ void ViewerGUIApp::addBackground(const Model::t_background& background) {
 }
 
 void ViewerGUIApp::setRenderType(const model::Primitives::RenderType renderType) {
-  _model->setRenderType(renderType);
+  _view->setRenderType(renderType);
 }
 
 }  // namespace app

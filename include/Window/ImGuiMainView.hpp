@@ -57,6 +57,8 @@ class ImGuiMainView {
   std::shared_ptr<ImGuiSceneView> getSceneView() { return _sceneView; };
   std::shared_ptr<model::ViewerModel> getSceneModel() { return _sceneModel; };
   std::shared_ptr<ObjectAddFileDialog> getObjectAddDialog() { return _objectAddDialog; };
+
+  void setRenderType(const model::Primitives::RenderType renderType);
 };
 }  // namespace window
 }  // namespace oglt
