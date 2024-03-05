@@ -35,11 +35,21 @@ class PointCloud : public Primitives {
  protected:
   // nothing
  public:
-  PointCloud(const std::string&, const float, const float, const float, const float, const float);
+  PointCloud(const std::string& filePath = "",
+             const float offsetX = 0.0f,
+             const float offsetY = 0.0f,
+             const float offsetZ = 0.0f,
+             const float scale = 1.0f,
+             const float pointSize = 0.1f);
   ~PointCloud() = default;
 
   void update() override{};
   void initVAO() override;
+  void initVAO(const std::shared_ptr<std::vector<Vertex>>&,
+               const std::shared_ptr<std::vector<uint32_t>>&);
+  void initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
+               const std::shared_ptr<std::vector<vec3f_t>> colors = nullptr,
+               const std::shared_ptr<std::vector<int>> ids = nullptr);
   void paintGL(const glm::mat4& mvMat,
                const glm::mat4& mvpMat,
                const glm::mat4& lightMat,
