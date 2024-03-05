@@ -103,5 +103,6 @@ void ViewerGUIApp::addObject(const Model::t_object& object, bool toInitializeVAO
 void ViewerGUIApp::addBackground(const Model::t_background& background) {
   _model->addBackground(background);
 }
+
 }  // namespace app
 }  // namespace oglt

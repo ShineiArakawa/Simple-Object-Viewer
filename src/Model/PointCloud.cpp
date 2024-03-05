@@ -140,6 +140,8 @@ void PointCloud::paintGL(const glm::mat4 &mvMat,
     const glm::mat4 &normMat = glm::transpose(glm::inverse(mvtMat));
     const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
 
+    paintBBOX(mvtMat, mvptMat, normMat);
+
     bindShader(
         mvtMat,
         mvptMat,
@@ -157,8 +159,6 @@ void PointCloud::paintGL(const glm::mat4 &mvMat,
         wireFrameWidth,
         depthTextureId,
         lightMvptMat);
-
-    paintBBOX(mvtMat, mvptMat, normMat);
 
     drawGL();
 
