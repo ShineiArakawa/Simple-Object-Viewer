@@ -35,8 +35,8 @@ void PointCloud::initVAO() {
 }
 
 void PointCloud::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
-                         const std::shared_ptr<std::vector<vec3f_t>> colors = nullptr,
-                         const std::shared_ptr<std::vector<int>> ids = nullptr) {
+                         const std::shared_ptr<std::vector<vec3f_t>> colors,
+                         const std::shared_ptr<std::vector<int>> ids) {
   std::shared_ptr<std::vector<Vertex>> points = std::make_shared<std::vector<Vertex>>();
   std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
 
