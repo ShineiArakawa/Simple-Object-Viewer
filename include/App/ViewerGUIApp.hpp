@@ -28,6 +28,7 @@ class ViewerGUIApp {
   void launch();
   void addObject(const model::Model::t_object& object, bool toInitializeVAO = true);
   void addBackground(const model::Model::t_background& background);
+  void setRenderType(const model::Primitives::RenderType renderType);
 };
 }  // namespace app
 }  // namespace oglt

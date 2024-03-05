@@ -104,5 +104,9 @@ void ViewerGUIApp::addBackground(const Model::t_background& background) {
   _model->addBackground(background);
 }
 
+void ViewerGUIApp::setRenderType(const model::Primitives::RenderType renderType) {
+  _model->setRenderType(renderType);
+}
+
 }  // namespace app
 }  // namespace oglt

@@ -18,21 +18,23 @@ class ImGuiMainView {
  private:
   inline static const int SIDEBAR_WIDTH = 700;
   inline static const char* FLOAT_FORMAT = "%.6f";
+  inline static const char* RENDER_TYPE_ITEMS = "Normal\0Color\0Texture\0Vertex Normal\0Shading\0Shading with texture\0Material\0";
 
-  float _menuBarHeight = -1.0f;
-  bool _isForcusedOnScene = false;
-  float _wheelOffset = 0.0f;
-  ImVec2 _sceneAreaMin = ImVec2(0.0f, 0.0f);
-  ImVec2 _sceneAreaMax = ImVec2(0.0f, 0.0f);
+  float _menuBarHeight;
+  bool _isForcusedOnScene;
+  int _renderTypeID;
+  float _wheelOffset;
+  ImVec2 _sceneAreaMin;
+  ImVec2 _sceneAreaMax;
   ImGuiIO* _io;
 
-  std::shared_ptr<ImGuiSceneView> _sceneView = nullptr;
-  std::shared_ptr<model::ViewerModel> _sceneModel = nullptr;
+  std::shared_ptr<ImGuiSceneView> _sceneView;
+  std::shared_ptr<model::ViewerModel> _sceneModel;
 
-  std::shared_ptr<ImGuiSceneView> _depthSceneView = nullptr;
-  std::shared_ptr<model::ViewerModel> _depthSceneModel = nullptr;
+  std::shared_ptr<ImGuiSceneView> _depthSceneView;
+  std::shared_ptr<model::ViewerModel> _depthSceneModel;
 
-  std::shared_ptr<ObjectAddFileDialog> _objectAddDialog = nullptr;
+  std::shared_ptr<ObjectAddFileDialog> _objectAddDialog;
 
  public:
   bool moveOn = true;

@@ -5,7 +5,20 @@ namespace window {
 
 using namespace model;
 
-ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel> sceneModel) {
+ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel> sceneModel)
+    : _menuBarHeight(0.0f),
+      _isForcusedOnScene(false),
+      _renderTypeID(static_cast<int>(model::Primitives::RenderType::NORMAL)),
+      _wheelOffset(0.0f),
+      _sceneAreaMin(ImVec2(0.0f, 0.0f)),
+      _sceneAreaMax(ImVec2(0.0f, 0.0f)),
+      _io(nullptr),
+      _sceneView(nullptr),
+      _sceneModel(nullptr),
+      _depthSceneView(nullptr),
+      _depthSceneModel(nullptr),
+      _objectAddDialog(nullptr),
+      moveOn(true) {
   _sceneModel = sceneModel;
 
   // ====================================================================
@@ -96,10 +109,8 @@ void ImGuiMainView::paintSideBar() {
     // ========================================================================================
     if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
       // Render type
-      static int renderType;
-      static const char* renderTypeItems = "Normal\0Color\0Texture\0Vertex Normal\0Shading\0Shading with texture\0Material\0";
-      ImGui::Combo("Render Type", &renderType, renderTypeItems);
-      _sceneModel->setRenderType(static_cast<Primitives::RenderType>(renderType));
+      ImGui::Combo("Render Type", &_renderTypeID, RENDER_TYPE_ITEMS);
+      _sceneModel->setRenderType(static_cast<Primitives::RenderType>(_renderTypeID));
 
       // Mask mode
       ImGui::Checkbox("Mask mode", &_sceneView->isMaskMode);
