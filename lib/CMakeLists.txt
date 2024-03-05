@@ -1,8 +1,4 @@
 add_subdirectory(
-    eigen
-)
-
-add_subdirectory(
     glad
 )
 

@@ -35,9 +35,6 @@ if(OpenMP_FOUND)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-# #### EIGEN
-set(EIGEN_INCLUDE_DIR ${PROJECT_LIB_DIR}/eigen)
-
 # #### GLAD
 set(GLAD_INCLUDE_DIR ${PROJECT_LIB_DIR}/glad/include)
 
@@ -87,7 +84,6 @@ set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_
 ######################################################
 set(
   EXTERNAL_INCLUDE_DIR
-  ${EIGEN_INCLUDE_DIR}
   ${GLAD_INCLUDE_DIR}
   ${GLFW_INCLUDE_DIR}
   ${GLM_INCLUDE_DIR}
