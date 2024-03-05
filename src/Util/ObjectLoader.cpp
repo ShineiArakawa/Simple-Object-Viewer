@@ -18,7 +18,11 @@ void ObjectLoader::readFromFile(const std::string &filePath,
                                 const float offsetZ) {
   const std::string extension = FileUtil::extension(filePath);
 
+#if defined(USE_ASSIMP)
+  if (extension == ".obj" || extension == ".stl") {
+#else
   if (extension == ".obj") {
+#endif
     readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else if (extension == ".las") {
     readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
@@ -36,6 +40,56 @@ void ObjectLoader::readObjFile(const std::string &filePath,
                                const float offsetZ) {
   LOG_INFO("### Loaded obj file: " + filePath);
 
+#if defined(USE_ASSIMP)
+  Assimp::Importer importer;
+  unsigned int flag = 0;
+  flag |= aiProcess_Triangulate;
+  flag |= aiProcess_CalcTangentSpace;
+  flag |= aiProcess_RemoveRedundantMaterials;
+
+  const aiScene *scene = importer.ReadFile(filePath, flag);
+
+  if (scene == nullptr) {
+    LOG_ERROR("[ERROR] " + std::string(importer.GetErrorString()));
+    return;
+  }
+
+  for (int iMesh = 0; iMesh < scene->mNumMeshes; ++iMesh) {
+    aiMesh *mesh = scene->mMeshes[iMesh];
+
+    for (int iFace = 0; iFace < mesh->mNumFaces; ++iFace) {
+      const aiFace &face = mesh->mFaces[iFace];
+
+      for (int iVertex = 0; iVertex < face.mNumIndices; ++iVertex) {
+        const unsigned int index = face.mIndices[iVertex];
+
+        glm::vec3 position = glm::vec3(mesh->mVertices[index].x, mesh->mVertices[index].y, mesh->mVertices[index].z);
+        glm::vec3 normal(0.0f), color(1.0f);
+        glm::vec2 texcoord(0.0f);
+
+        if (mesh->HasNormals()) {
+          normal = glm::vec3(mesh->mNormals[index].x, mesh->mNormals[index].y, mesh->mNormals[index].z);
+        }
+
+        if (mesh->HasTextureCoords(0)) {
+          texcoord = glm::vec2(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
+        }
+
+        const unsigned int materialID = mesh->mMaterialIndex;
+
+        const Vertex vertex(position,
+                            color,
+                            normal,
+                            BARY_CENTER[iVertex % 3],
+                            texcoord,
+                            0.0f);
+
+        indices->push_back(uint32_t(vertices->size()));
+        vertices->push_back(vertex);
+      }
+    }
+  }
+#else
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
@@ -107,6 +161,7 @@ void ObjectLoader::readObjFile(const std::string &filePath,
       vertices->push_back(vertex);
     }
   }
+#endif
 
   ObjectLoader::moveToOrigin(vertices);
   ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
@@ -265,7 +320,7 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
     for (int iFace = 0; iFace < mesh->mNumFaces; ++iFace) {
       nFaces++;
 
-      aiFace face = mesh->mFaces[iFace];
+      const aiFace &face = mesh->mFaces[iFace];
 
       for (int iVertex = 0; iVertex < face.mNumIndices; ++iVertex) {
         nVertices++;
@@ -298,7 +353,6 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
       }
     }
   }
-
 #else
   const std::string mtlFileDir = FileUtil::dirPath(filePath);
 

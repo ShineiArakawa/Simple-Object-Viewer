@@ -59,7 +59,7 @@ void ImGuiSceneView::paintGL() {
       _renderer->rotateLight(glm::radians(rotateAnimationAngle), cameraUp);
     }
 
-    _renderer->paintGL();
+    _renderer->paintGL(isEnabledShadowMapping);
   }
 }
 

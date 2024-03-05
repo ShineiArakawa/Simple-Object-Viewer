@@ -53,36 +53,34 @@ void Renderer::initializeGL() {
   initLightMatrices();
 }
 
-void Renderer::paintGL() {
+void Renderer::paintGL(const bool& renderShadowMap) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_MULTISAMPLE);
 
   const glm::mat4 modelMat = _acTransMat * _acRotMat * _acScaleMat;
+  const glm::mat4& lightMvpMat = _lightProjMat * getLightViewMat(modelMat) * modelMat;
 
   // ====================================================================
   // Render depth map for shadow maping
   // ====================================================================
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glViewport(0, 0, _depthRenderer->DEPTH_MAP_WIDTH, _depthRenderer->DEPTH_MAP_HEIGHT);
+  if (renderShadowMap) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, _depthRenderer->DEPTH_MAP_WIDTH, _depthRenderer->DEPTH_MAP_HEIGHT);
 
-  const glm::mat4& lightMvpMat = _lightProjMat * getLightViewMat(modelMat) * modelMat;
-  // const glm::mat4& lightMvpMat = _lightProjMat * getLightViewMat(modelMat) * modelMat;
+    {
+      _depthRenderer->bind();
+      glEnable(GL_DEPTH_TEST);
+      glDepthFunc(GL_LESS);
 
-  {
-    _depthRenderer->bind();
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+      glEnable(GL_CULL_FACE);
+      glCullFace(GL_BACK);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+      _model->drawGL(lightMvpMat);
 
-    _model->drawGL(lightMvpMat);
-
-    glDisable(GL_CULL_FACE);
-    _depthRenderer->unbind();
+      glDisable(GL_CULL_FACE);
+      _depthRenderer->unbind();
+    }
   }
-
-  const GLuint& depthMapId = _depthRenderer->getDepthMapId();
 
   // ====================================================================
   // Render scene
@@ -106,7 +104,7 @@ void Renderer::paintGL() {
                     mvpMat,
                     lightMat,
                     lightMvpMat,
-                    depthMapId);
+                    _depthRenderer->getDepthMapId());
   }
 
   if (_frameBuffer != nullptr) {

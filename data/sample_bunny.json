@@ -10,7 +10,7 @@
     "Model": {
         "Object": {
             "Face": {
-                "ObjPath": "bunny.obj",
+                "ObjPath": "C:/Users/PC_Arakawa/Desktop/particles.stl",
                 "DefaultRenderType": "NORMAL",
                 "Scale": 1.0,
                 "Offset": [

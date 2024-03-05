@@ -48,6 +48,7 @@ ViewerApp::ViewerApp(std::string configFilePath) {
   }
 
   model = std::make_shared<ViewerModel>();
+  model->compileShaders();
   ModelParser::parse(configFilePath, model);
   {
     LOG_INFO("### Start initilizing models ...");
@@ -57,7 +58,6 @@ ViewerApp::ViewerApp(std::string configFilePath) {
     const double elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
     LOG_INFO("### Finish initilizing models. Elapsed time is " + std::to_string(elapsedTime) + " [sec].");
   }
-  model->compileShaders();
   model->setMaskMode(Window::isMaskMode);
 
   Window::renderer = std::make_shared<Renderer>(&Window::WIN_WIDTH, &Window::WIN_HEIGHT, model);
