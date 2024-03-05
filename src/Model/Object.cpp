@@ -63,7 +63,7 @@ void Object::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
     const glm::vec3 bary = BARY_CENTER[iBary];
 
     glm::vec2 uvCoord;
-    if (normals != nullptr) {
+    if (uvCoords != nullptr) {
       uvCoord = glm::vec2((*uvCoords)[iVertex][0], (*uvCoords)[iVertex][1]);
     }
 
