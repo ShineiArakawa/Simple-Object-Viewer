@@ -1,5 +1,13 @@
 #include <App/ViewerApp.hpp>
 
+namespace oglt {
+namespace app {
+
+using namespace window;
+using namespace model;
+using namespace renderer;
+using namespace util;
+
 ViewerApp::ViewerApp(std::string configFilePath) {
   Logging::setLevelFromEnv();
 
@@ -144,3 +152,5 @@ void ViewerApp::keyboardEventViewer(GLFWwindow* window, int key, int scancode, i
     model->setMaskMode(Window::isMaskMode);
   }
 }
+}  // namespace app
+}  // namespace oglt

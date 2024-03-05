@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _VIEWER_MODEL_H_
-#define _VIEWER_MODEL_H_
 
 #include <Model/AxesCone.hpp>
 #include <Model/Background.hpp>
@@ -14,6 +12,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace model {
 class ViewerModel : public Model {
  public:
   ViewerModel();
@@ -31,4 +31,5 @@ class ViewerModel : public Model {
 
   void setAxesConeState(const bool isShown);
 };
-#endif
+}  // namespace model
+}  // namespace oglt

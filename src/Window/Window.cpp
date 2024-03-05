@@ -1,5 +1,8 @@
 #include <Window/Window.hpp>
 
+namespace oglt {
+namespace window {
+
 void Window::resetCameraPose() {
   cameraPos = DEFAULT_CAMERA_POS;
   cameraLookAt = DEFAULT_CAMERA_LOOK_AT;
@@ -129,3 +132,6 @@ void Window::wheelEvent(GLFWwindow* window, double xoffset, double yoffset) {
   }
   updateScale();
 }
+
+}  // namespace window
+}  // namespace oglt

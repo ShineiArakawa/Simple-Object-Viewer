@@ -1,10 +1,10 @@
 #pragma once
-#ifndef _FILE_UTIL_H_
-#define _FILE_UTIL_H_
 
 #include <filesystem>
 #include <string>
 
+namespace oglt {
+namespace util {
 namespace generic_fs = std::filesystem;
 
 class FileUtil {
@@ -23,5 +23,5 @@ class FileUtil {
   static bool isAbsolute(const std::string);
   static std::string getTimeStamp();
 };
-
-#endif
+}  // namespace util
+}  // namespace oglt

@@ -1,5 +1,7 @@
 #include <Util/StbAdapter.hpp>
 
+namespace oglt {
+namespace util {
 namespace stb {
 
 unsigned char *api_stbi_load(char const *filename, int *x, int *y, int *comp, int req_comp) {
@@ -36,3 +38,5 @@ void saveImage(const int width, const int height, const int channels, unsigned c
 };
 
 }  // namespace stb
+}  // namespace util
+}  // namespace oglt

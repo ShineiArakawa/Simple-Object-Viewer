@@ -4,6 +4,8 @@
 #include <Util/Logging.hpp>
 #include <Util/ObjectLoader.hpp>
 
+namespace oglt {
+namespace model {
 class PointCloud : public Primitives {
  private:
   std::string _filePath;
@@ -53,3 +55,5 @@ class PointCloud : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_POINT_CLOUD; };
 };
+}  // namespace model
+}  // namespace oglt

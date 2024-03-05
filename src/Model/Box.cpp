@@ -1,7 +1,18 @@
 #include <Model/Box.hpp>
 #include <iostream>
 
-Box::Box(const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ) {
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
+Box::Box(const float offsetX,
+         const float offsetY,
+         const float offsetZ,
+         const float scaleX,
+         const float scaleY,
+         const float scaleZ) {
   _offsetX = offsetX;
   _offsetY = offsetY;
   _offsetZ = offsetZ;
@@ -142,3 +153,5 @@ void Box::drawAllGL(const glm::mat4& lightMvpMat) {
 }
 
 void Box::loadTexture(const std::string& filePath) { Texture::loadTexture(filePath, _textureId); }
+}  // namespace model
+}  // namespace oglt

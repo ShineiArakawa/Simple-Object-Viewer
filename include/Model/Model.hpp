@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace model {
 class Model {
  public:
   using t_object = std::shared_ptr<Primitives>;
@@ -149,6 +151,8 @@ class Model {
 
   void setIsEnabledShadowMapping(bool isEnabledShadowMapping);
 
+  void setIsVisibleBBOX(bool isEnabledShadowMapping);
+
   void setWireFrameMode(Primitives::WireFrameMode wireFrameMode);
 
   void setBackgroundIDtoDraw(const int index) { _backgroundIDtoDraw = index; };
@@ -187,3 +191,5 @@ class Model {
 
   void setWireFrameWidth(const float &wireFrameWidth) { _wireFrameWidth = wireFrameWidth; }
 };
+}  // namespace model
+}  // namespace oglt

@@ -1,5 +1,11 @@
 #include <Window/ObjectAddPopup.hpp>
 
+namespace oglt {
+namespace window {
+
+using namespace model;
+using namespace util;
+
 ObjectAddFileDialog::ObjectAddFileDialog(std::shared_ptr<ViewerModel> model) : _model(model) {
   _objectTypes = ""s;
   _objectTypes += Object::KEY_MODEL_OBJECT + "\0"s;
@@ -347,3 +353,6 @@ void ObjectAddFileDialog::paint() {
     ImGui::Text(_message.c_str());
   }
 }
+
+}  // namespace window
+}  // namespace oglt

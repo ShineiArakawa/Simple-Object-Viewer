@@ -5,6 +5,8 @@
 #include <Util/Logging.hpp>
 #include <string>
 
+namespace oglt {
+namespace shader {
 class Shader {
  private:
   inline const static int MAX_NUM_TEXTURES = 32;
@@ -69,3 +71,5 @@ class Shader {
   void setUniformVariable(const std::string& name, const bool& value);
   void setUniformTexture(const std::string& name, const GLuint& textureId);
 };
+}  // namespace shader
+}  // namespace oglt

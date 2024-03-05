@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _SHADER_COMPILER_H_
-#define _SHADER_COMPILER_H_
 
 #include <OpenGL.hpp>
 #include <Util/Logging.hpp>
@@ -10,6 +8,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace shader {
 class ShaderCompiler {
  private:
   // nothing
@@ -32,5 +32,5 @@ class ShaderCompiler {
 
   static GLuint buildShaderProgram(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
 };
-
-#endif
+}  // namespace shader
+}  // namespace oglt

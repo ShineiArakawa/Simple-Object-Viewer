@@ -1,6 +1,17 @@
 #include <Model/PointCloud.hpp>
 
-PointCloud::PointCloud(const std::string &filePath, const float offsetX, const float offsetY, const float offsetZ, const float scale, const float pointSize)
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
+PointCloud::PointCloud(const std::string &filePath,
+                       const float offsetX,
+                       const float offsetY,
+                       const float offsetZ,
+                       const float scale,
+                       const float pointSize)
     : _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
@@ -57,6 +68,10 @@ void PointCloud::initVAO() {
 
   // Temporarily disable VAO
   glBindVertexArray(0);
+
+  glm::vec3 minCoords, maxCoords;
+  std::tie(minCoords, maxCoords) = ObjectLoader::getCorners(points);
+  _bbox = std::make_shared<AxisAlignedBoundingBox>(minCoords, maxCoords);
 }
 
 void PointCloud::paintGL(const glm::mat4 &mvMat,
@@ -93,6 +108,8 @@ void PointCloud::paintGL(const glm::mat4 &mvMat,
         depthTextureId,
         lightMvptMat);
 
+    paintBBOX(mvtMat, mvptMat, normMat);
+
     drawGL();
 
     unbindShader();
@@ -119,3 +136,5 @@ void PointCloud::drawAllGL(const glm::mat4 &lightMvpMat) {
 
   drawGL();
 }
+}  // namespace model
+}  // namespace oglt

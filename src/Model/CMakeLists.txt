@@ -16,6 +16,7 @@ add_library(
   "PointCloudPoly.cpp"
   "AxesCone.cpp"
   "MaterialObject.cpp"
+  "AxisAlignedBoundingBox.cpp"
 )
 
 # =========================================================

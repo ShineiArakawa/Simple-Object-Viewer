@@ -1,5 +1,11 @@
 #include <Model/ViewerModel.hpp>
 
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
 ViewerModel::ViewerModel() {
   setMaskMode(false);
 }
@@ -76,3 +82,5 @@ void ViewerModel::setAxesConeState(const bool isShown) {
     }
   }
 }
+}  // namespace model
+}  // namespace oglt

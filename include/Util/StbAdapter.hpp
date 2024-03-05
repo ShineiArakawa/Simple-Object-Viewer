@@ -16,6 +16,8 @@
 #include <iostream>
 #include <string>
 
+namespace oglt {
+namespace util {
 namespace stb {
 
 const int api_STBI_rgb_alpha = STBI_rgb_alpha;
@@ -25,3 +27,5 @@ void api_stbi_image_free(void *);
 void saveImage(const int width, const int height, const int channels, unsigned char *bytes, const std::string filePath);
 
 }  // namespace stb
+}  // namespace util
+}  // namespace oglt

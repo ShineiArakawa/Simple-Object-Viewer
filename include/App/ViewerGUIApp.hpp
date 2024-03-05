@@ -8,6 +8,8 @@
 
 // #define DEBUG_SHADOW_MAPPING
 
+namespace oglt {
+namespace app {
 class ViewerGUIApp {
  private:
   inline static int WINDOW_WIDTH = 2000;
@@ -16,14 +18,16 @@ class ViewerGUIApp {
   inline static const std::string DEFAULT_CONFIG_PATH = "../../../../data/sample_bunny.json";
 
   GLFWwindow* _window;
-  std::shared_ptr<ViewerModel> _model;
-  std::shared_ptr<ImGuiMainView> _view;
+  std::shared_ptr<model::ViewerModel> _model;
+  std::shared_ptr<window::ImGuiMainView> _view;
 
  public:
   ViewerGUIApp();
   ~ViewerGUIApp();
 
   void launch();
-  void addObject(const Model::t_object& object, bool toInitializeVAO = true);
-  void addBackground(const Model::t_background& background);
+  void addObject(const model::Model::t_object& object, bool toInitializeVAO = true);
+  void addBackground(const model::Model::t_background& background);
 };
+}  // namespace app
+}  // namespace oglt

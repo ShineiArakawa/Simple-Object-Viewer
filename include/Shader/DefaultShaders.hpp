@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace oglt {
+namespace shader {
 class DefaultModelShader {
  public:
   inline static const char* UNIFORM_NAME_MV_MAT = "u_mvMat";
@@ -316,3 +318,5 @@ class DefaultDepthQuadShader {
       "    // out_color = vec4(1.0f, 1.0f, 1.0f, 1.0);\n"
       "}\n";
 };
+}  // namespace shader
+}  // namespace oglt

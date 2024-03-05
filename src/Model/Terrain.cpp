@@ -1,15 +1,26 @@
 #include <Model/Terrain.hpp>
 #include <Util/Texture.hpp>
 
-Terrain::Terrain(const std::string &filePath, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY,
-                 const float scaleH) {
-  _filePath = filePath;
-  _offsetX = offsetX;
-  _offsetY = offsetY;
-  _offsetZ = offsetZ;
-  _scaleX = scaleX;
-  _scaleY = scaleY;
-  _scaleH = scaleH;
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
+Terrain::Terrain(const std::string &filePath,
+                 const float offsetX,
+                 const float offsetY,
+                 const float offsetZ,
+                 const float scaleX,
+                 const float scaleY,
+                 const float scaleH)
+    : _filePath(filePath),
+      _offsetX(offsetX),
+      _offsetY(offsetY),
+      _offsetZ(offsetZ),
+      _scaleX(scaleX),
+      _scaleY(scaleY),
+      _scaleH(scaleH) {
 }
 
 Terrain::~Terrain() {}
@@ -116,6 +127,10 @@ void Terrain::initVAO() {
   // Temporarily disable VAO
   glBindVertexArray(0);
 
+  glm::vec3 minCoords, maxCoords;
+  std::tie(minCoords, maxCoords) = ObjectLoader::getCorners(vertices);
+  _bbox = std::make_shared<AxisAlignedBoundingBox>(minCoords, maxCoords);
+
   const auto endTime = std::chrono::system_clock::now();
   const double elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
 
@@ -137,6 +152,8 @@ void Terrain::paintGL(const glm::mat4 &mvMat,
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
     const glm::mat4 &normMat = glm::transpose(glm::inverse(mvtMat));
     const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+
+    paintBBOX(mvtMat, mvptMat, normMat);
 
     bindShader(
         mvtMat,
@@ -179,3 +196,5 @@ void Terrain::drawAllGL(const glm::mat4 &lightMvpMat) {
 
   drawGL();
 }
+}  // namespace model
+}  // namespace oglt

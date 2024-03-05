@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _TERRAIN_H_
-#define _TERRAIN_H_
 
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
@@ -10,6 +8,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace model {
 class Terrain : public Primitives {
  private:
   std::string _filePath;
@@ -82,5 +82,5 @@ class Terrain : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_TERRAIN; };
 };
-
-#endif
+}  // namespace model
+}  // namespace oglt

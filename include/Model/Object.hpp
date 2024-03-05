@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _MODEL_OBJECT_H_
-#define _MODEL_OBJECT_H_
 
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
@@ -11,6 +9,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace model {
 class Object : public Primitives {
  private:
   std::string _filePath;
@@ -74,4 +74,5 @@ class Object : public Primitives {
   std::string getObjectType() override { return KEY_MODEL_OBJECT; };
 };
 
-#endif
+}  // namespace model
+}  // namespace oglt

@@ -1,5 +1,13 @@
 #include <App/PoneApp.hpp>
 
+namespace oglt {
+namespace app {
+
+using namespace window;
+using namespace model;
+using namespace renderer;
+using namespace util;
+
 void PoneApp::keyboardEventPone(GLFWwindow* window, int key, int scancode, int action, int mods) {
   if (action == GLFW_PRESS || action == GLFW_REPEAT) {
     auto cameraDirection = glm::normalize(Window::cameraLookAt - Window::cameraPos);
@@ -146,3 +154,6 @@ void PoneApp::launch() {
     }
   }
 }
+
+}  // namespace app
+}  // namespace oglt

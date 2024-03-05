@@ -1,5 +1,10 @@
 #include <Window/ImGuiMainView.hpp>
 
+namespace oglt {
+namespace window {
+
+using namespace model;
+
 ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel> sceneModel) {
   _sceneModel = sceneModel;
 
@@ -135,6 +140,10 @@ void ImGuiMainView::paintSideBar() {
       // Shadow mapping
       ImGui::Checkbox("Shadow mapping", &_sceneView->isEnabledShadowMapping);
       _sceneModel->setIsEnabledShadowMapping(_sceneView->isEnabledShadowMapping);
+
+      // Bounding box
+      ImGui::Checkbox("Bounding box", &_sceneView->isVisibleBBOX);
+      _sceneModel->setIsVisibleBBOX(_sceneView->isVisibleBBOX);
     }
 
     // ========================================================================================
@@ -462,3 +471,6 @@ void ImGuiMainView::listenEvent() {
     }
   }
 }
+
+}  // namespace window
+}  // namespace oglt

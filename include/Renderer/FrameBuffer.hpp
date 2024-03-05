@@ -5,6 +5,8 @@
 
 #define USE_MIP_MAP
 
+namespace oglt {
+namespace renderer {
 class FrameBuffer {
  public:
   FrameBuffer(){};
@@ -20,3 +22,5 @@ class FrameBuffer {
   GLuint _texture;
   GLuint _rbo;
 };
+}  // namespace renderer
+}  // namespace oglt

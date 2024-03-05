@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace model {
 class MaterialObject : public Primitives {
  public:
   struct MaterialObjectBuffer {
@@ -78,3 +80,5 @@ class MaterialObject : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_MATERIAL_OBJECT; };
 };
+}  // namespace model
+}  // namespace oglt

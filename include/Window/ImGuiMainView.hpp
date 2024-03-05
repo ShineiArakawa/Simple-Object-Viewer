@@ -12,6 +12,8 @@
 #include <memory>
 #include <string>
 
+namespace oglt {
+namespace window {
 class ImGuiMainView {
  private:
   inline static const int SIDEBAR_WIDTH = 700;
@@ -25,10 +27,10 @@ class ImGuiMainView {
   ImGuiIO* _io;
 
   std::shared_ptr<ImGuiSceneView> _sceneView = nullptr;
-  std::shared_ptr<ViewerModel> _sceneModel = nullptr;
+  std::shared_ptr<model::ViewerModel> _sceneModel = nullptr;
 
   std::shared_ptr<ImGuiSceneView> _depthSceneView = nullptr;
-  std::shared_ptr<ViewerModel> _depthSceneModel = nullptr;
+  std::shared_ptr<model::ViewerModel> _depthSceneModel = nullptr;
 
   std::shared_ptr<ObjectAddFileDialog> _objectAddDialog = nullptr;
 
@@ -42,7 +44,7 @@ class ImGuiMainView {
   void paintDepthSceneWindow();
 
  public:
-  ImGuiMainView(GLFWwindow*, std::shared_ptr<ViewerModel>);
+  ImGuiMainView(GLFWwindow*, std::shared_ptr<model::ViewerModel>);
   ~ImGuiMainView();
 
   void paint();
@@ -51,6 +53,8 @@ class ImGuiMainView {
   void destroy();
 
   std::shared_ptr<ImGuiSceneView> getSceneView() { return _sceneView; };
-  std::shared_ptr<ViewerModel> getSceneModel() { return _sceneModel; };
+  std::shared_ptr<model::ViewerModel> getSceneModel() { return _sceneModel; };
   std::shared_ptr<ObjectAddFileDialog> getObjectAddDialog() { return _objectAddDialog; };
 };
+}  // namespace window
+}  // namespace oglt

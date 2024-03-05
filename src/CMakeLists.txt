@@ -43,6 +43,7 @@ add_library(
   "App/ViewerApp.cpp"
   "App/ViewerGUIApp.cpp"
   "Model/Box.cpp"
+  "Model/AxisAlignedBoundingBox.cpp"
   "Model/Object.cpp"
   "Model/Background.cpp"
   "Model/Terrain.cpp"

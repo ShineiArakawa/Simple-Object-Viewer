@@ -3,6 +3,8 @@
 #include <Model/Primitives.hpp>
 #include <Util/ObjectLoader.hpp>
 
+namespace oglt {
+namespace model {
 class AxesCone : public Primitives {
  private:
   float _offsetX;
@@ -54,3 +56,5 @@ class AxesCone : public Primitives {
       std::shared_ptr<std::vector<unsigned int>>& indices,
       const glm::vec3& color) const;
 };
+}  // namespace model
+}  // namespace oglt

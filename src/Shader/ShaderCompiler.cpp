@@ -1,5 +1,8 @@
 #include <Shader/ShaderCompiler.hpp>
 
+namespace oglt {
+namespace shader {
+
 std::string ShaderCompiler::readCodesFromFile(const std::string& filename) {
   // Load source file
   std::ifstream reader;
@@ -116,3 +119,6 @@ GLuint ShaderCompiler::buildShaderProgram(const std::string& vertexShaderCode,
 
   return programId;
 }
+
+}  // namespace shader
+}  // namespace oglt

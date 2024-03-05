@@ -1,12 +1,12 @@
 #pragma once
-#ifndef _BACKGROUND_H_
-#define _BACKGROUND_H_
 
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
 #include <Util/Texture.hpp>
 #include <string>
 
+namespace oglt {
+namespace model {
 class Background : public Primitives {
  private:
   GLuint _vaoId;
@@ -54,5 +54,5 @@ class Background : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_BACKGROUND; };
 };
-
-#endif
+}  // namespace model
+}  // namespace oglt

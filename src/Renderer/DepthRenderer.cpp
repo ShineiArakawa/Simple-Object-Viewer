@@ -1,5 +1,8 @@
 #include <Renderer/DepthRenderer.hpp>
 
+namespace oglt {
+namespace renderer {
+
 DepthRenderer::DepthRenderer(DepthShader_t shader) : _shader(shader) {
   initDepthMap();
 }
@@ -39,3 +42,6 @@ void DepthRenderer::initDepthMap() {
 GLuint DepthRenderer::getDepthMapId() {
   return _depthMap;
 }
+
+}  // namespace renderer
+}  // namespace oglt

@@ -8,10 +8,12 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace window {
 class ImGuiSceneView {
  public:
-  using pRenderer = std::shared_ptr<Renderer>;
-  using pModel = std::shared_ptr<Model>;
+  using pRenderer = std::shared_ptr<renderer::Renderer>;
+  using pModel = std::shared_ptr<model::Model>;
 
  private:
   pRenderer _renderer = nullptr;
@@ -47,6 +49,7 @@ class ImGuiSceneView {
   bool isMaskMode = false;
   bool isEnabledNormalMap = false;
   bool isEnabledShadowMapping = false;
+  bool isVisibleBBOX = false;
 
   bool enabledModelRotationMode = false;
   bool enabledLightRotationMode = false;
@@ -67,7 +70,7 @@ class ImGuiSceneView {
   ImGuiSceneView(GLFWwindow* parentWindow, pModel model);
   ~ImGuiSceneView();
 
-  Renderer::pFrameBuffer getFrameBuffer();
+  renderer::Renderer::pFrameBuffer getFrameBuffer();
   pRenderer getRenderer();
 
   void paintGL();
@@ -87,3 +90,5 @@ class ImGuiSceneView {
 
   void saveScreenShot(const std::string& filePath);
 };
+}  // namespace window
+}  // namespace oglt

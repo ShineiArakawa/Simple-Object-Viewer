@@ -1,5 +1,11 @@
 #include <Model/Model.hpp>
 
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
 Model::~Model() {}
 
 void Model::compileShaders(const bool& isQuad) {
@@ -98,3 +104,11 @@ void Model::setIsEnabledShadowMapping(bool isEnabledShadowMapping) {
     getObject(iModel)->setIsEnabledShadowMapping(isEnabledShadowMapping);
   }
 }
+
+void Model::setIsVisibleBBOX(bool isVisible) {
+  for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+    getObject(iModel)->setVisibleBBOX(isVisible);
+  }
+}
+}  // namespace model
+}  // namespace oglt

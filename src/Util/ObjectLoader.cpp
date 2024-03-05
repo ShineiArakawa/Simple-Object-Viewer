@@ -5,6 +5,11 @@
 #include <tiny_obj_loader.h>
 #endif
 
+namespace oglt {
+namespace util {
+
+using namespace model;
+
 void ObjectLoader::readFromFile(const std::string &filePath,
                                 std::shared_ptr<std::vector<Vertex>> vertices,
                                 std::shared_ptr<std::vector<uint32_t>> indices,
@@ -568,3 +573,6 @@ std::pair<glm::vec3, glm::vec3> ObjectLoader::getCorners(std::shared_ptr<std::ve
 
   return {std::move(minCoords), std::move(maxCoords)};
 }
+
+}  // namespace util
+}  // namespace oglt

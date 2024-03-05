@@ -1,6 +1,11 @@
 #include <Renderer/Renderer.hpp>
 #include <iostream>
 
+namespace oglt {
+namespace renderer {
+
+using namespace model;
+
 Renderer::Renderer(const int* windowWidth,
                    const int* windowHeight,
                    std::shared_ptr<Model> model,
@@ -185,3 +190,5 @@ glm::mat4 Renderer::getLightViewMat(const glm::mat4& modelMat) {
                      glm::vec3(0.0f),
                      glm::vec3(0.0f, 1.0f, 0.0f));
 }
+}  // namespace renderer
+}  // namespace oglt

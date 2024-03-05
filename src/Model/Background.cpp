@@ -1,5 +1,11 @@
 #include <Model/Background.hpp>
 
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
 Background::Background(const GLuint& textureId) {
   _textureId = textureId;
   setDefaultRenderType(RenderType::TEXTURE);
@@ -110,3 +116,6 @@ void Background::drawGL(const int& index) {
 void Background::drawAllGL(const glm::mat4& lightMvpMat) {
   drawGL();
 }
+
+}  // namespace model
+}  // namespace oglt

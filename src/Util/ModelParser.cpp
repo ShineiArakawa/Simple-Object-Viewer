@@ -1,5 +1,11 @@
 #include <Util/ModelParser.hpp>
 
+namespace oglt {
+namespace util {
+
+using namespace model;
+using namespace shader;
+
 namespace GetValueHelpers {
 
 template <class Type>
@@ -410,3 +416,6 @@ void ModelParser::autoCompPath(const pString path, const pString rootDirPath) {
     *path = FileUtil::join(*rootDirPath, *path);
   }
 }
+
+}  // namespace util
+}  // namespace oglt

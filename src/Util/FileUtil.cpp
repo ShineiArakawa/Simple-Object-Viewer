@@ -1,5 +1,8 @@
 #include <Util/FileUtil.hpp>
 
+namespace oglt {
+namespace util {
+
 std::string FileUtil::join(const std::string basePath, const std::string additional) {
   tPath path_basePath = generic_fs::absolute(tPath(basePath));
   return (path_basePath / tPath(additional)).string();
@@ -37,3 +40,6 @@ std::string FileUtil::getTimeStamp() {
 
   return timeStamp;
 }
+
+}  // namespace util
+}  // namespace oglt

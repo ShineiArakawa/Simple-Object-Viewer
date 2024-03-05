@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _PONE_MODEL_H_
-#define _PONE_MODEL_H_
 
 #include <Model/Background.hpp>
 #include <Model/Model.hpp>
@@ -15,6 +13,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace model {
 class PoneModel : public Model {
  public:
   enum class GamePhase { START,
@@ -67,4 +67,5 @@ class PoneModel : public Model {
   void paddleMoveLeft();
   void paddleMoveRight();
 };
-#endif
+}  // namespace model
+}  // namespace oglt

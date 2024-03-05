@@ -3,6 +3,8 @@
 #include <Model/Primitives.hpp>
 #include <Util/ObjectLoader.hpp>
 
+namespace oglt {
+namespace model {
 class Sphere : public Primitives {
  private:
   float _offsetX;
@@ -32,7 +34,14 @@ class Sphere : public Primitives {
  protected:
   // nothing
  public:
-  Sphere(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ, const glm::vec3 color);
+  Sphere(const int nDivs,
+         const float offsetX,
+         const float offsetY,
+         const float offsetZ,
+         const float scaleX,
+         const float scaleY,
+         const float scaleZ,
+         const glm::vec3 color);
   ~Sphere();
 
   void update() override{};
@@ -52,6 +61,15 @@ class Sphere : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_SPHERE; };
 
-  static void createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled = false);
-  static void createSphere(const int nDivs, const glm::vec3 color, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled = false);
+  static void createSphere(const int nDivs,
+                           std::shared_ptr<std::vector<Vertex>> vertices,
+                           std::shared_ptr<std::vector<unsigned int>> indices,
+                           const bool isDoubled = false);
+  static void createSphere(const int nDivs,
+                           const glm::vec3 color,
+                           std::shared_ptr<std::vector<Vertex>> vertices,
+                           std::shared_ptr<std::vector<unsigned int>> indices,
+                           const bool isDoubled = false);
 };
+}  // namespace model
+}  // namespace oglt

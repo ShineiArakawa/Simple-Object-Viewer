@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _RENDERER_H_
-#define _RENDERER_H_
 
 #include <Model/Model.hpp>
 #include <Model/Primitives.hpp>
@@ -12,6 +10,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace renderer {
 class Renderer {
  public:
   using pFrameBuffer = std::shared_ptr<FrameBuffer>;
@@ -21,7 +21,7 @@ class Renderer {
   inline static const float TICK_VALUE = 1.0f;
 
   // Model
-  std::shared_ptr<Model> _model;
+  std::shared_ptr<model::Model> _model;
   glm::mat4 _viewMat;
   glm::mat4 _projMat;
   glm::mat4 _acRotMat;
@@ -49,7 +49,7 @@ class Renderer {
  public:
   Renderer(const int* windowWidth,
            const int* windowHeight,
-           std::shared_ptr<Model> models,
+           std::shared_ptr<model::Model> models,
            const bool renderToFrameBuffer = false);
   ~Renderer();
 
@@ -75,5 +75,5 @@ class Renderer {
   glm::vec3 getLightPosInWorldSpace();
   glm::mat4 getLightViewMat(const glm::mat4& modelMat);
 };
-
-#endif
+}  // namespace renderer
+}  // namespace oglt

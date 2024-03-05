@@ -12,6 +12,8 @@
 #define LOG_ERROR(str) SPDLOG_ERROR(str)
 #define LOG_CRITICAL(str) SPDLOG_CRITICAL(str)
 
+namespace oglt {
+namespace util {
 class Logging {
  private:
   // nothing
@@ -46,3 +48,5 @@ class Logging {
     spdlog::level::level_enum logLevel = spdlog::get_level();
   };
 };
+}  // namespace util
+}  // namespace oglt

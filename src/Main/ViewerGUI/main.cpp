@@ -4,6 +4,8 @@
 #include <crtdbg.h>
 #endif  // ENABLE_LEAK_CHECK
 
+using namespace oglt::app;
+
 int main(int argc, char** argv) {
 #if defined(WIN32) && defined(ENABLE_LEAK_CHECK)
   _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);

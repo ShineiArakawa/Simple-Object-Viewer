@@ -4,6 +4,9 @@
 #include <crtdbg.h>
 #endif  // ENABLE_LEAK_CHECK
 
+using namespace oglt::app;
+using namespace oglt::util;
+
 int main(int argc, char** argv) {
   // Parse args
   int nArgs = argc - 1;

@@ -1,5 +1,12 @@
 #include <Window/ImGuiSceneView.hpp>
 
+namespace oglt {
+namespace window {
+
+using namespace model;
+using namespace renderer;
+using namespace util;
+
 ImGuiSceneView::ImGuiSceneView(GLFWwindow* parentWindow, pModel model) {
   _parentWindow = parentWindow;
 
@@ -197,3 +204,6 @@ void ImGuiSceneView::saveScreenShot(const std::string& filePath) {
     LOG_WARN("The scene was not rendered to the current frame buffer.");
   }
 }
+
+}  // namespace window
+}  // namespace oglt

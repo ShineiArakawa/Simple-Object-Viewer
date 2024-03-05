@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace window {
 class Window {
  public:
   // ========================================================================
@@ -32,7 +34,7 @@ class Window {
   // ========================================================================
   // Global Variables =======================================================
   // ========================================================================
-  typedef std::shared_ptr<Renderer> pRenderer;
+  typedef std::shared_ptr<renderer::Renderer> pRenderer;
 
   inline static pRenderer renderer = nullptr;
 
@@ -66,3 +68,5 @@ class Window {
   static void motionEvent(GLFWwindow* window, double xpos, double ypos);
   static void wheelEvent(GLFWwindow* window, double xoffset, double yoffset);
 };
+}  // namespace window
+}  // namespace oglt

@@ -4,6 +4,8 @@
 #include <Model/Sphere.hpp>
 #include <Util/ObjectLoader.hpp>
 
+namespace oglt {
+namespace model {
 class PointCloudPoly : public Primitives {
  private:
   inline static const int NUM_DIVISIONS = 3;
@@ -57,3 +59,5 @@ class PointCloudPoly : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_POINT_CLOUD_POLY; };
 };
+}  // namespace model
+}  // namespace oglt

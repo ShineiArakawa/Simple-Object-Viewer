@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _BOX_H_
-#define _BOX_H_
 
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
@@ -11,6 +9,8 @@
 #include <string>
 #include <vector>
 
+namespace oglt {
+namespace model {
 class Box : public Primitives {
  private:
   std::string _filePath;
@@ -132,5 +132,5 @@ class Box : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_BOX; };
 };
-
-#endif
+}  // namespace model
+}  // namespace oglt

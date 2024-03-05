@@ -1,5 +1,8 @@
 #include <Util/Texture.hpp>
 
+namespace oglt {
+namespace util {
+
 void Texture::loadTexture(const std::string& filePath, GLuint& texID) {
   int texWidth, texHeight, channels;
   // Texture ============================================================================================
@@ -54,3 +57,6 @@ void Texture::readTexture(const std::string& filePath, Texture::TextureArray tex
 
   stb::api_stbi_image_free(bytesTexture);
 }
+
+}  // namespace util
+}  // namespace oglt

@@ -1,5 +1,11 @@
 #include <Model/AxesCone.hpp>
 
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
 AxesCone::AxesCone(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scale)
     : _nDivs(nDivs),
       _offsetX(offsetX),
@@ -200,3 +206,6 @@ void AxesCone::drawAllGL(const glm::mat4& lightMvpMat) {
 
   drawGL();
 }
+
+}  // namespace model
+}  // namespace oglt

@@ -1,6 +1,14 @@
 #include <Model/MaterialObject.hpp>
 
-MaterialObject::MaterialObject(const std::string& filePath, const glm::vec3 offset, const glm::vec3 scale)
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
+MaterialObject::MaterialObject(const std::string& filePath,
+                               const glm::vec3 offset,
+                               const glm::vec3 scale)
     : _filePath(filePath),
       _offset(offset),
       _scale(scale),
@@ -163,3 +171,5 @@ void MaterialObject::drawAllGL(const glm::mat4& lightMvpMat) {
     drawGL(iObject);
   }
 }
+}  // namespace model
+}  // namespace oglt

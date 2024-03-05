@@ -5,9 +5,11 @@
 #include <Shader/DepthShader.hpp>
 #include <memory>
 
+namespace oglt {
+namespace renderer {
 class DepthRenderer {
  public:
-  using DepthShader_t = std::shared_ptr<DepthShader>;
+  using DepthShader_t = std::shared_ptr<shader::DepthShader>;
 
  private:
   GLuint _depthMap;
@@ -32,3 +34,5 @@ class DepthRenderer {
   void bind();
   void unbind();
 };
+}  // namespace renderer
+}  // namespace oglt

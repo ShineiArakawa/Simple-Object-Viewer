@@ -1,5 +1,8 @@
 #include <Shader/Shader.hpp>
 
+namespace oglt {
+namespace shader {
+
 Shader::~Shader() = default;
 
 void Shader::setShaders(const std::string& vertShaderCode, const std::string& fragShaderCode) {
@@ -65,3 +68,6 @@ void Shader::setUniformTexture(const std::string& name, const GLuint& textureId)
   glUniform1i(uid, _textureCounter);
   _textureCounter++;
 }
+
+}  // namespace shader
+}  // namespace oglt

@@ -1,6 +1,19 @@
 #include <Model/Sphere.hpp>
 
-Sphere::Sphere(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scaleX, const float scaleY, const float scaleZ, const glm::vec3 color)
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
+Sphere::Sphere(const int nDivs,
+               const float offsetX,
+               const float offsetY,
+               const float offsetZ,
+               const float scaleX,
+               const float scaleY,
+               const float scaleZ,
+               const glm::vec3 color)
     : _nDivs(nDivs),
       _offsetX(offsetX),
       _offsetY(offsetY),
@@ -60,6 +73,10 @@ void Sphere::initVAO() {
 
   // Temporarily disable VAO
   glBindVertexArray(0);
+
+  glm::vec3 minCoords, maxCoords;
+  std::tie(minCoords, maxCoords) = ObjectLoader::getCorners(vertices);
+  _bbox = std::make_shared<AxisAlignedBoundingBox>(minCoords, maxCoords);
 }
 
 void Sphere::paintGL(const glm::mat4 &mvMat,
@@ -77,6 +94,8 @@ void Sphere::paintGL(const glm::mat4 &mvMat,
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
     const glm::mat4 &normMat = glm::transpose(glm::inverse(mvtMat));
     const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+
+    paintBBOX(mvtMat, mvptMat, normMat);
 
     bindShader(
         mvtMat,
@@ -174,3 +193,5 @@ void Sphere::createSphere(const int nDivs, const glm::vec3 color, std::shared_pt
     }
   }
 }
+}  // namespace model
+}  // namespace oglt

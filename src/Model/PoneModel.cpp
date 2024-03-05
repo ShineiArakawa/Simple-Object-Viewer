@@ -1,5 +1,11 @@
 #include <Model/PoneModel.hpp>
 
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
 PoneModel::PoneModel(/* args */) {}
 
 PoneModel::~PoneModel() {}
@@ -216,3 +222,5 @@ void PoneModel::paddleMoveRight() {
     }
   }
 }
+}  // namespace model
+}  // namespace oglt

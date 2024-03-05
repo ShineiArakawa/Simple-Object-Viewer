@@ -1,6 +1,18 @@
 #include <Model/PointCloudPoly.hpp>
 
-PointCloudPoly::PointCloudPoly(const std::string &filePath, const float offsetX, const float offsetY, const float offsetZ, const float scale, const float pointSize, const bool isDoubled)
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
+PointCloudPoly::PointCloudPoly(const std::string &filePath,
+                               const float offsetX,
+                               const float offsetY,
+                               const float offsetZ,
+                               const float scale,
+                               const float pointSize,
+                               const bool isDoubled)
     : _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
@@ -86,6 +98,10 @@ void PointCloudPoly::initVAO() {
 
   // Temporarily disable VAO
   glBindVertexArray(0);
+
+  glm::vec3 minCoords, maxCoords;
+  std::tie(minCoords, maxCoords) = ObjectLoader::getCorners(vertices);
+  _bbox = std::make_shared<AxisAlignedBoundingBox>(minCoords, maxCoords);
 }
 
 void PointCloudPoly::paintGL(const glm::mat4 &mvMat,
@@ -103,6 +119,8 @@ void PointCloudPoly::paintGL(const glm::mat4 &mvMat,
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
     const glm::mat4 &normMat = glm::transpose(glm::inverse(mvtMat));
     const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+
+    paintBBOX(mvtMat, mvptMat, normMat);
 
     bindShader(
         mvtMat,
@@ -145,3 +163,5 @@ void PointCloudPoly::drawAllGL(const glm::mat4 &lightMvpMat) {
 
   drawGL();
 }
+}  // namespace model
+}  // namespace oglt

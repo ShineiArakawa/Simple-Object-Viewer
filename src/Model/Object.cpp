@@ -1,6 +1,12 @@
 #include <Model/Object.hpp>
 #include <Util/Texture.hpp>
 
+namespace oglt {
+namespace model {
+
+using namespace util;
+using namespace shader;
+
 Object::Object(const std::string &filePath,
                const float offsetX,
                const float offsetY,
@@ -121,6 +127,10 @@ void Object::initVAO(const std::shared_ptr<std::vector<Vertex>> &vertices,
 
   // Temporarily disable VAO
   glBindVertexArray(0);
+
+  glm::vec3 minCoords, maxCoords;
+  std::tie(minCoords, maxCoords) = ObjectLoader::getCorners(vertices);
+  _bbox = std::make_shared<AxisAlignedBoundingBox>(minCoords, maxCoords);
 }
 
 void Object::paintGL(const glm::mat4 &mvMat,
@@ -138,6 +148,8 @@ void Object::paintGL(const glm::mat4 &mvMat,
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
     const glm::mat4 &normMat = glm::transpose(glm::inverse(mvtMat));
     const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+
+    paintBBOX(mvtMat, mvptMat, normMat);
 
     bindShader(
         mvtMat,
@@ -200,3 +212,5 @@ void Object::loadTexture(const std::string &filePath) {
 void Object::loadNormalMap(const std::string &filePath) {
   Texture::loadTexture(filePath, _normalMapId);
 }
+}  // namespace model
+}  // namespace oglt
