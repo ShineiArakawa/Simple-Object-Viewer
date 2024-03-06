@@ -1,6 +1,6 @@
 #include <Model/Background.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -118,4 +118,4 @@ void Background::drawAllGL(const glm::mat4& lightMvpMat) {
 }
 
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

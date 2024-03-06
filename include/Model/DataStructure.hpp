@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace model {
 inline static const std::array<glm::vec3, 3> BARY_CENTER = {
     glm::vec3(1.0f, 0.0f, 0.0f),
@@ -61,4 +61,4 @@ struct MaterialGroup {
 using MaterialGroup_t = std::shared_ptr<MaterialGroup>;
 using MaterialGroups_t = std::shared_ptr<std::vector<MaterialGroup_t>>;
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace shader {
 class ShaderCompiler {
  private:
@@ -33,4 +33,4 @@ class ShaderCompiler {
   static GLuint buildShaderProgram(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
 };
 }  // namespace shader
-}  // namespace oglt
+}  // namespace simview

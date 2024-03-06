@@ -1,6 +1,6 @@
 #include <Model/Model.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -111,4 +111,4 @@ void Model::setIsVisibleBBOX(bool isVisible) {
   }
 }
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

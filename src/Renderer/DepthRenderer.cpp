@@ -1,6 +1,6 @@
 #include <Renderer/DepthRenderer.hpp>
 
-namespace oglt {
+namespace simview {
 namespace renderer {
 
 DepthRenderer::DepthRenderer(DepthShader_t shader) : _shader(shader) {
@@ -44,4 +44,4 @@ GLuint DepthRenderer::getDepthMapId() {
 }
 
 }  // namespace renderer
-}  // namespace oglt
+}  // namespace simview

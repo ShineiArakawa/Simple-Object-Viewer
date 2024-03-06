@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-namespace oglt {
+namespace simview {
 namespace app {
 class PoneApp {
  public:
@@ -23,4 +23,4 @@ class PoneApp {
 };
 
 }  // namespace app
-}  // namespace oglt
+}  // namespace simview

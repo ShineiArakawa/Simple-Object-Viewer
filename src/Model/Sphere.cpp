@@ -1,6 +1,6 @@
 #include <Model/Sphere.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -194,4 +194,4 @@ void Sphere::createSphere(const int nDivs, const glm::vec3 color, std::shared_pt
   }
 }
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

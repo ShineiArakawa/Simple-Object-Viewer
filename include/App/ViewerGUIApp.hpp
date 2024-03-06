@@ -8,7 +8,7 @@
 
 // #define DEBUG_SHADOW_MAPPING
 
-namespace oglt {
+namespace simview {
 namespace app {
 class ViewerGUIApp {
  private:
@@ -31,4 +31,4 @@ class ViewerGUIApp {
   void setRenderType(const model::Primitives::RenderType renderType);
 };
 }  // namespace app
-}  // namespace oglt
+}  // namespace simview

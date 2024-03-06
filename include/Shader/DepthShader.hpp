@@ -3,7 +3,7 @@
 #include <Shader/DefaultShaders.hpp>
 #include <Shader/Shader.hpp>
 
-namespace oglt {
+namespace simview {
 namespace shader {
 class DepthShader : public Shader {
  public:
@@ -12,4 +12,4 @@ class DepthShader : public Shader {
   ~DepthShader();
 };
 }  // namespace shader
-}  // namespace oglt
+}  // namespace simview

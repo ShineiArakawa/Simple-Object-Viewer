@@ -1,6 +1,6 @@
 #include <App/PoneApp.hpp>
 
-namespace oglt {
+namespace simview {
 namespace app {
 
 using namespace window;
@@ -156,4 +156,4 @@ void PoneApp::launch() {
 }
 
 }  // namespace app
-}  // namespace oglt
+}  // namespace simview

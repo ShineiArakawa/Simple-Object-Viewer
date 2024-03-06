@@ -1,6 +1,6 @@
 #include <Shader/Shader.hpp>
 
-namespace oglt {
+namespace simview {
 namespace shader {
 
 Shader::~Shader() = default;
@@ -70,4 +70,4 @@ void Shader::setUniformTexture(const std::string& name, const GLuint& textureId)
 }
 
 }  // namespace shader
-}  // namespace oglt
+}  // namespace simview

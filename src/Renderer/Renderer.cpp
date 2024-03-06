@@ -1,7 +1,7 @@
 #include <Renderer/Renderer.hpp>
 #include <iostream>
 
-namespace oglt {
+namespace simview {
 namespace renderer {
 
 using namespace model;
@@ -189,4 +189,4 @@ glm::mat4 Renderer::getLightViewMat(const glm::mat4& modelMat) {
                      glm::vec3(0.0f, 1.0f, 0.0f));
 }
 }  // namespace renderer
-}  // namespace oglt
+}  // namespace simview

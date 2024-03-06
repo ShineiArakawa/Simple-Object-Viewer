@@ -19,7 +19,7 @@
 #include <string>
 #include <variant>
 
-namespace oglt {
+namespace simview {
 namespace window {
 using namespace std::string_literals;
 class ObjectAddFileDialog {
@@ -43,4 +43,4 @@ class ObjectAddFileDialog {
   void paint();
 };
 }  // namespace window
-}  // namespace oglt
+}  // namespace simview

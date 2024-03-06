@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class ViewerModel : public Model {
  public:
@@ -32,4 +32,4 @@ class ViewerModel : public Model {
   void setAxesConeState(const bool isShown);
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

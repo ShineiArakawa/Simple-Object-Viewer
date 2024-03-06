@@ -1,6 +1,6 @@
 #include <Util/FileUtil.hpp>
 
-namespace oglt {
+namespace simview {
 namespace util {
 
 std::string FileUtil::join(const std::string basePath, const std::string additional) {
@@ -42,4 +42,4 @@ std::string FileUtil::getTimeStamp() {
 }
 
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

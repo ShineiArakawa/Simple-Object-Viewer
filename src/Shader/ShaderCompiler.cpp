@@ -1,6 +1,6 @@
 #include <Shader/ShaderCompiler.hpp>
 
-namespace oglt {
+namespace simview {
 namespace shader {
 
 std::string ShaderCompiler::readCodesFromFile(const std::string& filename) {
@@ -121,4 +121,4 @@ GLuint ShaderCompiler::buildShaderProgram(const std::string& vertexShaderCode,
 }
 
 }  // namespace shader
-}  // namespace oglt
+}  // namespace simview

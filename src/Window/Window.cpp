@@ -1,6 +1,6 @@
 #include <Window/Window.hpp>
 
-namespace oglt {
+namespace simview {
 namespace window {
 
 void Window::resetCameraPose() {
@@ -134,4 +134,4 @@ void Window::wheelEvent(GLFWwindow* window, double xoffset, double yoffset) {
 }
 
 }  // namespace window
-}  // namespace oglt
+}  // namespace simview

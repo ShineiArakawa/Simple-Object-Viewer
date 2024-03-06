@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace window {
 class ImGuiSceneView {
  public:
@@ -91,4 +91,4 @@ class ImGuiSceneView {
   void saveScreenShot(const std::string& filePath);
 };
 }  // namespace window
-}  // namespace oglt
+}  // namespace simview

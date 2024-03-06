@@ -4,7 +4,7 @@
 #include <Util/Logging.hpp>
 #include <Util/ObjectLoader.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class PointCloud : public Primitives {
  private:
@@ -66,4 +66,4 @@ class PointCloud : public Primitives {
   std::string getObjectType() override { return KEY_MODEL_POINT_CLOUD; };
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

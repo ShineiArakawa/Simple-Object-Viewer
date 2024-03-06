@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 class Primitives {
@@ -263,4 +263,4 @@ class Primitives {
   virtual void drawAllGL(const glm::mat4& lightMvpMat) = 0;
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

@@ -1,6 +1,6 @@
 #include <App/ViewerApp.hpp>
 
-namespace oglt {
+namespace simview {
 namespace app {
 
 using namespace window;
@@ -153,4 +153,4 @@ void ViewerApp::keyboardEventViewer(GLFWwindow* window, int key, int scancode, i
   }
 }
 }  // namespace app
-}  // namespace oglt
+}  // namespace simview

@@ -1,6 +1,6 @@
 #include <Renderer/FrameBuffer.hpp>
 
-namespace oglt {
+namespace simview {
 namespace renderer {
 FrameBuffer::FrameBuffer(const float width, const float height) {
   glGenFramebuffers(1, &_fbo);
@@ -71,4 +71,4 @@ void FrameBuffer::unbind() const {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 }  // namespace renderer
-}  // namespace oglt
+}  // namespace simview

@@ -1,6 +1,6 @@
 #include <Window/ObjectAddPopup.hpp>
 
-namespace oglt {
+namespace simview {
 namespace window {
 
 using namespace model;
@@ -355,4 +355,4 @@ void ObjectAddFileDialog::paint() {
 }
 
 }  // namespace window
-}  // namespace oglt
+}  // namespace simview

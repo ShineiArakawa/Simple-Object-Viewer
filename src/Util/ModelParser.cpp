@@ -1,6 +1,6 @@
 #include <Util/ModelParser.hpp>
 
-namespace oglt {
+namespace simview {
 namespace util {
 
 using namespace model;
@@ -418,4 +418,4 @@ void ModelParser::autoCompPath(const pString path, const pString rootDirPath) {
 }
 
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

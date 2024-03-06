@@ -2,7 +2,7 @@
 
 #include <Shader/Shader.hpp>
 
-namespace oglt {
+namespace simview {
 namespace shader {
 class ModelShader : public Shader {
  public:
@@ -11,4 +11,4 @@ class ModelShader : public Shader {
   ~ModelShader();
 };
 }  // namespace shader
-}  // namespace oglt
+}  // namespace simview

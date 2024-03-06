@@ -1,6 +1,6 @@
 #include <App/ViewerGUIApp.hpp>
 
-namespace oglt {
+namespace simview {
 namespace app {
 
 using namespace window;
@@ -109,4 +109,4 @@ void ViewerGUIApp::setRenderType(const model::Primitives::RenderType renderType)
 }
 
 }  // namespace app
-}  // namespace oglt
+}  // namespace simview

@@ -12,7 +12,7 @@
 #define LOG_ERROR(str) SPDLOG_ERROR(str)
 #define LOG_CRITICAL(str) SPDLOG_CRITICAL(str)
 
-namespace oglt {
+namespace simview {
 namespace util {
 class Logging {
  private:
@@ -49,4 +49,4 @@ class Logging {
   };
 };
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

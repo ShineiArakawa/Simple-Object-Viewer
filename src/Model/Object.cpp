@@ -1,7 +1,7 @@
 #include <Model/Object.hpp>
 #include <Util/Texture.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -213,4 +213,4 @@ void Object::loadNormalMap(const std::string &filePath) {
   Texture::loadTexture(filePath, _normalMapId);
 }
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

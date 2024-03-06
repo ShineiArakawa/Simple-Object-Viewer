@@ -19,7 +19,7 @@
 #include <assimp/Importer.hpp>  // C++ importer interface
 #endif
 
-namespace oglt {
+namespace simview {
 namespace util {
 class ObjectLoader {
  private:
@@ -73,4 +73,4 @@ class ObjectLoader {
   static std::pair<glm::vec3, glm::vec3> getCorners(std::shared_ptr<std::vector<model::Vertex>> vertices);
 };
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class PoneModel : public Model {
  public:
@@ -68,4 +68,4 @@ class PoneModel : public Model {
   void paddleMoveRight();
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

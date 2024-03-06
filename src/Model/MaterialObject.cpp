@@ -1,6 +1,6 @@
 #include <Model/MaterialObject.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -172,4 +172,4 @@ void MaterialObject::drawAllGL(const glm::mat4& lightMvpMat) {
   }
 }
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

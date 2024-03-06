@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace window {
 class Window {
  public:
@@ -69,4 +69,4 @@ class Window {
   static void wheelEvent(GLFWwindow* window, double xoffset, double yoffset);
 };
 }  // namespace window
-}  // namespace oglt
+}  // namespace simview

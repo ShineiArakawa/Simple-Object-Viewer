@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class AxisAlignedBoundingBox {
  private:
@@ -61,4 +61,4 @@ class AxisAlignedBoundingBox {
   void draw() const;
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

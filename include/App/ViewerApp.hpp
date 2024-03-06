@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-namespace oglt {
+namespace simview {
 namespace app {
 class ViewerApp {
  public:
@@ -25,4 +25,4 @@ class ViewerApp {
   static void keyboardEventViewer(GLFWwindow* window, int key, int scancode, int action, int mods);
 };
 }  // namespace app
-}  // namespace oglt
+}  // namespace simview

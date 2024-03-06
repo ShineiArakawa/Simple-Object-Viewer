@@ -1,6 +1,6 @@
 #include <Window/ImGuiMainView.hpp>
 
-namespace oglt {
+namespace simview {
 namespace window {
 
 using namespace model;
@@ -488,4 +488,4 @@ void ImGuiMainView::setRenderType(const model::Primitives::RenderType renderType
 }
 
 }  // namespace window
-}  // namespace oglt
+}  // namespace simview

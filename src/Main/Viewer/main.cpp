@@ -4,8 +4,8 @@
 #include <crtdbg.h>
 #endif  // ENABLE_LEAK_CHECK
 
-using namespace oglt::app;
-using namespace oglt::util;
+using namespace simview::app;
+using namespace simview::util;
 
 int main(int argc, char** argv) {
 #if defined(WIN32) && defined(ENABLE_LEAK_CHECK)

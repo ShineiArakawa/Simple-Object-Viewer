@@ -5,7 +5,7 @@
 
 #define USE_MIP_MAP
 
-namespace oglt {
+namespace simview {
 namespace renderer {
 class FrameBuffer {
  public:
@@ -23,4 +23,4 @@ class FrameBuffer {
   GLuint _rbo;
 };
 }  // namespace renderer
-}  // namespace oglt
+}  // namespace simview

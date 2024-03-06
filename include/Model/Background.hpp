@@ -5,7 +5,7 @@
 #include <Util/Texture.hpp>
 #include <string>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class Background : public Primitives {
  private:
@@ -55,4 +55,4 @@ class Background : public Primitives {
   std::string getObjectType() override { return KEY_MODEL_BACKGROUND; };
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

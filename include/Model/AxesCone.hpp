@@ -3,7 +3,7 @@
 #include <Model/Primitives.hpp>
 #include <Util/ObjectLoader.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class AxesCone : public Primitives {
  private:
@@ -57,4 +57,4 @@ class AxesCone : public Primitives {
       const glm::vec3& color) const;
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

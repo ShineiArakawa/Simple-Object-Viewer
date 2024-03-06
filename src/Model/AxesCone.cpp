@@ -1,6 +1,6 @@
 #include <Model/AxesCone.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -208,4 +208,4 @@ void AxesCone::drawAllGL(const glm::mat4& lightMvpMat) {
 }
 
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

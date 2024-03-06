@@ -15,7 +15,7 @@
 
 #endif
 
-namespace oglt {
+namespace simview {
 namespace util {
 class ModelParser {
  private:
@@ -53,4 +53,4 @@ class ModelParser {
 };
 
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

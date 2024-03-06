@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 
-namespace oglt {
+namespace simview {
 namespace window {
 class ImGuiMainView {
  private:
@@ -61,4 +61,4 @@ class ImGuiMainView {
   void setRenderType(const model::Primitives::RenderType renderType);
 };
 }  // namespace window
-}  // namespace oglt
+}  // namespace simview

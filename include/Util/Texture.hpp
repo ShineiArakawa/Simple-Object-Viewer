@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace util {
 class Texture {
  private:
@@ -20,4 +20,4 @@ class Texture {
   static void readTexture(const std::string& filePath, Texture::TextureArray texture);
 };
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

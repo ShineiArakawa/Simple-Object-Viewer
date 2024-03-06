@@ -5,7 +5,7 @@
 #include <tiny_obj_loader.h>
 #endif
 
-namespace oglt {
+namespace simview {
 namespace util {
 
 using namespace model;
@@ -629,4 +629,4 @@ std::pair<glm::vec3, glm::vec3> ObjectLoader::getCorners(std::shared_ptr<std::ve
 }
 
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class Object : public Primitives {
  private:
@@ -75,4 +75,4 @@ class Object : public Primitives {
 };
 
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

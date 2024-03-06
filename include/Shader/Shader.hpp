@@ -5,7 +5,7 @@
 #include <Util/Logging.hpp>
 #include <string>
 
-namespace oglt {
+namespace simview {
 namespace shader {
 class Shader {
  private:
@@ -72,4 +72,4 @@ class Shader {
   void setUniformTexture(const std::string& name, const GLuint& textureId);
 };
 }  // namespace shader
-}  // namespace oglt
+}  // namespace simview

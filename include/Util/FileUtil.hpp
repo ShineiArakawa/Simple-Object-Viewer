@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 
-namespace oglt {
+namespace simview {
 namespace util {
 namespace generic_fs = std::filesystem;
 
@@ -24,4 +24,4 @@ class FileUtil {
   static std::string getTimeStamp();
 };
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

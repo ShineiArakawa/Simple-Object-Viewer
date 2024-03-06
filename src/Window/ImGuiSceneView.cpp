@@ -1,6 +1,6 @@
 #include <Window/ImGuiSceneView.hpp>
 
-namespace oglt {
+namespace simview {
 namespace window {
 
 using namespace model;
@@ -206,4 +206,4 @@ void ImGuiSceneView::saveScreenShot(const std::string& filePath) {
 }
 
 }  // namespace window
-}  // namespace oglt
+}  // namespace simview

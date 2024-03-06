@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace renderer {
 class Renderer {
  public:
@@ -76,4 +76,4 @@ class Renderer {
   glm::mat4 getLightViewMat(const glm::mat4& modelMat);
 };
 }  // namespace renderer
-}  // namespace oglt
+}  // namespace simview

@@ -1,6 +1,6 @@
 #include <Model/PoneModel.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -223,4 +223,4 @@ void PoneModel::paddleMoveRight() {
   }
 }
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

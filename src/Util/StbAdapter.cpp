@@ -1,6 +1,6 @@
 #include <Util/StbAdapter.hpp>
 
-namespace oglt {
+namespace simview {
 namespace util {
 namespace stb {
 
@@ -39,4 +39,4 @@ void saveImage(const int width, const int height, const int channels, unsigned c
 
 }  // namespace stb
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

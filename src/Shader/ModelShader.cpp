@@ -1,6 +1,6 @@
 #include <Shader/ModelShader.hpp>
 
-namespace oglt {
+namespace simview {
 namespace shader {
 
 ModelShader::ModelShader(const std::string& vertShaderCode, const std::string& fragShaderCode) {
@@ -11,4 +11,4 @@ ModelShader::ModelShader(const std::string& vertShaderCode, const std::string& f
 ModelShader::~ModelShader() = default;
 
 }  // namespace shader
-}  // namespace oglt
+}  // namespace simview

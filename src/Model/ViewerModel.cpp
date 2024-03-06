@@ -1,6 +1,6 @@
 #include <Model/ViewerModel.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -83,4 +83,4 @@ void ViewerModel::setAxesConeState(const bool isShown) {
   }
 }
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

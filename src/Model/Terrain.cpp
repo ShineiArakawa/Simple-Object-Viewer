@@ -1,7 +1,7 @@
 #include <Model/Terrain.hpp>
 #include <Util/Texture.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -197,4 +197,4 @@ void Terrain::drawAllGL(const glm::mat4 &lightMvpMat) {
   drawGL();
 }
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

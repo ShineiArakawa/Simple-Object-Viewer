@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace oglt {
+namespace simview {
 namespace shader {
 class DefaultModelShader {
  public:
@@ -319,4 +319,4 @@ class DefaultDepthQuadShader {
       "}\n";
 };
 }  // namespace shader
-}  // namespace oglt
+}  // namespace simview

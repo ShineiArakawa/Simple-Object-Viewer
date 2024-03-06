@@ -1,7 +1,7 @@
 #include <Model/Box.hpp>
 #include <iostream>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -154,4 +154,4 @@ void Box::drawAllGL(const glm::mat4& lightMvpMat) {
 
 void Box::loadTexture(const std::string& filePath) { Texture::loadTexture(filePath, _textureId); }
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

@@ -5,7 +5,7 @@
 #include <Shader/DepthShader.hpp>
 #include <memory>
 
-namespace oglt {
+namespace simview {
 namespace renderer {
 class DepthRenderer {
  public:
@@ -35,4 +35,4 @@ class DepthRenderer {
   void unbind();
 };
 }  // namespace renderer
-}  // namespace oglt
+}  // namespace simview

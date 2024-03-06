@@ -1,6 +1,6 @@
 #include <Util/Texture.hpp>
 
-namespace oglt {
+namespace simview {
 namespace util {
 
 void Texture::loadTexture(const std::string& filePath, GLuint& texID) {
@@ -59,4 +59,4 @@ void Texture::readTexture(const std::string& filePath, Texture::TextureArray tex
 }
 
 }  // namespace util
-}  // namespace oglt
+}  // namespace simview

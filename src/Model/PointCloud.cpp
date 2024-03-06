@@ -1,6 +1,6 @@
 #include <Model/PointCloud.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -187,4 +187,4 @@ void PointCloud::drawAllGL(const glm::mat4 &lightMvpMat) {
   drawGL();
 }
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

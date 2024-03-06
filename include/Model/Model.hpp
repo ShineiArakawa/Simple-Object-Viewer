@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class Model {
  public:
@@ -192,4 +192,4 @@ class Model {
   void setWireFrameWidth(const float &wireFrameWidth) { _wireFrameWidth = wireFrameWidth; }
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

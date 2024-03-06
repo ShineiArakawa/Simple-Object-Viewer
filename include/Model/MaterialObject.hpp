@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class MaterialObject : public Primitives {
  public:
@@ -81,4 +81,4 @@ class MaterialObject : public Primitives {
   std::string getObjectType() override { return KEY_MODEL_MATERIAL_OBJECT; };
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

@@ -1,6 +1,6 @@
 #include <Model/AxisAlignedBoundingBox.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 
 using namespace util;
@@ -84,4 +84,4 @@ void AxisAlignedBoundingBox::draw() const {
 }
 
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

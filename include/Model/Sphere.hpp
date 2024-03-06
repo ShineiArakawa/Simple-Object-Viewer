@@ -3,7 +3,7 @@
 #include <Model/Primitives.hpp>
 #include <Util/ObjectLoader.hpp>
 
-namespace oglt {
+namespace simview {
 namespace model {
 class Sphere : public Primitives {
  private:
@@ -72,4 +72,4 @@ class Sphere : public Primitives {
                            const bool isDoubled = false);
 };
 }  // namespace model
-}  // namespace oglt
+}  // namespace simview

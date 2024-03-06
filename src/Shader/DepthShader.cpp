@@ -1,6 +1,6 @@
 #include <Shader/DepthShader.hpp>
 
-namespace oglt {
+namespace simview {
 namespace shader {
 
 DepthShader::DepthShader(const std::string& vertShaderCode, const std::string& fragShaderCode) {
@@ -10,4 +10,4 @@ DepthShader::DepthShader(const std::string& vertShaderCode, const std::string& f
 
 DepthShader::~DepthShader() = default;
 }  // namespace shader
-}  // namespace oglt
+}  // namespace simview
