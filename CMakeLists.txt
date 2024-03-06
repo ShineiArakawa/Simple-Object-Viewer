@@ -9,13 +9,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE on)
 
 if(MSVC)
-  set(CMAKE_CXX_FLAGS_RELEASE "/O2")
+  # set(CMAKE_CXX_FLAGS_RELEASE "/O2")
 elseif(UNIX)
   set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -D ENABLE_LEAK_CHECK")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D ENABLE_LEAK_CHECK")
 
 # #################################################
 # #### Envirionment Variables #####################
