@@ -82,5 +82,6 @@ void ViewerModel::setAxesConeState(const bool isShown) {
     }
   }
 }
+
 }  // namespace model
 }  // namespace simview

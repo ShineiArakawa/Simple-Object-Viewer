@@ -34,7 +34,7 @@ add_subdirectory(
 # Lib =====================================================
 # =========================================================
 # Project Name
-project(OpenGLTemplate CXX)
+project(SimView_static CXX)
 
 add_library(
   ${PROJECT_NAME}

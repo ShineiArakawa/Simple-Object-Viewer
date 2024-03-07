@@ -364,10 +364,23 @@ void ImGuiMainView::paintDepthSceneWindow() {
 
     const ImVec2 sceneAreaSize = ImGui::GetContentRegionAvail();
     const ImVec2 sceneAreaOrigin = ImGui::GetCursorScreenPos();
-    const ImVec2 sceneAreaMin = ImVec2(sceneAreaOrigin.x, sceneAreaOrigin.y);
-    const ImVec2 sceneAreaMax = ImVec2(sceneAreaOrigin.x + sceneAreaSize.x, sceneAreaOrigin.y + sceneAreaSize.y);
 
-    _depthSceneView->resizeGL(sceneAreaSize.x, sceneAreaSize.y);
+    ImVec2 sceneAreaMin;
+    ImVec2 sceneAreaMax;
+
+    if (sceneAreaSize.x > sceneAreaSize.y) {
+      const float frameWidth = (float)(_depthSceneView->WIN_WIDTH / _depthSceneView->WIN_HEIGHT) * sceneAreaSize.y;
+      sceneAreaMin.x = sceneAreaOrigin.x + (sceneAreaSize.x - frameWidth) / 2.0f;
+      sceneAreaMin.y = sceneAreaOrigin.y;
+      sceneAreaMax.x = sceneAreaOrigin.x + (sceneAreaSize.x + frameWidth) / 2.0f;
+      sceneAreaMax.y = sceneAreaOrigin.y + sceneAreaSize.y;
+    } else {
+      const float frameHeight = (float)(_depthSceneView->WIN_HEIGHT / _depthSceneView->WIN_WIDTH) * sceneAreaSize.x;
+      sceneAreaMin.x = sceneAreaOrigin.x;
+      sceneAreaMin.y = sceneAreaOrigin.y + (sceneAreaSize.y - frameHeight) / 2.0f;
+      sceneAreaMax.x = sceneAreaOrigin.x + sceneAreaSize.x;
+      sceneAreaMax.y = sceneAreaOrigin.y + (sceneAreaSize.y + frameHeight) / 2.0f;
+    }
 
     ImGui::GetWindowDrawList()->AddImage(
         reinterpret_cast<void*>(_depthSceneView->getFrameBuffer()->getFrameTexture()),

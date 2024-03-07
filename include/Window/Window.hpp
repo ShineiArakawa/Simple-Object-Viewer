@@ -34,9 +34,9 @@ class Window {
   // ========================================================================
   // Global Variables =======================================================
   // ========================================================================
-  typedef std::shared_ptr<renderer::Renderer> pRenderer;
+  using Renderer_t = std::shared_ptr<renderer::Renderer>;
 
-  inline static pRenderer renderer = nullptr;
+  inline static Renderer_t renderer = nullptr;
 
   inline static bool isDragging = false;
   inline static bool isMaskMode = false;

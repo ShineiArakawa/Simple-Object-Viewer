@@ -68,12 +68,12 @@ ViewerGUIApp::ViewerGUIApp() : _window(nullptr),
 
 #ifdef DEBUG_SHADOW_MAPPING
   auto box = std::make_shared<Box>(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+  box->setName("Box");
   _model->addObject(box);
 
   auto plane = std::make_shared<Box>(0.0f, -10.0f, 0.0f, 100.0f, 0.5f, 100.0f);
+  plane->setName("Plane");
   _model->addObject(plane);
-
-  _model->setLightPosition(0.0f, 20.0f, 0.0f);
 
   _view->getSceneView()->isEnabledShadowMapping = true;
   _model->setIsEnabledShadowMapping(_view->getSceneView()->isEnabledShadowMapping);
@@ -96,11 +96,11 @@ void ViewerGUIApp::launch() {
   }
 }
 
-void ViewerGUIApp::addObject(const Model::t_object& object, bool toInitializeVAO) {
+void ViewerGUIApp::addObject(const Model::Object_t& object, bool toInitializeVAO) {
   _model->addObject(object, toInitializeVAO);
 }
 
-void ViewerGUIApp::addBackground(const Model::t_background& background) {
+void ViewerGUIApp::addBackground(const Model::Background_t& background) {
   _model->addBackground(background);
 }
 

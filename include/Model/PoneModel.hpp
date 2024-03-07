@@ -30,11 +30,11 @@ class PoneModel : public Model {
   inline static const glm::vec2 RANGE_Y = glm::vec2(-9.5f, 9.5f);
 
  private:
-  Model::t_object _sphere = nullptr;
-  Model::t_object _paddle = nullptr;
-  Model::t_object _backgroundStart = nullptr;
-  Model::t_object _backgroundGameOver = nullptr;
-  Model::t_objects _walls = std::make_shared<std::vector<Model::t_object>>();
+  Model::Object_t _sphere = nullptr;
+  Model::Object_t _paddle = nullptr;
+  Model::Object_t _backgroundStart = nullptr;
+  Model::Object_t _backgroundGameOver = nullptr;
+  Model::Objects_t _walls = std::make_shared<std::vector<Model::Object_t>>();
   GamePhase _phase = GamePhase::START;
 
   // clang-format off

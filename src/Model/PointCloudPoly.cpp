@@ -158,10 +158,13 @@ void PointCloudPoly::drawGL(const int &index) {
 }
 
 void PointCloudPoly::drawAllGL(const glm::mat4 &lightMvpMat) {
-  const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
-  _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+  if (_isVisible) {
+    const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+    _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
 
-  drawGL();
+    drawGL();
+  }
 }
+
 }  // namespace model
 }  // namespace simview

@@ -146,10 +146,12 @@ void Box::drawGL(const int& index) {
 }
 
 void Box::drawAllGL(const glm::mat4& lightMvpMat) {
-  const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
-  _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+  if (_isVisible) {
+    const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
+    _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
 
-  drawGL();
+    drawGL();
+  }
 }
 
 void Box::loadTexture(const std::string& filePath) { Texture::loadTexture(filePath, _textureId); }

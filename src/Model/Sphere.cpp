@@ -133,10 +133,12 @@ void Sphere::drawGL(const int &index) {
 }
 
 void Sphere::drawAllGL(const glm::mat4 &lightMvpMat) {
-  const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
-  _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+  if (_isVisible) {
+    const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+    _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
 
-  drawGL();
+    drawGL();
+  }
 }
 
 void Sphere::createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled) {
@@ -193,5 +195,6 @@ void Sphere::createSphere(const int nDivs, const glm::vec3 color, std::shared_pt
     }
   }
 }
+
 }  // namespace model
 }  // namespace simview

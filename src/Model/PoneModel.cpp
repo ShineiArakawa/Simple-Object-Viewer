@@ -13,7 +13,7 @@ PoneModel::~PoneModel() {}
 void PoneModel::initVAO() {
   int nBackgrounds = getNumBackgrounds();
   for (int iBackground = 0; iBackground < nBackgrounds; iBackground++) {
-    Model::t_object background = getBackground(iBackground);
+    Model::Object_t background = getBackground(iBackground);
     background->initVAO();
 
     if (iBackground % 10000 == 0 || iBackground == nBackgrounds - 1) {
@@ -31,7 +31,7 @@ void PoneModel::initVAO() {
 
   int nModels = getNumObjects();
   for (int iModel = 0; iModel < nModels; iModel++) {
-    Model::t_object model = getObject(iModel);
+    Model::Object_t model = getObject(iModel);
     model->initVAO();
 
     std::cout << model->getName() << std::endl;

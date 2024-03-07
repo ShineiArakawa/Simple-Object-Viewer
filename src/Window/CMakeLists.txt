@@ -1,4 +1,4 @@
-project(OpenGLTemplate_Window_object CXX)
+project(SimView_Window_object CXX)
 
 add_library(
   ${PROJECT_NAME}

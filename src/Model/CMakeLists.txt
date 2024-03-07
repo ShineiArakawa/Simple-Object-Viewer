@@ -1,5 +1,5 @@
 # Project Name
-project(OpenGLTemplate_Model_object CXX)
+project(SimView_Model_object CXX)
 
 add_library(
   ${PROJECT_NAME}

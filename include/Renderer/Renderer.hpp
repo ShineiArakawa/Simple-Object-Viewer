@@ -14,8 +14,8 @@ namespace simview {
 namespace renderer {
 class Renderer {
  public:
-  using pFrameBuffer = std::shared_ptr<FrameBuffer>;
-  using pDepthRenderer = std::shared_ptr<DepthRenderer>;
+  using FrameBuffer_t = std::shared_ptr<FrameBuffer>;
+  using DepthRenderer_t = std::shared_ptr<DepthRenderer>;
 
  private:
   inline static const float TICK_VALUE = 1.0f;
@@ -35,8 +35,8 @@ class Renderer {
   const int* _windowWidth = nullptr;
   const int* _windowHeight = nullptr;
 
-  pFrameBuffer _frameBuffer = nullptr;
-  pDepthRenderer _depthRenderer = nullptr;
+  FrameBuffer_t _frameBuffer = nullptr;
+  DepthRenderer_t _depthRenderer = nullptr;
 
  protected:
   // nothing
@@ -60,8 +60,8 @@ class Renderer {
   void paintGL(const bool& renderShadowMap = true);
   void resizeGL();
 
-  pFrameBuffer getFrameBuffer();
-  pDepthRenderer getDepthRenderer();
+  FrameBuffer_t getFrameBuffer();
+  DepthRenderer_t getDepthRenderer();
 
   void updateScale(const float);
   void updateTranslate(const glm::vec4& newPosScreenSpace, const glm::vec4& oldPosScreenSpace);

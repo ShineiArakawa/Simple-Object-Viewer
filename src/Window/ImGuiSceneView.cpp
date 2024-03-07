@@ -7,9 +7,8 @@ using namespace model;
 using namespace renderer;
 using namespace util;
 
-ImGuiSceneView::ImGuiSceneView(GLFWwindow* parentWindow, pModel model) {
-  _parentWindow = parentWindow;
-
+ImGuiSceneView::ImGuiSceneView(GLFWwindow* parentWindow, Model_t model)
+    : _parentWindow(parentWindow) {
   // ====================================================================
   // Initialize Renderer
   // ====================================================================
@@ -24,11 +23,11 @@ ImGuiSceneView::ImGuiSceneView(GLFWwindow* parentWindow, pModel model) {
 
 ImGuiSceneView::~ImGuiSceneView() {}
 
-Renderer::pFrameBuffer ImGuiSceneView::getFrameBuffer() {
+Renderer::FrameBuffer_t ImGuiSceneView::getFrameBuffer() {
   return _renderer->getFrameBuffer();
 }
 
-ImGuiSceneView::pRenderer ImGuiSceneView::getRenderer() {
+ImGuiSceneView::Renderer_t ImGuiSceneView::getRenderer() {
   return _renderer;
 }
 

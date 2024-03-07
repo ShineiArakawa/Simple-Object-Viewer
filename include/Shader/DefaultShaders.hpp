@@ -4,6 +4,7 @@
 
 namespace simview {
 namespace shader {
+
 class DefaultModelShader {
  public:
   inline static const char* UNIFORM_NAME_MV_MAT = "u_mvMat";
@@ -269,19 +270,27 @@ class DefaultDepthShader {
       "#version 460\n"
       "\n"
       "layout(location = 0) in vec3 in_position;\n"
+      "layout(location = 1) in vec3 in_color;\n"
+      "layout(location = 2) in vec3 in_normal;\n"
+      "layout(location = 3) in vec3 in_bary;\n"
+      "layout(location = 4) in vec2 in_uv;\n"
+      "layout(location = 5) in float in_id;\n"
       "\n"
       "uniform mat4 u_lightMvpMat;\n"
       "\n"
       "void main() {\n"
       "    gl_Position = u_lightMvpMat * vec4(in_position, 1.0);\n"
+      "    // gl_Position = mat4(1.0f) * vec4(in_position, 1.0);\n"
       "}\n";
 
   inline static const std::string FRAG_SHADER =
       "#version 460\n"
       "\n"
+      "layout(location = 0) out float fragmentdepth;\n"
+      "\n"
       "void main() {\n"
+      "    fragmentdepth = gl_FragCoord.z;\n"
       "}\n";
-  ;
 };
 
 class DefaultDepthQuadShader {
@@ -314,9 +323,11 @@ class DefaultDepthQuadShader {
       "\n"
       "void main() {\n"
       "    float depthValue = texture(u_diffuseTexture, f_uv).r;\n"
-      "    out_color = vec4(vec3(depthValue), 1.0);\n"
-      "    // out_color = vec4(1.0f, 1.0f, 1.0f, 1.0);\n"
+      "    depthValue = 1.0 - (1.0 - depthValue) * 25.0;\n"
+      "    out_color = vec4(depthValue);\n"
+      "    // out_color = vec4(vec3(depthValue), 1.0);\n"
       "}\n";
 };
+
 }  // namespace shader
 }  // namespace simview

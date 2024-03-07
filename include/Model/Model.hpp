@@ -18,23 +18,23 @@ namespace simview {
 namespace model {
 class Model {
  public:
-  using t_object = std::shared_ptr<Primitives>;
-  using t_background = std::shared_ptr<Background>;
-  using t_objects = std::shared_ptr<std::vector<t_object>>;
-  using t_string = std::shared_ptr<std::string>;
+  using Object_t = std::shared_ptr<Primitives>;
+  using Background_t = std::shared_ptr<Background>;
+  using Objects_t = std::shared_ptr<std::vector<Object_t>>;
+  using String_t = std::shared_ptr<std::string>;
 
  private:
   // Nothing
 
  protected:
-  t_objects _objects = std::make_shared<std::vector<t_object>>();
-  t_objects _backgrounds = std::make_shared<std::vector<t_object>>();
+  Objects_t _objects = std::make_shared<std::vector<Object_t>>();
+  Objects_t _backgrounds = std::make_shared<std::vector<Object_t>>();
   glm::vec4 _backgroundColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-  t_string _modelVertMShaderPath = nullptr;
-  t_string _modelFragShaderPath = nullptr;
-  t_string _depthVertMShaderPath = nullptr;
-  t_string _depthFragShaderPath = nullptr;
+  String_t _modelVertMShaderPath = nullptr;
+  String_t _modelFragShaderPath = nullptr;
+  String_t _depthVertMShaderPath = nullptr;
+  String_t _depthFragShaderPath = nullptr;
 
   int _backgroundIDtoDraw = 0;
   float _time = 0.0f;
@@ -42,7 +42,7 @@ class Model {
   Primitives::ModelShader_t _shader = nullptr;
   Primitives::DepthShader_t _depthShader = nullptr;
 
-  glm::vec4 _lightPosition = glm::vec4(5.0f, 0.0f, 0.0f, 1.0f);
+  glm::vec4 _lightPosition = glm::vec4(5.0f, 5.0f, 5.0f, 1.0f);
   float _shininess = 50.0f;
   float _ambientIntensity = 0.1f;
   glm::vec3 _wireFrameColor = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -73,14 +73,14 @@ class Model {
 
   void compileShaders(const bool &isQuad = false);
 
-  void addBackground(const t_background &background) {
+  void addBackground(const Background_t &background) {
     background->setModelShader(getModelShader());
     background->setDepthShader(getDepthShader());
     background->initVAO();
     _backgrounds->push_back(background);
   };
 
-  void addObject(const t_object &object, bool toInitializeVAO = true) {
+  void addObject(const Object_t &object, bool toInitializeVAO = true) {
     object->setModelShader(getModelShader());
     object->setDepthShader(getDepthShader());
     if (toInitializeVAO) {
@@ -101,19 +101,19 @@ class Model {
     }
   }
 
-  t_objects getBackgrounds() { return _backgrounds; };
+  Objects_t getBackgrounds() { return _backgrounds; };
 
   Primitives::ModelShader_t getModelShader() { return _shader; };
 
   Primitives::DepthShader_t getDepthShader() { return _depthShader; };
 
-  t_object getBackground(const int index) { return (*_backgrounds)[index]; };
+  Object_t getBackground(const int index) { return (*_backgrounds)[index]; };
 
   int getNumBackgrounds() { return (int)_backgrounds->size(); };
 
-  t_objects getObjects() { return _objects; };
+  Objects_t getObjects() { return _objects; };
 
-  t_object getObject(const int index) { return (*_objects)[index]; };
+  Object_t getObject(const int index) { return (*_objects)[index]; };
 
   int getNumObjects() { return (int)_objects->size(); };
 
@@ -131,13 +131,13 @@ class Model {
 
   float getWireFrameWidth() { return _wireFrameWidth; };
 
-  void setModelVertShaderPath(const t_string &vertShaderPath) { _modelVertMShaderPath = vertShaderPath; };
+  void setModelVertShaderPath(const String_t &vertShaderPath) { _modelVertMShaderPath = vertShaderPath; };
 
-  void setModelFragShaderPath(const t_string &fragShaderPath) { _modelFragShaderPath = fragShaderPath; };
+  void setModelFragShaderPath(const String_t &fragShaderPath) { _modelFragShaderPath = fragShaderPath; };
 
-  void setDepthVertShaderPath(const t_string &vertShaderPath) { _depthVertMShaderPath = vertShaderPath; };
+  void setDepthVertShaderPath(const String_t &vertShaderPath) { _depthVertMShaderPath = vertShaderPath; };
 
-  void setDepthFragShaderPath(const t_string &fragShaderPath) { _depthFragShaderPath = fragShaderPath; };
+  void setDepthFragShaderPath(const String_t &fragShaderPath) { _depthFragShaderPath = fragShaderPath; };
 
   void setModelShader(Primitives::ModelShader_t shader);
 

@@ -19,12 +19,12 @@ target_include_directories(
 target_link_libraries(
   ${PROJECT_NAME}
   ${EXTERNAL_LIBS}
-  $<TARGET_OBJECTS:OpenGLTemplate_App_object>
-  $<TARGET_OBJECTS:OpenGLTemplate_Renderer_object>
-  $<TARGET_OBJECTS:OpenGLTemplate_Model_object>
-  $<TARGET_OBJECTS:OpenGLTemplate_Util_object>
-  $<TARGET_OBJECTS:OpenGLTemplate_Window_object>
-  $<TARGET_OBJECTS:OpenGLTemplate_Shader_object>
+  $<TARGET_OBJECTS:SimView_App_object>
+  $<TARGET_OBJECTS:SimView_Renderer_object>
+  $<TARGET_OBJECTS:SimView_Model_object>
+  $<TARGET_OBJECTS:SimView_Util_object>
+  $<TARGET_OBJECTS:SimView_Window_object>
+  $<TARGET_OBJECTS:SimView_Shader_object>
   ${CMAKE_DL_LIBS}
 )
 

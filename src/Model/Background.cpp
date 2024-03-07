@@ -114,7 +114,9 @@ void Background::drawGL(const int& index) {
 }
 
 void Background::drawAllGL(const glm::mat4& lightMvpMat) {
-  drawGL();
+  if (_isVisible) {
+    drawGL();
+  }
 }
 
 }  // namespace model

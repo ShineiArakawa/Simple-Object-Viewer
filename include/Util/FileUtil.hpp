@@ -8,7 +8,7 @@ namespace util {
 namespace generic_fs = std::filesystem;
 
 class FileUtil {
-  using tPath = std::filesystem::path;
+  using Path_t = std::filesystem::path;
 
  public:
   static std::string join(const std::string, const std::string);

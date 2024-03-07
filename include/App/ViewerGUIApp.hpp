@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-// #define DEBUG_SHADOW_MAPPING
+#define DEBUG_SHADOW_MAPPING
 
 namespace simview {
 namespace app {
@@ -26,8 +26,8 @@ class ViewerGUIApp {
   ~ViewerGUIApp();
 
   void launch();
-  void addObject(const model::Model::t_object& object, bool toInitializeVAO = true);
-  void addBackground(const model::Model::t_background& background);
+  void addObject(const model::Model::Object_t& object, bool toInitializeVAO = true);
+  void addBackground(const model::Model::Background_t& background);
   void setRenderType(const model::Primitives::RenderType renderType);
 };
 }  // namespace app

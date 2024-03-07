@@ -39,7 +39,6 @@ void Renderer::initLightMatrices() {
                                    (float)_depthRenderer->DEPTH_MAP_WIDTH / (float)_depthRenderer->DEPTH_MAP_HEIGHT,
                                    0.1f,
                                    1000.0f);
-  // _lightProjMat = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
 }
 
 void Renderer::initializeGL() {
@@ -57,7 +56,7 @@ void Renderer::paintGL(const bool& renderShadowMap) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_MULTISAMPLE);
 
-  const glm::mat4 modelMat = _acTransMat * _acRotMat * _acScaleMat;
+  const glm::mat4& modelMat = _acTransMat * _acRotMat * _acScaleMat;
   const glm::mat4& lightMvpMat = _lightProjMat * getLightViewMat(modelMat) * modelMat;
 
   // ====================================================================
@@ -69,7 +68,6 @@ void Renderer::paintGL(const bool& renderShadowMap) {
 
     {
       _depthRenderer->bind();
-      glEnable(GL_DEPTH_TEST);
       glDepthFunc(GL_LESS);
 
       glEnable(GL_CULL_FACE);
@@ -130,11 +128,11 @@ void Renderer::resizeGL() {
   }
 }
 
-Renderer::pFrameBuffer Renderer::getFrameBuffer() {
+Renderer::FrameBuffer_t Renderer::getFrameBuffer() {
   return _frameBuffer;
 }
 
-Renderer::pDepthRenderer Renderer::getDepthRenderer() {
+Renderer::DepthRenderer_t Renderer::getDepthRenderer() {
   return _depthRenderer;
 }
 
@@ -184,8 +182,8 @@ glm::vec3 Renderer::getLightPosInWorldSpace() {
 }
 
 glm::mat4 Renderer::getLightViewMat(const glm::mat4& modelMat) {
-  return glm::lookAt((modelMat * _model->getLightPos()).xyz(),
-                     glm::vec3(0.0f),
+  return glm::lookAt((modelMat * _lightTrasMat * _model->getLightPos()).xyz(),
+                     glm::vec3(0.0f, 0.0f, 0.0f),
                      glm::vec3(0.0f, 1.0f, 0.0f));
 }
 }  // namespace renderer

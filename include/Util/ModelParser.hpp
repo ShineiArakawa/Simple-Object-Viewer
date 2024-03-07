@@ -25,31 +25,31 @@ class ModelParser {
   // clang-format on
 
  public:
-  using pValue = std::shared_ptr<picojson::value>;
-  using pModel = std::shared_ptr<model::Model>;
-  using pString = std::shared_ptr<std::string>;
+  using Value_t = std::shared_ptr<picojson::value>;
+  using Model_t = std::shared_ptr<model::Model>;
+  using String_t = std::shared_ptr<std::string>;
 
  private:
-  static void autoCompPath(const pString path, const pString rootDirPath);
+  static void autoCompPath(const String_t path, const String_t rootDirPath);
 
  public:
-  static void parse(std::string filePath, pModel model);
+  static void parse(std::string filePath, Model_t model);
 
-  static void parseCommon(const pValue jsonValueCommon, pString rootDirPath);
+  static void parseCommon(const Value_t jsonValueCommon, String_t rootDirPath);
 
-  static void parseShader(const pValue jsonValueShader, pModel model, const pString rootDirPath);
+  static void parseShader(const Value_t jsonValueShader, Model_t model, const String_t rootDirPath);
 
-  static void parseBackgroundColor(const pValue jsonValueBackground, pModel model, const pString rootDirPath);
+  static void parseBackgroundColor(const Value_t jsonValueBackground, Model_t model, const String_t rootDirPath);
 
-  static void parseModel(const pValue jsonValueModel, pModel model, const pString rootDirPath);
+  static void parseModel(const Value_t jsonValueModel, Model_t model, const String_t rootDirPath);
 
-  static void parseModelBackground(const pValue jsonValueModelBackground, pModel model, const pString rootDirPath);
+  static void parseModelBackground(const Value_t jsonValueModelBackground, Model_t model, const String_t rootDirPath);
 
-  static void parseModelBox(const pValue jsonValueModelBox, pModel model, const pString rootDirPath);
+  static void parseModelBox(const Value_t jsonValueModelBox, Model_t model, const String_t rootDirPath);
 
-  static void parseModelObject(const pValue jsonValueModelObject, pModel model, const pString rootDirPath);
+  static void parseModelObject(const Value_t jsonValueModelObject, Model_t model, const String_t rootDirPath);
 
-  static void parseModelTerrain(const pValue jsonValueModelTerrain, pModel model, const pString rootDirPath);
+  static void parseModelTerrain(const Value_t jsonValueModelTerrain, Model_t model, const String_t rootDirPath);
 };
 
 }  // namespace util

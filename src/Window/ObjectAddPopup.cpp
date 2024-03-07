@@ -223,7 +223,7 @@ void ObjectAddFileDialog::paint() {
     // ========================================================================================================================
     // Create objects
     // ========================================================================================================================
-    Model::t_object newObject = nullptr;
+    Model::Object_t newObject = nullptr;
     std::string strObjName(objName);
     std::string strObjFilePath(objFilePath);
     std::string strTexFilePath(textureFilePath);

@@ -164,12 +164,15 @@ void MaterialObject::drawGL(const int& index) {
 }
 
 void MaterialObject::drawAllGL(const glm::mat4& lightMvpMat) {
-  const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
-  _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+  if (_isVisible) {
+    const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
+    _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
 
-  for (int iObject = 0; iObject < (int)_materialObjectBuffers->size(); ++iObject) {
-    drawGL(iObject);
+    for (int iObject = 0; iObject < (int)_materialObjectBuffers->size(); ++iObject) {
+      drawGL(iObject);
+    }
   }
 }
+
 }  // namespace model
 }  // namespace simview
