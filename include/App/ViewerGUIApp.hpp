@@ -6,7 +6,6 @@
 #include <memory>
 #include <string>
 
-#define DEBUG_SHADOW_MAPPING
 
 namespace simview {
 namespace app {
