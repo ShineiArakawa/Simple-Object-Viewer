@@ -3,6 +3,8 @@
 namespace simview {
 namespace renderer {
 
+using namespace shader;
+
 DepthRenderer::DepthRenderer(DepthShader_t shader) : _shader(shader) {
   initDepthMap();
 }

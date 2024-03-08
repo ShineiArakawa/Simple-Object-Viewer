@@ -23,33 +23,35 @@ PointCloudPoly::PointCloudPoly(const std::string &filePath,
 }
 
 void PointCloudPoly::initVAO() {
-  std::shared_ptr<std::vector<Vertex>> points = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<uint32_t>> pointsIndices = std::make_shared<std::vector<uint32_t>>();
+  VertexArray_t points = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t pointsIndices = std::make_shared<std::vector<uint32_t>>();
 
   ObjectLoader::readFromFile(_filePath, points, pointsIndices, _offsetX, _offsetY, _offsetZ);
   ObjectLoader::moveToOrigin(points);
   ObjectLoader::scaleObject(points, _scale);
   ObjectLoader::translateObject(points, _offsetX, _offsetY, _offsetZ);
 
-  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
+  VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
 
   int index = 0;
 
   vertices->resize((NUM_DIVISIONS - 1) * (2 * NUM_DIVISIONS - 1) * 6 * (int)points->size());
   indices->resize((NUM_DIVISIONS - 1) * (2 * NUM_DIVISIONS - 1) * 6 * (int)points->size());
 
-  std::shared_ptr<std::vector<Vertex>> primitiveVertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<uint32_t>> primitiveIndices = std::make_shared<std::vector<uint32_t>>();
-  Sphere::createSphere(NUM_DIVISIONS, primitiveVertices, primitiveIndices, _isDoubled);
-  ObjectLoader::moveToOrigin(primitiveVertices);
-  ObjectLoader::scaleObject(primitiveVertices, _pointSize);
+  VertexArray_t primitiveVertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t primitiveIndices = std::make_shared<std::vector<uint32_t>>();
+  {
+    Sphere::createSphere(NUM_DIVISIONS, primitiveVertices, primitiveIndices, _isDoubled);
+    ObjectLoader::moveToOrigin(primitiveVertices);
+    ObjectLoader::scaleObject(primitiveVertices, _pointSize);
+  }
 
   for (int iPoint = 0; iPoint < (int)points->size(); ++iPoint) {
     const Vertex point = (*points)[iPoint];
 
-    std::shared_ptr<std::vector<Vertex>> iVertices = std::make_shared<std::vector<Vertex>>(*primitiveVertices);
-    std::shared_ptr<std::vector<uint32_t>> iIndices = std::make_shared<std::vector<uint32_t>>(*primitiveIndices);
+    VertexArray_t iVertices = std::make_shared<std::vector<Vertex>>(*primitiveVertices);
+    IndexArray_t iIndices = std::make_shared<std::vector<uint32_t>>(*primitiveIndices);
 
     ObjectLoader::translateObject(iVertices, point.position[0], point.position[1], point.position[2]);
 
@@ -92,7 +94,7 @@ void PointCloudPoly::initVAO() {
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices->size(), indices->data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices->size(), indices->data(), GL_STATIC_DRAW);
 
   _indexBufferSize = (int)indices->size();
 

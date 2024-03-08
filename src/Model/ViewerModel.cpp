@@ -13,7 +13,7 @@ ViewerModel::ViewerModel() {
 ViewerModel::~ViewerModel() {}
 
 void ViewerModel::initVAO() {
-  int nBackgrounds = getNumBackgrounds();
+  const int nBackgrounds = getNumBackgrounds();
   for (int iBackground = 0; iBackground < nBackgrounds; iBackground++) {
     getBackground(iBackground)->initVAO();
 
@@ -22,7 +22,7 @@ void ViewerModel::initVAO() {
     }
   }
 
-  int nModels = getNumObjects();
+  const int nModels = getNumObjects();
   for (int iModel = 0; iModel < nModels; iModel++) {
     getObject(iModel)->initVAO();
 

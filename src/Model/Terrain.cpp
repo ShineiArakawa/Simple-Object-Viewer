@@ -38,10 +38,11 @@ void Terrain::initVAO() {
   const float diffW = 1.0f / (float)width;
 
   // Create vertex array
-  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
-  std::vector<unsigned int> indices;
+  VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
+
   vertices->resize((height - 1) * (width - 1) * 6);
-  indices.resize((height - 1) * (width - 1) * 6);
+  indices->resize((height - 1) * (width - 1) * 6);
 
 #pragma omp parallel for
   for (int h_texture = 0; h_texture < height - 1; h_texture++) {
@@ -71,14 +72,14 @@ void Terrain::initVAO() {
         Vertex v(points[faces[0][i_vert]], colors[i_vert], normals[0], BARY_CENTER[i_vert], textureCoords[i_vert], 0.0f);
 
         (*vertices)[index + i_vert] = v;
-        indices[index + i_vert] = index + i_vert;
+        (*indices)[index + i_vert] = index + i_vert;
       }
 
       for (int i_vert = 0; i_vert < 3; i_vert++) {
         Vertex v(points[faces[1][i_vert]], colors[i_vert], normals[1], BARY_CENTER[i_vert], textureCoords[i_vert], 0.0f);
 
         (*vertices)[index + i_vert + 3] = v;
-        indices[index + i_vert + 3] = index + i_vert + 3;
+        (*indices)[index + i_vert + 3] = index + i_vert + 3;
       }
     }
   }
@@ -120,9 +121,9 @@ void Terrain::initVAO() {
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices->size(), indices->data(), GL_STATIC_DRAW);
 
-  _indexBufferSize = (int)indices.size();
+  _indexBufferSize = (int)indices->size();
 
   // Temporarily disable VAO
   glBindVertexArray(0);

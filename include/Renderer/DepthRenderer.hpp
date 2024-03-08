@@ -7,14 +7,12 @@
 
 namespace simview {
 namespace renderer {
-class DepthRenderer {
- public:
-  using DepthShader_t = std::shared_ptr<shader::DepthShader>;
 
+class DepthRenderer {
  private:
   GLuint _depthMap;
   GLuint _depthMapFBO;
-  DepthShader_t _shader = nullptr;
+  shader::DepthShader_t _shader = nullptr;
 
  public:
   inline static const unsigned int DEPTH_MAP_WIDTH = 2048;
@@ -24,7 +22,7 @@ class DepthRenderer {
   // Nothing
 
  public:
-  DepthRenderer(DepthShader_t);
+  DepthRenderer(shader::DepthShader_t);
   ~DepthRenderer();
 
   void initDepthMap();
@@ -34,5 +32,8 @@ class DepthRenderer {
   void bind();
   void unbind();
 };
+
+using DepthRenderer_t = std::shared_ptr<DepthRenderer>;
+
 }  // namespace renderer
 }  // namespace simview

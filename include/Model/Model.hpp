@@ -16,19 +16,19 @@
 
 namespace simview {
 namespace model {
+
 class Model {
  public:
-  using Object_t = std::shared_ptr<Primitives>;
-  using Background_t = std::shared_ptr<Background>;
-  using Objects_t = std::shared_ptr<std::vector<Object_t>>;
+  using Objects_t = std::shared_ptr<std::vector<Primitives_t>>;
+  using Backgrounds_t = std::shared_ptr<std::vector<Background_t>>;
   using String_t = std::shared_ptr<std::string>;
 
  private:
   // Nothing
 
  protected:
-  Objects_t _objects = std::make_shared<std::vector<Object_t>>();
-  Objects_t _backgrounds = std::make_shared<std::vector<Object_t>>();
+  Objects_t _objects = std::make_shared<std::vector<Primitives_t>>();
+  Backgrounds_t _backgrounds = std::make_shared<std::vector<Background_t>>();
   glm::vec4 _backgroundColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
   String_t _modelVertMShaderPath = nullptr;
@@ -39,8 +39,8 @@ class Model {
   int _backgroundIDtoDraw = 0;
   float _time = 0.0f;
 
-  Primitives::ModelShader_t _shader = nullptr;
-  Primitives::DepthShader_t _depthShader = nullptr;
+  shader::ModelShader_t _shader = nullptr;
+  shader::DepthShader_t _depthShader = nullptr;
 
   glm::vec4 _lightPosition = glm::vec4(5.0f, 5.0f, 5.0f, 1.0f);
   float _shininess = 50.0f;
@@ -74,19 +74,29 @@ class Model {
   void compileShaders(const bool &isQuad = false);
 
   void addBackground(const Background_t &background) {
-    background->setModelShader(getModelShader());
-    background->setDepthShader(getDepthShader());
-    background->initVAO();
-    _backgrounds->push_back(background);
+    try {
+      background->setModelShader(getModelShader());
+      background->setDepthShader(getDepthShader());
+      background->initVAO();
+      _backgrounds->push_back(background);
+    } catch (std::exception exception) {
+      LOG_ERROR("Failed to add a new object. Please check attributes!");
+      LOG_ERROR(exception.what());
+    }
   };
 
-  void addObject(const Object_t &object, bool toInitializeVAO = true) {
-    object->setModelShader(getModelShader());
-    object->setDepthShader(getDepthShader());
-    if (toInitializeVAO) {
-      object->initVAO();
+  void addObject(const Primitives_t &object, bool toInitializeVAO = true) {
+    try {
+      object->setModelShader(getModelShader());
+      object->setDepthShader(getDepthShader());
+      if (toInitializeVAO) {
+        object->initVAO();
+      }
+      _objects->push_back(object);
+    } catch (std::exception exception) {
+      LOG_ERROR("Failed to add a new object. Please check attributes!");
+      LOG_ERROR(exception.what());
     }
-    _objects->push_back(object);
   };
 
   void removeObject(const int index) {
@@ -101,19 +111,19 @@ class Model {
     }
   }
 
-  Objects_t getBackgrounds() { return _backgrounds; };
+  Backgrounds_t getBackgrounds() { return _backgrounds; };
 
-  Primitives::ModelShader_t getModelShader() { return _shader; };
+  shader::ModelShader_t getModelShader() { return _shader; };
 
-  Primitives::DepthShader_t getDepthShader() { return _depthShader; };
+  shader::DepthShader_t getDepthShader() { return _depthShader; };
 
-  Object_t getBackground(const int index) { return (*_backgrounds)[index]; };
+  Background_t getBackground(const int index) { return (*_backgrounds)[index]; };
 
   int getNumBackgrounds() { return (int)_backgrounds->size(); };
 
   Objects_t getObjects() { return _objects; };
 
-  Object_t getObject(const int index) { return (*_objects)[index]; };
+  Primitives_t getObject(const int index) { return (*_objects)[index]; };
 
   int getNumObjects() { return (int)_objects->size(); };
 
@@ -139,9 +149,9 @@ class Model {
 
   void setDepthFragShaderPath(const String_t &fragShaderPath) { _depthFragShaderPath = fragShaderPath; };
 
-  void setModelShader(Primitives::ModelShader_t shader);
+  void setModelShader(shader::ModelShader_t shader);
 
-  void setDepthShader(Primitives::DepthShader_t shader);
+  void setDepthShader(shader::DepthShader_t shader);
 
   void setMaskMode(bool maskMode);
 
@@ -191,5 +201,8 @@ class Model {
 
   void setWireFrameWidth(const float &wireFrameWidth) { _wireFrameWidth = wireFrameWidth; }
 };
+
+using Model_t = std::shared_ptr<Model>;
+
 }  // namespace model
 }  // namespace simview

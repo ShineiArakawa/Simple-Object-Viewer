@@ -14,6 +14,7 @@
 
 namespace simview {
 namespace model {
+
 class ViewerModel : public Model {
  public:
   ViewerModel();
@@ -31,5 +32,8 @@ class ViewerModel : public Model {
 
   void setAxesConeState(const bool isShown);
 };
+
+using ViewerModel_t = std::shared_ptr<ViewerModel>;
+
 }  // namespace model
 }  // namespace simview

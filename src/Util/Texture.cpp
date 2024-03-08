@@ -4,12 +4,13 @@ namespace simview {
 namespace util {
 
 void Texture::loadTexture(const std::string& filePath, GLuint& texID) {
-  int texWidth, texHeight, channels;
   // Texture ============================================================================================
+  int texWidth, texHeight, channels;
   unsigned char* bytesTexture = stb::api_stbi_load(filePath.c_str(), &texWidth, &texHeight, &channels, stb::api_STBI_rgb_alpha);
+
   if (!bytesTexture) {
-    fprintf(stderr, "Failed to load image file: %s\n", filePath.c_str());
-    exit(1);
+    LOG_ERROR("Failed to load image file from " + filePath);
+    return;
   }
 
   glGenTextures(1, &texID);
@@ -31,13 +32,14 @@ void Texture::loadTexture(const std::string& filePath, GLuint& texID) {
 
 void Texture::readTexture(const std::string& filePath, Texture::TextureArray texture) {
   texture->clear();
+
   int texWidth, texHeight, nChannels;
 
   // Texture ============================================================================================
   unsigned char* bytesTexture = stb::api_stbi_load(filePath.c_str(), &texWidth, &texHeight, &nChannels, stb::api_STBI_rgb_alpha);
   if (!bytesTexture) {
-    fprintf(stderr, "Failed to load image file: %s\n", filePath.c_str());
-    exit(1);
+    LOG_ERROR("Failed to load image file from " + filePath);
+    return;
   }
 
   for (int i = 0; i < texHeight; i++) {

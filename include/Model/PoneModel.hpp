@@ -15,6 +15,7 @@
 
 namespace simview {
 namespace model {
+
 class PoneModel : public Model {
  public:
   enum class GamePhase { START,
@@ -30,11 +31,11 @@ class PoneModel : public Model {
   inline static const glm::vec2 RANGE_Y = glm::vec2(-9.5f, 9.5f);
 
  private:
-  Model::Object_t _sphere = nullptr;
-  Model::Object_t _paddle = nullptr;
-  Model::Object_t _backgroundStart = nullptr;
-  Model::Object_t _backgroundGameOver = nullptr;
-  Model::Objects_t _walls = std::make_shared<std::vector<Model::Object_t>>();
+  Primitives_t _sphere = nullptr;
+  Primitives_t _paddle = nullptr;
+  Primitives_t _backgroundStart = nullptr;
+  Primitives_t _backgroundGameOver = nullptr;
+  Model::Objects_t _walls = std::make_shared<std::vector<Primitives_t>>();
   GamePhase _phase = GamePhase::START;
 
   // clang-format off
@@ -67,5 +68,8 @@ class PoneModel : public Model {
   void paddleMoveLeft();
   void paddleMoveRight();
 };
+
+using PoneModel_t = std::shared_ptr<PoneModel>;
+
 }  // namespace model
 }  // namespace simview

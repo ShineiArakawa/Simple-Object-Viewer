@@ -5,6 +5,7 @@
 
 namespace simview {
 namespace model {
+
 class AxesCone : public Primitives {
  private:
   float _offsetX;
@@ -52,9 +53,12 @@ class AxesCone : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_AXES_CONE; };
   void createXorientedCone(
-      std::shared_ptr<std::vector<Vertex>>& vertices,
-      std::shared_ptr<std::vector<unsigned int>>& indices,
+      VertexArray_t& vertices,
+      IndexArray_t& indices,
       const glm::vec3& color) const;
 };
+
+using AxesCone_t = std::shared_ptr<AxesCone>;
+
 }  // namespace model
 }  // namespace simview

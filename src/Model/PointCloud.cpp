@@ -21,8 +21,8 @@ PointCloud::PointCloud(const std::string &filePath,
 }
 
 void PointCloud::initVAO() {
-  std::shared_ptr<std::vector<Vertex>> points = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
+  VertexArray_t points = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
 
   ObjectLoader::readFromFile(_filePath, points, indices, _offsetX, _offsetY, _offsetZ);
   ObjectLoader::moveToOrigin(points);
@@ -37,8 +37,8 @@ void PointCloud::initVAO() {
 void PointCloud::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
                          const std::shared_ptr<std::vector<vec3f_t>> colors,
                          const std::shared_ptr<std::vector<int>> ids) {
-  std::shared_ptr<std::vector<Vertex>> points = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
+  VertexArray_t points = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
 
   const int nPoints = positions->size();
 
@@ -79,8 +79,8 @@ void PointCloud::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
   initVAO(points, indices);
 }
 
-void PointCloud::initVAO(const std::shared_ptr<std::vector<Vertex>> &points,
-                         const std::shared_ptr<std::vector<uint32_t>> &indices) {
+void PointCloud::initVAO(const VertexArray_t &points,
+                         const IndexArray_t &indices) {
   // Create VAO
   glGenVertexArrays(1, &_vaoId);
   glBindVertexArray(_vaoId);
@@ -112,7 +112,7 @@ void PointCloud::initVAO(const std::shared_ptr<std::vector<Vertex>> &points,
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices->size(), indices->data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices->size(), indices->data(), GL_STATIC_DRAW);
 
   _indexBufferSize = (int)indices->size();
 
@@ -188,5 +188,6 @@ void PointCloud::drawAllGL(const glm::mat4 &lightMvpMat) {
     drawGL();
   }
 }
+
 }  // namespace model
 }  // namespace simview

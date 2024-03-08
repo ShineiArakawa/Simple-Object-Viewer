@@ -12,12 +12,11 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox(const glm::vec3& minCoords,
   initVAO();
 }
 
-AxisAlignedBoundingBox::~AxisAlignedBoundingBox() {
-}
+AxisAlignedBoundingBox::~AxisAlignedBoundingBox() = default;
 
 void AxisAlignedBoundingBox::initVAO() {
-  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
-  std::vector<unsigned int> indices;
+  VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
   int idx = 0;
 
   glm::vec3 normal(0.0f), bary(0.0f);
@@ -26,11 +25,11 @@ void AxisAlignedBoundingBox::initVAO() {
   for (int iLine = 0; iLine < 12; ++iLine) {
     Vertex v0(POSITIONS[LINES[iLine][0]], COLOR, normal, bary, uv, 0.0f);
     vertices->push_back(v0);
-    indices.push_back(idx++);
+    indices->push_back(idx++);
 
     Vertex v1(POSITIONS[LINES[iLine][1]], COLOR, normal, bary, uv, 0.0f);
     vertices->push_back(v1);
-    indices.push_back(idx++);
+    indices->push_back(idx++);
   }
 
   const glm::vec3 intervals = _maxCoords - _minCoords;
@@ -71,7 +70,7 @@ void AxisAlignedBoundingBox::initVAO() {
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices->size(), indices->data(), GL_STATIC_DRAW);
 
   // Temporarily disable VAO
   glBindVertexArray(0);

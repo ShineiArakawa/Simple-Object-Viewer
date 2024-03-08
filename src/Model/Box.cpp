@@ -25,8 +25,8 @@ Box::~Box() = default;
 
 void Box::initVAO() {
   // Create vertex array
-  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
-  std::vector<unsigned int> indices;
+  VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
   int idx = 0;
 
   for (int i = 0; i < 6; i++) {
@@ -35,7 +35,7 @@ void Box::initVAO() {
 
       Vertex v(pos, colors[i], normals[i], BARY_CENTER[j], uvKeypointCoords[faceToUVKeypointIndex[i * 2 + 0][j]], 0.0f);
       vertices->push_back(v);
-      indices.push_back(idx++);
+      indices->push_back(idx++);
     }
 
     for (int j = 0; j < 3; j++) {
@@ -43,7 +43,7 @@ void Box::initVAO() {
 
       Vertex v(pos, colors[i], normals[i], BARY_CENTER[j], uvKeypointCoords[faceToUVKeypointIndex[i * 2 + 1][j]], 0.0f);
       vertices->push_back(v);
-      indices.push_back(idx++);
+      indices->push_back(idx++);
     }
   }
 
@@ -82,7 +82,7 @@ void Box::initVAO() {
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices->size(), indices->data(), GL_STATIC_DRAW);
 
   // Temporarily disable VAO
   glBindVertexArray(0);

@@ -85,7 +85,11 @@ PoneApp::PoneApp(const std::string& configFilePath) {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   // Create a window
-  window = glfwCreateWindow(Window::WIN_WIDTH, Window::WIN_HEIGHT, WIN_TITLE, NULL, NULL);
+  window = glfwCreateWindow(Window::WIN_WIDTH,
+                            Window::WIN_HEIGHT,
+                            WIN_TITLE,
+                            NULL,
+                            NULL);
   if (window == NULL) {
     glfwTerminate();
     fprintf(stderr, "Window creation failed!\n");

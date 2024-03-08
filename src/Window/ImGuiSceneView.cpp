@@ -23,11 +23,11 @@ ImGuiSceneView::ImGuiSceneView(GLFWwindow* parentWindow, Model_t model)
 
 ImGuiSceneView::~ImGuiSceneView() {}
 
-Renderer::FrameBuffer_t ImGuiSceneView::getFrameBuffer() {
+FrameBuffer_t ImGuiSceneView::getFrameBuffer() {
   return _renderer->getFrameBuffer();
 }
 
-ImGuiSceneView::Renderer_t ImGuiSceneView::getRenderer() {
+Renderer_t ImGuiSceneView::getRenderer() {
   return _renderer;
 }
 

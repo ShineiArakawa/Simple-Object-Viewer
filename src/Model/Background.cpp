@@ -6,33 +6,36 @@ namespace model {
 using namespace util;
 using namespace shader;
 
-Background::Background(const GLuint& textureId) {
-  _textureId = textureId;
+Background::Background(const GLuint& textureId)
+    : _isLoadedTexture(true),
+      _textureId(textureId),
+      _textureFilePath("") {
   setDefaultRenderType(RenderType::TEXTURE);
 }
 
-Background::Background(const std::string& filePath) {
-  Texture::loadTexture(filePath, _textureId);
+Background::Background(const std::string& filePath)
+    : _isLoadedTexture(false),
+      _textureFilePath(filePath) {
   setDefaultRenderType(RenderType::TEXTURE);
 }
 
 Background::~Background() {}
 
 void Background::initVAO() {
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
+  VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
   int idx = 0;
 
   for (int j = 0; j < 3; j++) {
     Vertex v(positions[j], glm::vec3(0), glm::vec3(0), BARY_CENTER[j], uvCoords[j], -1.0);
-    vertices.push_back(v);
-    indices.push_back(idx++);
+    vertices->push_back(v);
+    indices->push_back(idx++);
   }
 
   for (int j = 0; j < 3; j++) {
     Vertex v(positions[j + 1], glm::vec3(0), glm::vec3(0), BARY_CENTER[j], uvCoords[j + 1], -1.0);
-    vertices.push_back(v);
-    indices.push_back(idx++);
+    vertices->push_back(v);
+    indices->push_back(idx++);
   }
 
   glGenVertexArrays(1, &_vaoId);
@@ -40,7 +43,7 @@ void Background::initVAO() {
 
   glGenBuffers(1, &_vertexBufferId);
   glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferId);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices->size(), vertices->data(), GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -62,9 +65,14 @@ void Background::initVAO() {
 
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices->size(), indices->data(), GL_STATIC_DRAW);
 
   glBindVertexArray(0);
+
+  // Load Texture
+  if (!_isLoadedTexture) {
+    Texture::loadTexture(_textureFilePath, _textureId);
+  }
 }
 
 void Background::paintGL(const glm::mat4& mvMat,

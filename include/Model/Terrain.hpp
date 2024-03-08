@@ -10,6 +10,7 @@
 
 namespace simview {
 namespace model {
+
 class Terrain : public Primitives {
  private:
   std::string _filePath;
@@ -82,5 +83,8 @@ class Terrain : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_TERRAIN; };
 };
+
+using Terrain_t = std::shared_ptr<Terrain>;
+
 }  // namespace model
 }  // namespace simview

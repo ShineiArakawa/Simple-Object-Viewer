@@ -27,8 +27,8 @@ Sphere::Sphere(const int nDivs,
 Sphere::~Sphere() = default;
 
 void Sphere::initVAO() {
-  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<unsigned int>> indices = std::make_shared<std::vector<unsigned int>>();
+  VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
 
   createSphere(_nDivs, _color, vertices, indices);
 
@@ -67,7 +67,7 @@ void Sphere::initVAO() {
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices->size(), indices->data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices->size(), indices->data(), GL_STATIC_DRAW);
 
   _indexBufferSize = (int)indices->size();
 
@@ -141,11 +141,18 @@ void Sphere::drawAllGL(const glm::mat4 &lightMvpMat) {
   }
 }
 
-void Sphere::createSphere(const int nDivs, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled) {
+void Sphere::createSphere(const int nDivs,
+                          VertexArray_t vertices,
+                          IndexArray_t indices,
+                          const bool isDoubled) {
   createSphere(nDivs, glm::vec3(0.0f), vertices, indices, isDoubled);
 }
 
-void Sphere::createSphere(const int nDivs, const glm::vec3 color, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<unsigned int>> indices, const bool isDoubled) {
+void Sphere::createSphere(const int nDivs,
+                          const glm::vec3 color,
+                          VertexArray_t vertices,
+                          IndexArray_t indices,
+                          const bool isDoubled) {
   const int nDivsTheta = nDivs;
   const int nDivsPhi = isDoubled ? 2 * nDivs : nDivs;
   const float deltaTheta = M_PI / (float)(nDivsTheta - 1);

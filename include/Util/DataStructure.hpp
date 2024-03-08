@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace simview {
-namespace model {
+
 inline static const std::array<glm::vec3, 3> BARY_CENTER = {
     glm::vec3(1.0f, 0.0f, 0.0f),
     glm::vec3(0.0f, 1.0f, 0.0f),
@@ -32,13 +32,16 @@ struct Vertex {
   float id;
 };
 
+using VertexArray_t = std::shared_ptr<std::vector<Vertex>>;
+using IndexArray_t = std::shared_ptr<std::vector<uint32_t>>;
+
 struct MaterialGroup {
   MaterialGroup()
-      : vertices(std::shared_ptr<std::vector<Vertex>>(new std::vector<Vertex>)),
-        indices(std::shared_ptr<std::vector<uint32_t>>(new std::vector<uint32_t>)){};
+      : vertices(VertexArray_t(new std::vector<Vertex>)),
+        indices(IndexArray_t(new std::vector<uint32_t>)){};
 
-  std::shared_ptr<std::vector<Vertex>> vertices = nullptr;
-  std::shared_ptr<std::vector<uint32_t>> indices = nullptr;
+  VertexArray_t vertices = nullptr;
+  IndexArray_t indices = nullptr;
 
   float shininess;          // Ns
   glm::vec3 ambientColor;   // Ka
@@ -60,5 +63,5 @@ struct MaterialGroup {
 
 using MaterialGroup_t = std::shared_ptr<MaterialGroup>;
 using MaterialGroups_t = std::shared_ptr<std::vector<MaterialGroup_t>>;
-}  // namespace model
+
 }  // namespace simview

@@ -13,7 +13,7 @@ PoneModel::~PoneModel() {}
 void PoneModel::initVAO() {
   int nBackgrounds = getNumBackgrounds();
   for (int iBackground = 0; iBackground < nBackgrounds; iBackground++) {
-    Model::Object_t background = getBackground(iBackground);
+    Background_t background = getBackground(iBackground);
     background->initVAO();
 
     if (iBackground % 10000 == 0 || iBackground == nBackgrounds - 1) {
@@ -31,7 +31,7 @@ void PoneModel::initVAO() {
 
   int nModels = getNumObjects();
   for (int iModel = 0; iModel < nModels; iModel++) {
-    Model::Object_t model = getObject(iModel);
+    Primitives_t model = getObject(iModel);
     model->initVAO();
 
     std::cout << model->getName() << std::endl;
@@ -172,7 +172,7 @@ void PoneModel::reset() {
   {
     std::random_device rnd;
     std::mt19937_64 mt64(rnd());
-    std::uniform_real_distribution<double> uniform(0, 1);
+    std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
     glm::vec3 initPosition(0.0f);
     glm::vec3 initVelocity(0.0f);
@@ -222,5 +222,6 @@ void PoneModel::paddleMoveRight() {
     }
   }
 }
+
 }  // namespace model
 }  // namespace simview

@@ -8,6 +8,7 @@
 
 namespace simview {
 namespace window {
+
 class Window {
  public:
   // ========================================================================
@@ -34,9 +35,7 @@ class Window {
   // ========================================================================
   // Global Variables =======================================================
   // ========================================================================
-  using Renderer_t = std::shared_ptr<renderer::Renderer>;
-
-  inline static Renderer_t renderer = nullptr;
+  inline static renderer::Renderer_t renderer = nullptr;
 
   inline static bool isDragging = false;
   inline static bool isMaskMode = false;
@@ -68,5 +67,6 @@ class Window {
   static void motionEvent(GLFWwindow* window, double xpos, double ypos);
   static void wheelEvent(GLFWwindow* window, double xoffset, double yoffset);
 };
+
 }  // namespace window
 }  // namespace simview

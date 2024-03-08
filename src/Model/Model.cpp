@@ -57,13 +57,13 @@ void Model::compileShaders(const bool& isQuad) {
   }
 }
 
-void Model::setModelShader(Primitives::ModelShader_t shader) {
+void Model::setModelShader(ModelShader_t shader) {
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->setModelShader(shader);
   }
 }
 
-void Model::setDepthShader(Primitives::DepthShader_t shader) {
+void Model::setDepthShader(DepthShader_t shader) {
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->setDepthShader(shader);
   }
@@ -110,5 +110,6 @@ void Model::setIsVisibleBBOX(bool isVisible) {
     getObject(iModel)->setVisibleBBOX(isVisible);
   }
 }
+
 }  // namespace model
 }  // namespace simview

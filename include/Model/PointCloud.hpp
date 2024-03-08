@@ -6,6 +6,7 @@
 
 namespace simview {
 namespace model {
+
 class PointCloud : public Primitives {
  private:
   std::string _filePath;
@@ -45,8 +46,8 @@ class PointCloud : public Primitives {
 
   void update() override{};
   void initVAO() override;
-  void initVAO(const std::shared_ptr<std::vector<Vertex>>&,
-               const std::shared_ptr<std::vector<uint32_t>>&);
+  void initVAO(const VertexArray_t&,
+               const IndexArray_t&);
   void initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
                const std::shared_ptr<std::vector<vec3f_t>> colors = nullptr,
                const std::shared_ptr<std::vector<int>> ids = nullptr);
@@ -65,5 +66,8 @@ class PointCloud : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_POINT_CLOUD; };
 };
+
+using PointCloud_t = std::shared_ptr<PointCloud>;
+
 }  // namespace model
 }  // namespace simview

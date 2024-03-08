@@ -17,8 +17,8 @@ AxesCone::AxesCone(const int nDivs, const float offsetX, const float offsetY, co
 AxesCone::~AxesCone() = default;
 
 void AxesCone::createXorientedCone(
-    std::shared_ptr<std::vector<Vertex>>& vertices,
-    std::shared_ptr<std::vector<unsigned int>>& indices,
+    VertexArray_t& vertices,
+    IndexArray_t& indices,
     const glm::vec3& color) const {
   const float deltaTheta = 2 * M_PI / (float)(_nDivs - 1);
   const glm::vec3 origin(0.0f, 0.0f, 0.0f);
@@ -29,8 +29,12 @@ void AxesCone::createXorientedCone(
   for (int iTheta = 0; iTheta < _nDivs - 1; ++iTheta) {
     const float theta = (float)iTheta * deltaTheta;
 
-    const glm::vec3 coneBottomPosition0(1.0f - CONE_HIGHT, CONE_RADIUS * std::cos(theta), CONE_RADIUS * std::sin(theta));
-    const glm::vec3 coneBottomPosition1(1.0f - CONE_HIGHT, CONE_RADIUS * std::cos(theta + deltaTheta), CONE_RADIUS * std::sin(theta + deltaTheta));
+    const glm::vec3 coneBottomPosition0(1.0f - CONE_HIGHT,
+                                        CONE_RADIUS * std::cos(theta),
+                                        CONE_RADIUS * std::sin(theta));
+    const glm::vec3 coneBottomPosition1(1.0f - CONE_HIGHT,
+                                        CONE_RADIUS * std::cos(theta + deltaTheta),
+                                        CONE_RADIUS * std::sin(theta + deltaTheta));
 
     const glm::vec3 coneNormal = glm::normalize(glm::cross(coneBottomPosition1 - coneBottomPosition0, apex - coneBottomPosition1));
 
@@ -84,24 +88,24 @@ void AxesCone::createXorientedCone(
 
 void AxesCone::initVAO() {
   // X-axis cone
-  std::shared_ptr<std::vector<Vertex>> xConeVertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<unsigned int>> xConeIndices = std::make_shared<std::vector<unsigned int>>();
+  VertexArray_t xConeVertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t xConeIndices = std::make_shared<std::vector<uint32_t>>();
   createXorientedCone(xConeVertices, xConeIndices, glm::vec3(1.0f, 0.0f, 0.0f));
 
   // Y-axis cone
-  std::shared_ptr<std::vector<Vertex>> yConeVertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<unsigned int>> yConeIndices = std::make_shared<std::vector<unsigned int>>();
+  VertexArray_t yConeVertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t yConeIndices = std::make_shared<std::vector<uint32_t>>();
   createXorientedCone(yConeVertices, yConeIndices, glm::vec3(0.0f, 1.0f, 0.0f));
   ObjectLoader::rotateObject(yConeVertices, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
   // Z-axis cone
-  std::shared_ptr<std::vector<Vertex>> zConeVertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<unsigned int>> zConeIndices = std::make_shared<std::vector<unsigned int>>();
+  VertexArray_t zConeVertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t zConeIndices = std::make_shared<std::vector<uint32_t>>();
   createXorientedCone(zConeVertices, zConeIndices, glm::vec3(0.0f, 0.0f, 1.0f));
   ObjectLoader::rotateObject(zConeVertices, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<unsigned int>> indices = std::make_shared<std::vector<unsigned int>>();
+  VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
 
   ObjectLoader::mergeVertices(xConeVertices, xConeIndices, vertices, indices);
   ObjectLoader::mergeVertices(yConeVertices, yConeIndices, vertices, indices);
@@ -141,7 +145,7 @@ void AxesCone::initVAO() {
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices->size(), indices->data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices->size(), indices->data(), GL_STATIC_DRAW);
 
   _indexBufferSize = (int)indices->size();
 

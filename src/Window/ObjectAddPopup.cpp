@@ -6,7 +6,7 @@ namespace window {
 using namespace model;
 using namespace util;
 
-ObjectAddFileDialog::ObjectAddFileDialog(std::shared_ptr<ViewerModel> model) : _model(model) {
+ObjectAddFileDialog::ObjectAddFileDialog(ViewerModel_t model) : _model(model) {
   _objectTypes = ""s;
   _objectTypes += Object::KEY_MODEL_OBJECT + "\0"s;
   _objectTypes += Box::KEY_MODEL_BOX + "\0"s;
@@ -205,8 +205,8 @@ void ObjectAddFileDialog::paint() {
       }
     }
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
-    ImGui::InputFloat3("Offset (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);
-    ImGui::InputFloat("Point size", &pointSize, 0.0f, 0.0f, FLOAT_FORMAT);
+    ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);
+    ImGui::InputFloat("Scale", &scale);
   }
 
   // ========================================================================================================================
@@ -223,7 +223,7 @@ void ObjectAddFileDialog::paint() {
     // ========================================================================================================================
     // Create objects
     // ========================================================================================================================
-    Model::Object_t newObject = nullptr;
+    Primitives_t newObject = nullptr;
     std::string strObjName(objName);
     std::string strObjFilePath(objFilePath);
     std::string strTexFilePath(textureFilePath);
@@ -322,7 +322,7 @@ void ObjectAddFileDialog::paint() {
         // ====================================================================
         newObject = std::make_shared<MaterialObject>(strObjFilePath,
                                                      glm::vec3(offsetXYZ[0], offsetXYZ[1], offsetXYZ[2]),
-                                                     glm::vec3(scaleXYZ[0], scaleXYZ[1], scaleXYZ[2]));
+                                                     glm::vec3(scaleXYZ[0] * scale, scaleXYZ[1] * scale, scaleXYZ[2] * scale));
       }
 
       if (newObject != nullptr) {

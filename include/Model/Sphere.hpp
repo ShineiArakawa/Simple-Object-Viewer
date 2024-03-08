@@ -62,14 +62,17 @@ class Sphere : public Primitives {
   std::string getObjectType() override { return KEY_MODEL_SPHERE; };
 
   static void createSphere(const int nDivs,
-                           std::shared_ptr<std::vector<Vertex>> vertices,
-                           std::shared_ptr<std::vector<unsigned int>> indices,
+                           VertexArray_t vertices,
+                           IndexArray_t indices,
                            const bool isDoubled = false);
   static void createSphere(const int nDivs,
                            const glm::vec3 color,
-                           std::shared_ptr<std::vector<Vertex>> vertices,
-                           std::shared_ptr<std::vector<unsigned int>> indices,
+                           VertexArray_t vertices,
+                           IndexArray_t indices,
                            const bool isDoubled = false);
 };
+
+using Sphere_t = std::shared_ptr<Sphere>;
+
 }  // namespace model
 }  // namespace simview

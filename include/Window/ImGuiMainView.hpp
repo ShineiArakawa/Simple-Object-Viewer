@@ -14,6 +14,7 @@
 
 namespace simview {
 namespace window {
+
 class ImGuiMainView {
  private:
   inline static const int SIDEBAR_WIDTH = 700;
@@ -28,13 +29,13 @@ class ImGuiMainView {
   ImVec2 _sceneAreaMax;
   ImGuiIO* _io;
 
-  std::shared_ptr<ImGuiSceneView> _sceneView;
-  std::shared_ptr<model::ViewerModel> _sceneModel;
+  ImGuiSceneView_t _sceneView;
+  model::ViewerModel_t _sceneModel;
 
-  std::shared_ptr<ImGuiSceneView> _depthSceneView;
-  std::shared_ptr<model::ViewerModel> _depthSceneModel;
+  ImGuiSceneView_t _depthSceneView;
+  model::ViewerModel_t _depthSceneModel;
 
-  std::shared_ptr<ObjectAddFileDialog> _objectAddDialog;
+  ObjectAddFileDialog_t _objectAddDialog;
 
  public:
   bool moveOn = true;
@@ -46,7 +47,7 @@ class ImGuiMainView {
   void paintDepthSceneWindow();
 
  public:
-  ImGuiMainView(GLFWwindow*, std::shared_ptr<model::ViewerModel>);
+  ImGuiMainView(GLFWwindow*, model::ViewerModel_t);
   ~ImGuiMainView();
 
   void paint();
@@ -54,11 +55,14 @@ class ImGuiMainView {
 
   void destroy();
 
-  std::shared_ptr<ImGuiSceneView> getSceneView() { return _sceneView; };
-  std::shared_ptr<model::ViewerModel> getSceneModel() { return _sceneModel; };
-  std::shared_ptr<ObjectAddFileDialog> getObjectAddDialog() { return _objectAddDialog; };
+  ImGuiSceneView_t getSceneView() { return _sceneView; };
+  model::ViewerModel_t getSceneModel() { return _sceneModel; };
+  ObjectAddFileDialog_t getObjectAddDialog() { return _objectAddDialog; };
 
   void setRenderType(const model::Primitives::RenderType renderType);
 };
+
+using ImGuiMainView_t = std::shared_ptr<ImGuiMainView>;
+
 }  // namespace window
 }  // namespace simview

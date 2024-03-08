@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Model/DataStructure.hpp>
 #include <OpenGL.hpp>
+#include <Util/DataStructure.hpp>
 #include <Util/ObjectLoader.hpp>
 #include <memory>
 #include <string>
@@ -9,6 +9,7 @@
 
 namespace simview {
 namespace model {
+
 class AxisAlignedBoundingBox {
  private:
   glm::vec3 _minCoords;
@@ -60,5 +61,8 @@ class AxisAlignedBoundingBox {
   ~AxisAlignedBoundingBox();
   void draw() const;
 };
+
+using AxisAlignedBoundingBox_t = std::shared_ptr<AxisAlignedBoundingBox>;
+
 }  // namespace model
 }  // namespace simview

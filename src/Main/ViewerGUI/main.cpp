@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
   _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
 #endif  // ENABLE_LEAK_CHECK
 
-  std::shared_ptr<ViewerGUIApp> app = std::make_shared<ViewerGUIApp>();
+  ViewerGUIApp_t app = std::make_shared<ViewerGUIApp>();
 
   app->launch();
 

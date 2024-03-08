@@ -22,8 +22,8 @@ Object::Object(const std::string &filePath,
 Object::~Object() {}
 
 void Object::initVAO() {
-  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
+  VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
 
   ObjectLoader::readFromFile(_filePath,
                              vertices,
@@ -41,8 +41,8 @@ void Object::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
                      const std::shared_ptr<std::vector<vec3f_t>> normals,
                      const std::shared_ptr<std::vector<vec2f_t>> uvCoords,
                      const std::shared_ptr<std::vector<int>> ids) {
-  std::shared_ptr<std::vector<Vertex>> vertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<uint32_t>> indices = std::make_shared<std::vector<uint32_t>>();
+  VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
 
   const int nVetiices = positions->size();
 
@@ -88,8 +88,8 @@ void Object::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
   initVAO(vertices, indices);
 }
 
-void Object::initVAO(const std::shared_ptr<std::vector<Vertex>> &vertices,
-                     const std::shared_ptr<std::vector<uint32_t>> &indices) {
+void Object::initVAO(const VertexArray_t &vertices,
+                     const IndexArray_t &indices) {
   // Create VAO
   glGenVertexArrays(1, &_vaoId);
   glBindVertexArray(_vaoId);
@@ -121,7 +121,7 @@ void Object::initVAO(const std::shared_ptr<std::vector<Vertex>> &vertices,
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices->size(), indices->data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices->size(), indices->data(), GL_STATIC_DRAW);
 
   _indexBufferSize = (int)indices->size();
 
@@ -214,5 +214,6 @@ void Object::loadTexture(const std::string &filePath) {
 void Object::loadNormalMap(const std::string &filePath) {
   Texture::loadTexture(filePath, _normalMapId);
 }
+
 }  // namespace model
 }  // namespace simview

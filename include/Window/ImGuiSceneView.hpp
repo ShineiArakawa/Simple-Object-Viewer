@@ -10,14 +10,11 @@
 
 namespace simview {
 namespace window {
-class ImGuiSceneView {
- public:
-  using Renderer_t = std::shared_ptr<renderer::Renderer>;
-  using Model_t = std::shared_ptr<model::Model>;
 
+class ImGuiSceneView {
  private:
-  Renderer_t _renderer = nullptr;
-  Model_t _model = nullptr;
+  renderer::Renderer_t _renderer = nullptr;
+  model::Model_t _model = nullptr;
   GLFWwindow* _parentWindow = nullptr;
 
  public:
@@ -67,11 +64,11 @@ class ImGuiSceneView {
   // ========================================================================
   // ========================================================================
 
-  ImGuiSceneView(GLFWwindow* parentWindow, Model_t model);
+  ImGuiSceneView(GLFWwindow* parentWindow, model::Model_t model);
   ~ImGuiSceneView();
 
-  renderer::Renderer::FrameBuffer_t getFrameBuffer();
-  Renderer_t getRenderer();
+  renderer::FrameBuffer_t getFrameBuffer();
+  renderer::Renderer_t getRenderer();
 
   void paintGL();
   void resetCameraPose();
@@ -90,5 +87,8 @@ class ImGuiSceneView {
 
   void saveScreenShot(const std::string& filePath);
 };
+
+using ImGuiSceneView_t = std::shared_ptr<ImGuiSceneView>;
+
 }  // namespace window
 }  // namespace simview

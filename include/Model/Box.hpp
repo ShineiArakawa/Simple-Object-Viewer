@@ -11,6 +11,7 @@
 
 namespace simview {
 namespace model {
+
 class Box : public Primitives {
  private:
   std::string _filePath;
@@ -132,5 +133,8 @@ class Box : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_BOX; };
 };
+
+using Box_t = std::shared_ptr<Box>;
+
 }  // namespace model
 }  // namespace simview

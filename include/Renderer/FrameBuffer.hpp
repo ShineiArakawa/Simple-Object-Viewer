@@ -7,6 +7,7 @@
 
 namespace simview {
 namespace renderer {
+
 class FrameBuffer {
  public:
   FrameBuffer(){};
@@ -22,5 +23,8 @@ class FrameBuffer {
   GLuint _texture;
   GLuint _rbo;
 };
+
+using FrameBuffer_t = std::shared_ptr<FrameBuffer>;
+
 }  // namespace renderer
 }  // namespace simview

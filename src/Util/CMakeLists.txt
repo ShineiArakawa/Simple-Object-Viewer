@@ -9,6 +9,7 @@ add_library(
   "ModelParser.cpp"
   "FileUtil.cpp"
   "StbAdapter.cpp"
+  "Geometry.cpp"
 )
 
 # =========================================================

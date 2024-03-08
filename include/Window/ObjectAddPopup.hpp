@@ -21,7 +21,9 @@
 
 namespace simview {
 namespace window {
+
 using namespace std::string_literals;
+
 class ObjectAddFileDialog {
  private:
   inline static const char* FLOAT_FORMAT = "%.6f";
@@ -31,16 +33,19 @@ class ObjectAddFileDialog {
   inline static const std::string TITLE = "Add Object";
 
   std::string _objectTypes;
-  std::shared_ptr<model::ViewerModel> _model;
+  model::ViewerModel_t _model;
   std::map<std::string, Attrib_t> _attributeBuffer;
   std::string _message = "";
   std::string _errorMessage = "";
 
  public:
-  ObjectAddFileDialog(std::shared_ptr<model::ViewerModel>);
+  ObjectAddFileDialog(model::ViewerModel_t);
   ~ObjectAddFileDialog();
 
   void paint();
 };
+
+using ObjectAddFileDialog_t = std::shared_ptr<ObjectAddFileDialog>;
+
 }  // namespace window
 }  // namespace simview

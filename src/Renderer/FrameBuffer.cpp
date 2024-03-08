@@ -2,6 +2,7 @@
 
 namespace simview {
 namespace renderer {
+
 FrameBuffer::FrameBuffer(const float width, const float height) {
   glGenFramebuffers(1, &_fbo);
   glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
@@ -70,5 +71,6 @@ void FrameBuffer::bind() const {
 void FrameBuffer::unbind() const {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
 }  // namespace renderer
 }  // namespace simview

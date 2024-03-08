@@ -7,6 +7,7 @@
 
 namespace simview {
 namespace model {
+
 class Background : public Primitives {
  private:
   GLuint _vaoId;
@@ -14,21 +15,20 @@ class Background : public Primitives {
   GLuint _indexBufferId;
   GLuint _textureId;
 
-  // clang-format off
-    inline static const glm::vec3 positions[4] = {
-            glm::vec3(1.0f, -1.0f, 1.0f),
-            glm::vec3(1.0f, 1.0f, 1.0f),
-            glm::vec3(-1.0f, -1.0f, 1.0f),
-            glm::vec3(-1.0f, 1.0f, 1.0f)
-    };
+  inline static const glm::vec3 positions[4] = {
+      glm::vec3(1.0f, -1.0f, 1.0f),
+      glm::vec3(1.0f, 1.0f, 1.0f),
+      glm::vec3(-1.0f, -1.0f, 1.0f),
+      glm::vec3(-1.0f, 1.0f, 1.0f)};
 
-    inline static const glm::vec2 uvCoords[4] = {
-            glm::vec2(1.0f, 1.0f),
-            glm::vec2(1.0f, 0.0f),
-            glm::vec2(0.0f, 1.0f),
-            glm::vec2(0.0f, 0.0f)
-    };
-  // clang-format on
+  inline static const glm::vec2 uvCoords[4] = {
+      glm::vec2(1.0f, 1.0f),
+      glm::vec2(1.0f, 0.0f),
+      glm::vec2(0.0f, 1.0f),
+      glm::vec2(0.0f, 0.0f)};
+
+  std::string _textureFilePath;
+  bool _isLoadedTexture;
 
  public:
   inline static const std::string KEY_MODEL_BACKGROUND = "Background";
@@ -54,5 +54,8 @@ class Background : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_BACKGROUND; };
 };
+
+using Background_t = std::shared_ptr<Background>;
+
 }  // namespace model
 }  // namespace simview

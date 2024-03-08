@@ -9,6 +9,7 @@
 
 namespace simview {
 namespace util {
+
 class Texture {
  private:
   // Nothing
@@ -16,8 +17,10 @@ class Texture {
  public:
   using InnerTextureArray = std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<int>>>>>;
   using TextureArray = std::shared_ptr<InnerTextureArray>;
+
   static void loadTexture(const std::string& filePath, GLuint& texID);
   static void readTexture(const std::string& filePath, Texture::TextureArray texture);
 };
+
 }  // namespace util
 }  // namespace simview

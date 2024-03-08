@@ -9,5 +9,6 @@ DepthShader::DepthShader(const std::string& vertShaderCode, const std::string& f
 }
 
 DepthShader::~DepthShader() = default;
+
 }  // namespace shader
 }  // namespace simview

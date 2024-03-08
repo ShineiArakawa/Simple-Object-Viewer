@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     std::exit(1);
   }
 
-  std::shared_ptr<ViewerApp> app = std::make_shared<ViewerApp>(configFilePath);
+  ViewerApp_t app = std::make_shared<ViewerApp>(configFilePath);
 
   app->launch();
 

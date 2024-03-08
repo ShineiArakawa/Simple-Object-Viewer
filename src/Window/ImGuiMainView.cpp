@@ -5,10 +5,10 @@ namespace window {
 
 using namespace model;
 
-ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, std::shared_ptr<ViewerModel> sceneModel)
+ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
     : _menuBarHeight(0.0f),
       _isForcusedOnScene(false),
-      _renderTypeID(static_cast<int>(model::Primitives::RenderType::NORMAL)),
+      _renderTypeID(static_cast<int>(Primitives::RenderType::NORMAL)),
       _wheelOffset(0.0f),
       _sceneAreaMin(ImVec2(0.0f, 0.0f)),
       _sceneAreaMax(ImVec2(0.0f, 0.0f)),
@@ -496,7 +496,7 @@ void ImGuiMainView::listenEvent() {
   }
 }
 
-void ImGuiMainView::setRenderType(const model::Primitives::RenderType renderType) {
+void ImGuiMainView::setRenderType(const Primitives::RenderType renderType) {
   _renderTypeID = static_cast<int>(renderType);
 }
 

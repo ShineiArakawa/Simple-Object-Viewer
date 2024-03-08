@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     std::exit(1);
   }
 
-  std::shared_ptr<PoneApp> app = std::make_shared<PoneApp>(configFilePath);
+  PoneApp_t app = std::make_shared<PoneApp>(configFilePath);
 
   app->launch();
 

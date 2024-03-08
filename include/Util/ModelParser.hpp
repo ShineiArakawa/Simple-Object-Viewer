@@ -17,6 +17,7 @@
 
 namespace simview {
 namespace util {
+
 class ModelParser {
  private:
   // clang-format off

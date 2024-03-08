@@ -8,15 +8,15 @@
 namespace simview {
 namespace util {
 
-using namespace model;
-
 void ObjectLoader::readFromFile(const std::string &filePath,
-                                std::shared_ptr<std::vector<Vertex>> vertices,
-                                std::shared_ptr<std::vector<uint32_t>> indices,
+                                VertexArray_t vertices,
+                                IndexArray_t indices,
                                 const float offsetX,
                                 const float offsetY,
                                 const float offsetZ) {
   const std::string extension = FileUtil::extension(filePath);
+
+  LOG_INFO("### Start load obj file: " + filePath);
 
 #if defined(USE_ASSIMP)
   if (extension == ".obj" || extension == ".stl") {
@@ -32,16 +32,16 @@ void ObjectLoader::readFromFile(const std::string &filePath,
     LOG_ERROR("Unsupprted file type: " + filePath);
     return;
   }
+
+  LOG_INFO("### Done.");
 }
 
 void ObjectLoader::readObjFile(const std::string &filePath,
-                               std::shared_ptr<std::vector<Vertex>> vertices,
-                               std::shared_ptr<std::vector<uint32_t>> indices,
+                               VertexArray_t vertices,
+                               IndexArray_t indices,
                                const float offsetX,
                                const float offsetY,
                                const float offsetZ) {
-  LOG_INFO("### Load obj file: " + filePath);
-
 #if defined(USE_ASSIMP)
   Assimp::Importer importer;
   unsigned int flag = 0;
@@ -173,13 +173,11 @@ void ObjectLoader::readObjFile(const std::string &filePath,
 }
 
 void ObjectLoader::readMshFile(const std::string &filePath,
-                               std::shared_ptr<std::vector<model::Vertex>> vertices,
-                               std::shared_ptr<std::vector<uint32_t>> indices,
+                               VertexArray_t vertices,
+                               IndexArray_t indices,
                                const float offsetX,
                                const float offsetY,
                                const float offsetZ) {
-  LOG_INFO("### Load obj file: " + filePath);
-
   std::ifstream ifstream = std::ifstream(filePath, std::ios::in);
 
   const int faces[16][3] = {
@@ -205,100 +203,141 @@ void ObjectLoader::readMshFile(const std::string &filePath,
     std::string buffer;
     std::vector<std::string> tokens;
 
+    // =========================================================================================
+    // Read elements
+    // =========================================================================================
     // Read num elements
     std::getline(ifstream, buffer);
     const int nElements = std::stoi(buffer);
 
     // Read elements
-    std::vector<std::array<int, 10>> elements;
-    elements.resize(nElements);
+    veci_pt elements = std::make_shared<std::vector<int>>();
+    elements->resize(10 * nElements);
 
     for (int iElement = 0; iElement < nElements; ++iElement) {
       std::getline(ifstream, buffer);
       splitText(buffer, ' ', tokens);
 
-      std::array<int, 10> element = {
-          std::stoi(tokens[0]),
-          std::stoi(tokens[1]),
-          std::stoi(tokens[2]),
-          std::stoi(tokens[3]),
-          std::stoi(tokens[4]),
-          std::stoi(tokens[5]),
-          std::stoi(tokens[6]),
-          std::stoi(tokens[7]),
-          std::stoi(tokens[8]),
-          std::stoi(tokens[9]),
-      };
+      const int offset = 10 * iElement;
 
-      elements[iElement] = element;
+      (*elements)[offset + 0] = std::stoll(tokens[0]);
+      (*elements)[offset + 1] = std::stoll(tokens[1]);
+      (*elements)[offset + 2] = std::stoll(tokens[2]);
+      (*elements)[offset + 3] = std::stoll(tokens[3]);
+      (*elements)[offset + 4] = std::stoll(tokens[4]);
+      (*elements)[offset + 5] = std::stoll(tokens[5]);
+      (*elements)[offset + 6] = std::stoll(tokens[6]);
+      (*elements)[offset + 7] = std::stoll(tokens[7]);
+      (*elements)[offset + 8] = std::stoll(tokens[8]);
+      (*elements)[offset + 9] = std::stoll(tokens[9]);
     }
 
+    // =========================================================================================
+    // Read vertex coords
+    // =========================================================================================
     // Read num vertices
     std::getline(ifstream, buffer);
     const int nVertices = std::stoi(buffer);
 
     // Read vertices
-    std::vector<glm::vec3> vertexCoords;
-    vertexCoords.resize(nVertices);
+    vecf_pt vertexCoords = std::make_shared<std::vector<float>>();
+    vertexCoords->resize(3 * nVertices);
 
     for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
       std::getline(ifstream, buffer);
       splitText(buffer, ' ', tokens);
 
-      glm::vec3 vertexCoord = {
-          std::stof(tokens[0]),  // X
-          std::stof(tokens[1]),  // Y
-          std::stof(tokens[2])   // X
-      };
+      const int offset = 3 * iVertex;
 
-      vertexCoords[iVertex] = vertexCoord;
+      (*vertexCoords)[offset + 0] = std::stof(tokens[0]);
+      (*vertexCoords)[offset + 1] = std::stof(tokens[1]);
+      (*vertexCoords)[offset + 2] = std::stof(tokens[2]);
     }
 
-    // Convert to object
-    vertices->resize(nElements * 16 * 3);
-    indices->resize(nElements * 16 * 3);
+    // =========================================================================================
+    // Triangulate
+    // =========================================================================================
+    veci_pt triangles = std::make_shared<std::vector<int>>();
+    triangles->resize(3 * 16 * nElements);
 
     for (int iElement = 0; iElement < nElements; ++iElement) {
-      const int offsetElement = 3 * 16 * iElement;
+      const int offsetElem = 3 * 16 * iElement;
+      const int offset = 10 * iElement;
 
-      for (int iFace = 0; iFace < 16; ++iFace) {
-        const int offsetFace = 3 * iFace;
+      for (int iTriangle = 0; iTriangle < 16; ++iTriangle) {
+        const int offsetTriangle = offsetElem + 3 * iTriangle;
 
-        const int vertexId0 = elements[iElement][faces[iFace][0]];
-        const int vertexId1 = elements[iElement][faces[iFace][1]];
-        const int vertexId2 = elements[iElement][faces[iFace][2]];
-
-        const Vertex vertex0(vertexCoords[vertexId0],
-                             glm::vec3(1.0f),
-                             glm::vec3(0.0f),
-                             BARY_CENTER[0],
-                             glm::vec2(0.0f),
-                             0.0f);
-        const Vertex vertex1(vertexCoords[vertexId1],
-                             glm::vec3(1.0f),
-                             glm::vec3(0.0f),
-                             BARY_CENTER[1],
-                             glm::vec2(0.0f),
-                             0.0f);
-        const Vertex vertex2(vertexCoords[vertexId2],
-                             glm::vec3(1.0f),
-                             glm::vec3(0.0f),
-                             BARY_CENTER[2],
-                             glm::vec2(0.0f),
-                             0.0f);
-
-        const int index0 = offsetElement + offsetFace + 0;
-        const int index1 = offsetElement + offsetFace + 1;
-        const int index2 = offsetElement + offsetFace + 2;
-
-        (*vertices)[index0] = vertex0;
-        (*vertices)[index1] = vertex1;
-        (*vertices)[index2] = vertex2;
-
-        (*indices)[index0] = index0;
-        (*indices)[index1] = index1;
-        (*indices)[index2] = index2;
+        (*triangles)[offsetTriangle + 0] = (*elements)[offset + faces[iTriangle][0]];
+        (*triangles)[offsetTriangle + 1] = (*elements)[offset + faces[iTriangle][1]];
+        (*triangles)[offsetTriangle + 2] = (*elements)[offset + faces[iTriangle][2]];
       }
+    }
+
+    const int nTriangles = triangles->size() / 3;
+    LOG_INFO("nTriangles: " + std::to_string(nTriangles));
+
+    // =========================================================================================
+    // Extract surface
+    // =========================================================================================
+    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(300, triangles, vertexCoords);
+
+    const int nSurfaceTriangles = surfaceTriangles->size() / 3;
+    LOG_INFO("nSurfaceTriangles: " + std::to_string(nSurfaceTriangles));
+
+    // =========================================================================================
+    // Convert data to program compat format
+    // =========================================================================================
+    // Convert to object
+    vertices->resize(nSurfaceTriangles * 3);
+    indices->resize(nSurfaceTriangles * 3);
+
+    for (int iTriangle = 0; iTriangle < nSurfaceTriangles; ++iTriangle) {
+      const int offset = 3 * iTriangle;
+
+      const int vertexIdOffset0 = 3 * (*surfaceTriangles)[offset + 0];
+      const int vertexIdOffset1 = 3 * (*surfaceTriangles)[offset + 1];
+      const int vertexIdOffset2 = 3 * (*surfaceTriangles)[offset + 2];
+
+      const glm::vec3 vertexCoord0 = glm::vec3((*vertexCoords)[vertexIdOffset0 + 0],
+                                               (*vertexCoords)[vertexIdOffset0 + 1],
+                                               (*vertexCoords)[vertexIdOffset0 + 2]);
+      const glm::vec3 vertexCoord1 = glm::vec3((*vertexCoords)[vertexIdOffset1 + 0],
+                                               (*vertexCoords)[vertexIdOffset1 + 1],
+                                               (*vertexCoords)[vertexIdOffset1 + 2]);
+      const glm::vec3 vertexCoord2 = glm::vec3((*vertexCoords)[vertexIdOffset2 + 0],
+                                               (*vertexCoords)[vertexIdOffset2 + 1],
+                                               (*vertexCoords)[vertexIdOffset2 + 2]);
+
+      const Vertex vertex0(vertexCoord0,
+                           glm::vec3(1.0f),
+                           glm::vec3(0.0f),
+                           BARY_CENTER[0],
+                           glm::vec2(0.0f),
+                           0.0f);
+      const Vertex vertex1(vertexCoord1,
+                           glm::vec3(1.0f),
+                           glm::vec3(0.0f),
+                           BARY_CENTER[1],
+                           glm::vec2(0.0f),
+                           0.0f);
+      const Vertex vertex2(vertexCoord2,
+                           glm::vec3(1.0f),
+                           glm::vec3(0.0f),
+                           BARY_CENTER[2],
+                           glm::vec2(0.0f),
+                           0.0f);
+
+      const int index0 = offset + 0;
+      const int index1 = offset + 1;
+      const int index2 = offset + 2;
+
+      (*vertices)[index0] = vertex0;
+      (*vertices)[index1] = vertex1;
+      (*vertices)[index2] = vertex2;
+
+      (*indices)[index0] = index0;
+      (*indices)[index1] = index1;
+      (*indices)[index2] = index2;
     }
   }
 
@@ -309,7 +348,12 @@ void ObjectLoader::readMshFile(const std::string &filePath,
   LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
 }
 
-void ObjectLoader::readLazFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
+void ObjectLoader::readLazFile(const std::string &filePath,
+                               VertexArray_t vertices,
+                               IndexArray_t indices,
+                               const float offsetX,
+                               const float offsetY,
+                               const float offsetZ) {
   // std::ifstream ifs(filePath, std::ios::in | std::ios::binary);
 
   // if (!ifs.good()) {
@@ -372,8 +416,6 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   unsigned int nVertices = 0;
 
 #if defined(USE_ASSIMP)
-  LOG_INFO("### Load obj file: " + filePath);
-
   Assimp::Importer importer;
   unsigned int flag = 0;
   flag |= aiProcess_Triangulate;
@@ -496,8 +538,6 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   }
 #else
   const std::string mtlFileDir = FileUtil::dirPath(filePath);
-
-  LOG_INFO("### Load obj file: " + filePath);
   LOG_INFO("### Mtl file dir : " + mtlFileDir);
 
   tinyobj::attrib_t attrib;
@@ -614,8 +654,8 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
 #endif
 
   // Scale and Translate
-  std::shared_ptr<std::vector<Vertex>> allVertices = std::make_shared<std::vector<Vertex>>();
-  std::shared_ptr<std::vector<uint32_t>> allIndices = std::make_shared<std::vector<uint32_t>>();
+  VertexArray_t allVertices = std::make_shared<std::vector<Vertex>>();
+  IndexArray_t allIndices = std::make_shared<std::vector<uint32_t>>();
   for (const auto &materialGroup : *materialGroups) {
     mergeVertices(materialGroup->vertices, materialGroup->indices, allVertices, allIndices);
   }
@@ -644,11 +684,15 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   LOG_INFO("Num of materials: " + std::to_string(nMaterials));
 }
 
-void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, const float scale) {
+void ObjectLoader::scaleObject(VertexArray_t vertices,
+                               const float scale) {
   ObjectLoader::scaleObject(vertices, scale, scale, scale);
 }
 
-void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, const float scaleX, const float scaleY, const float scaleZ) {
+void ObjectLoader::scaleObject(VertexArray_t vertices,
+                               const float scaleX,
+                               const float scaleY,
+                               const float scaleZ) {
   glm::vec3 minCoords, maxCoords;
   std::tie(minCoords, maxCoords) = getCorners(vertices);
 
@@ -676,12 +720,12 @@ void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices, co
   }
 }
 
-void ObjectLoader::scaleObject(std::shared_ptr<std::vector<Vertex>> vertices,
+void ObjectLoader::scaleObject(VertexArray_t vertices,
                                const glm::vec3 scale) {
   ObjectLoader::scaleObject(vertices, scale.x, scale.y, scale.z);
 }
 
-void ObjectLoader::moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices) {
+void ObjectLoader::moveToOrigin(VertexArray_t vertices) {
   glm::vec3 minCoords, maxCoords;
   std::tie(minCoords, maxCoords) = getCorners(vertices);
 
@@ -707,7 +751,10 @@ void ObjectLoader::moveToOrigin(std::shared_ptr<std::vector<Vertex>> vertices) {
   }
 }
 
-void ObjectLoader::translateObject(std::shared_ptr<std::vector<Vertex>> vertices, const float offsetX, const float offsetY, const float offsetZ) {
+void ObjectLoader::translateObject(VertexArray_t vertices,
+                                   const float offsetX,
+                                   const float offsetY,
+                                   const float offsetZ) {
   glm::vec3 offset(offsetX, offsetY, offsetZ);
 
   for (int i = 0; i < vertices->size(); i++) {
@@ -715,12 +762,12 @@ void ObjectLoader::translateObject(std::shared_ptr<std::vector<Vertex>> vertices
   }
 }
 
-void ObjectLoader::translateObject(std::shared_ptr<std::vector<Vertex>> vertices,
+void ObjectLoader::translateObject(VertexArray_t vertices,
                                    const glm::vec3 offset) {
   ObjectLoader::translateObject(vertices, offset.x, offset.y, offset.z);
 }
 
-void ObjectLoader::rotateObject(std::shared_ptr<std::vector<Vertex>> vertices, const float angle, const glm::vec3 axis) {
+void ObjectLoader::rotateObject(VertexArray_t vertices, const float angle, const glm::vec3 axis) {
   const int nVertices = vertices->size();
   const glm::mat4 rotMat = glm::rotate(angle, axis);
 
@@ -733,10 +780,10 @@ void ObjectLoader::rotateObject(std::shared_ptr<std::vector<Vertex>> vertices, c
 };
 
 void ObjectLoader::mergeVertices(
-    const std::shared_ptr<std::vector<Vertex>> &sourceVertices,
-    const std::shared_ptr<std::vector<unsigned int>> &sourceIndices,
-    std::shared_ptr<std::vector<Vertex>> &distVertices,
-    std::shared_ptr<std::vector<unsigned int>> &distIndices) {
+    const VertexArray_t &sourceVertices,
+    const IndexArray_t &sourceIndices,
+    VertexArray_t &distVertices,
+    IndexArray_t &distIndices) {
   const int offsetIndex = distIndices->size();
   const int nSourceVertices = sourceVertices->size();
   const int distTotalSize = offsetIndex + nSourceVertices;
@@ -750,7 +797,7 @@ void ObjectLoader::mergeVertices(
   }
 };
 
-std::pair<glm::vec3, glm::vec3> ObjectLoader::getCorners(std::shared_ptr<std::vector<Vertex>> vertices) {
+std::pair<glm::vec3, glm::vec3> ObjectLoader::getCorners(VertexArray_t vertices) {
   glm::vec3 maxCoords(0.0f);
   glm::vec3 minCoords(0.0f);
 

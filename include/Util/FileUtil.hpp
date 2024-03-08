@@ -5,6 +5,7 @@
 
 namespace simview {
 namespace util {
+
 namespace generic_fs = std::filesystem;
 
 class FileUtil {
@@ -23,5 +24,6 @@ class FileUtil {
   static bool isAbsolute(const std::string);
   static std::string getTimeStamp();
 };
+
 }  // namespace util
 }  // namespace simview

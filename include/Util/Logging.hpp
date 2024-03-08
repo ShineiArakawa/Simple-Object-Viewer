@@ -1,4 +1,5 @@
 #pragma once
+
 #include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
 
@@ -14,6 +15,7 @@
 
 namespace simview {
 namespace util {
+
 class Logging {
  private:
   // nothing
@@ -48,5 +50,6 @@ class Logging {
     spdlog::level::level_enum logLevel = spdlog::get_level();
   };
 };
+
 }  // namespace util
 }  // namespace simview

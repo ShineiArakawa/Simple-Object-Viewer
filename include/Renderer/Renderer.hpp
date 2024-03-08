@@ -12,16 +12,13 @@
 
 namespace simview {
 namespace renderer {
-class Renderer {
- public:
-  using FrameBuffer_t = std::shared_ptr<FrameBuffer>;
-  using DepthRenderer_t = std::shared_ptr<DepthRenderer>;
 
+class Renderer {
  private:
   inline static const float TICK_VALUE = 1.0f;
 
   // Model
-  std::shared_ptr<model::Model> _model;
+  model::Model_t _model;
   glm::mat4 _viewMat;
   glm::mat4 _projMat;
   glm::mat4 _acRotMat;
@@ -49,7 +46,7 @@ class Renderer {
  public:
   Renderer(const int* windowWidth,
            const int* windowHeight,
-           std::shared_ptr<model::Model> models,
+           model::Model_t models,
            const bool renderToFrameBuffer = false);
   ~Renderer();
 
@@ -64,8 +61,10 @@ class Renderer {
   DepthRenderer_t getDepthRenderer();
 
   void updateScale(const float);
-  void updateTranslate(const glm::vec4& newPosScreenSpace, const glm::vec4& oldPosScreenSpace);
-  void updateRotate(const glm::vec3& u, const glm::vec3& v);
+  void updateTranslate(const glm::vec4& newPosScreenSpace,
+                       const glm::vec4& oldPosScreenSpace);
+  void updateRotate(const glm::vec3& u,
+                    const glm::vec3& v);
 
   void rotateModel(const float angle, const glm::vec3&);
   void rotateLight(const float angle, const glm::vec3&);
@@ -75,5 +74,8 @@ class Renderer {
   glm::vec3 getLightPosInWorldSpace();
   glm::mat4 getLightViewMat(const glm::mat4& modelMat);
 };
+
+using Renderer_t = std::shared_ptr<Renderer>;
+
 }  // namespace renderer
 }  // namespace simview

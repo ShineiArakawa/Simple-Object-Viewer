@@ -96,11 +96,11 @@ void ViewerGUIApp::launch() {
   }
 }
 
-void ViewerGUIApp::addObject(const Model::Object_t& object, bool toInitializeVAO) {
+void ViewerGUIApp::addObject(const model::Primitives_t& object, bool toInitializeVAO) {
   _model->addObject(object, toInitializeVAO);
 }
 
-void ViewerGUIApp::addBackground(const Model::Background_t& background) {
+void ViewerGUIApp::addBackground(const model::Background_t& background) {
   _model->addBackground(background);
 }
 

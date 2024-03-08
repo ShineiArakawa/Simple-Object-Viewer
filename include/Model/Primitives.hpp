@@ -4,12 +4,13 @@
 #include <math.h>
 
 #include <Model/AxisAlignedBoundingBox.hpp>
-#include <Model/DataStructure.hpp>
 #include <OpenGL.hpp>
 #include <Shader/DefaultShaders.hpp>
 #include <Shader/DepthShader.hpp>
 #include <Shader/ModelShader.hpp>
+#include <Util/DataStructure.hpp>
 #include <Util/Logging.hpp>
+#include <Util/Math.hpp>
 #include <array>
 #include <fstream>
 #include <iostream>
@@ -25,22 +26,6 @@ class Primitives {
   // Type defines
   // ==================================================================================================
  public:
-  using ModelShader_t = std::shared_ptr<shader::ModelShader>;
-  using DepthShader_t = std::shared_ptr<shader::DepthShader>;
-  using BBOX_t = std::shared_ptr<AxisAlignedBoundingBox>;
-
-  template <class dtype>
-  using vec4_t = std::array<dtype, 4>;
-  using vec4f_t = vec4_t<float>;
-
-  template <class dtype>
-  using vec3_t = std::array<dtype, 3>;
-  using vec3f_t = vec3_t<float>;
-
-  template <class dtype>
-  using vec2_t = std::array<dtype, 2>;
-  using vec2f_t = vec2_t<float>;
-
   enum class RenderType {
     NORMAL,
     COLOR,
@@ -76,11 +61,11 @@ class Primitives {
   // nothing
  protected:
   std::string _name;
-  ModelShader_t _shader = nullptr;
-  DepthShader_t _depthShader = nullptr;
-  Primitives::RenderType _defaultRenderType = Primitives::RenderType::COLOR;
-  Primitives::RenderType _renderType = Primitives::RenderType::COLOR;
-  Primitives::WireFrameMode _wireFrameMode = Primitives::WireFrameMode::OFF;
+  shader::ModelShader_t _shader = nullptr;
+  shader::DepthShader_t _depthShader = nullptr;
+  RenderType _defaultRenderType = RenderType::COLOR;
+  RenderType _renderType = RenderType::COLOR;
+  WireFrameMode _wireFrameMode = WireFrameMode::OFF;
   bool _maskMode = false;
   bool _isVisible = true;
   bool _isEnabledNormalMap = false;
@@ -88,7 +73,7 @@ class Primitives {
   bool _isVisibleBBOX = true;
   glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
   glm::vec3 _vecocity = glm::vec3(0.0f, 0.0f, 0.0f);
-  BBOX_t _bbox = nullptr;
+  AxisAlignedBoundingBox_t _bbox = nullptr;
 
  public:
   // nothing
@@ -109,8 +94,8 @@ class Primitives {
   void setIsEnabledShadowMapping(bool isEnabledShadowMapping) { _isEnabledShadowMapping = isEnabledShadowMapping; };
   void setVisibleBBOX(bool isVisibleBBOX) { _isVisibleBBOX = isVisibleBBOX; };
   void setName(std::string name) { _name = name; };
-  void setModelShader(ModelShader_t shader) { _shader = shader; };
-  void setDepthShader(DepthShader_t shader) { _depthShader = shader; };
+  void setModelShader(shader::ModelShader_t shader) { _shader = shader; };
+  void setDepthShader(shader::DepthShader_t shader) { _depthShader = shader; };
   std::string getName() { return _name; };
   glm::vec3 getPosition() { return _position; };
   void setPosition(glm::vec3 position) { _position = position; };
@@ -124,55 +109,55 @@ class Primitives {
   // ==================================================================================================
   // Rendering options
   // ==================================================================================================
-  void setDefaultRenderType(const Primitives::RenderType& renderType) {
+  void setDefaultRenderType(const RenderType& renderType) {
     _defaultRenderType = renderType;
     _renderType = renderType;
   };
 
   void resetRenderType() { _renderType = _defaultRenderType; };
 
-  void setRenderType(const Primitives::RenderType& renderType) { _renderType = renderType; };
+  void setRenderType(const RenderType& renderType) { _renderType = renderType; };
 
   float getRenderType() {
     return getRenderType(_maskMode, _renderType);
   };
 
-  void setWireFrameMode(const Primitives::WireFrameMode& wireFrameMode) { _wireFrameMode = wireFrameMode; };
+  void setWireFrameMode(const WireFrameMode& wireFrameMode) { _wireFrameMode = wireFrameMode; };
 
   float getWireFrameMode() const {
     return getWireFrameMode(_wireFrameMode);
   };
 
-  inline static float getRenderType(const bool& maskMode, const Primitives::RenderType& renderType) {
+  inline static float getRenderType(const bool& maskMode, const RenderType& renderType) {
     float renderTypeValue = 0.0f;
 
     if (maskMode) {
       renderTypeValue = -2.0f;
-    } else if (renderType == Primitives::RenderType::NORMAL) {
+    } else if (renderType == RenderType::NORMAL) {
       renderTypeValue = -1.0f;
-    } else if (renderType == Primitives::RenderType::COLOR) {
+    } else if (renderType == RenderType::COLOR) {
       renderTypeValue = 0.0f;
-    } else if (renderType == Primitives::RenderType::TEXTURE) {
+    } else if (renderType == RenderType::TEXTURE) {
       renderTypeValue = 1.0f;
-    } else if (renderType == Primitives::RenderType::VERT_NORMAL) {
+    } else if (renderType == RenderType::VERT_NORMAL) {
       renderTypeValue = -3.0f;
-    } else if (renderType == Primitives::RenderType::SHADE) {
+    } else if (renderType == RenderType::SHADE) {
       renderTypeValue = 2.0f;
-    } else if (renderType == Primitives::RenderType::SHADE_TEXTURE) {
+    } else if (renderType == RenderType::SHADE_TEXTURE) {
       renderTypeValue = 3.0f;
-    } else if (renderType == Primitives::RenderType::MATERIAL) {
+    } else if (renderType == RenderType::MATERIAL) {
       renderTypeValue = 4.0f;
     }
 
     return renderTypeValue;
   };
 
-  inline static float getWireFrameMode(const Primitives::WireFrameMode& wireFrameType) {
+  inline static float getWireFrameMode(const WireFrameMode& wireFrameType) {
     float wireFrameTypeValue = 0.0f;
 
-    if (wireFrameType == Primitives::WireFrameMode::ON) {
+    if (wireFrameType == WireFrameMode::ON) {
       wireFrameTypeValue = 1.0f;
-    } else if (wireFrameType == Primitives::WireFrameMode::ONLY) {
+    } else if (wireFrameType == WireFrameMode::ONLY) {
       wireFrameTypeValue = -1.0f;
     }
 
@@ -238,7 +223,7 @@ class Primitives {
       _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MV_MAT, mvMat);
       _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MVP_MAT, mvpMat);
       _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_NORM_MAT, normMat);
-      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, Primitives::getRenderType(false, Primitives::RenderType::COLOR));
+      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, getRenderType(false, RenderType::COLOR));
 
       _bbox->draw();
 
@@ -262,5 +247,8 @@ class Primitives {
   virtual void drawGL(const int& index) = 0;
   virtual void drawAllGL(const glm::mat4& lightMvpMat) = 0;
 };
+
+using Primitives_t = std::shared_ptr<Primitives>;
+
 }  // namespace model
 }  // namespace simview

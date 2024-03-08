@@ -6,6 +6,7 @@
 
 namespace simview {
 namespace model {
+
 class PointCloudPoly : public Primitives {
  private:
   inline static const int NUM_DIVISIONS = 3;
@@ -59,5 +60,8 @@ class PointCloudPoly : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_POINT_CLOUD_POLY; };
 };
+
+using PointCloudPoly_t = std::shared_ptr<PointCloudPoly>;
+
 }  // namespace model
 }  // namespace simview

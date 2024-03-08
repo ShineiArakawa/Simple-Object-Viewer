@@ -10,6 +10,7 @@
 
 namespace simview {
 namespace shader {
+
 class ShaderCompiler {
  private:
   // nothing
@@ -32,5 +33,6 @@ class ShaderCompiler {
 
   static GLuint buildShaderProgram(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
 };
+
 }  // namespace shader
 }  // namespace simview

@@ -61,7 +61,7 @@ void MaterialObject::initVAO() {
     // Create index buffer object
     glGenBuffers(1, &buffer->indexBufferId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->indexBufferId);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * materialGroup->indices->size(), materialGroup->indices->data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * materialGroup->indices->size(), materialGroup->indices->data(), GL_STATIC_DRAW);
 
     buffer->indexBufferSize = (int)materialGroup->indices->size();
 

@@ -11,6 +11,7 @@
 
 namespace simview {
 namespace model {
+
 class Object : public Primitives {
  private:
   std::string _filePath;
@@ -51,8 +52,8 @@ class Object : public Primitives {
   void loadNormalMap(const std::string& filePath);
   void update() override{};
   void initVAO() override;
-  void initVAO(const std::shared_ptr<std::vector<Vertex>>&,
-               const std::shared_ptr<std::vector<uint32_t>>&);
+  void initVAO(const VertexArray_t&,
+               const IndexArray_t&);
   void initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
                const std::shared_ptr<std::vector<vec3f_t>> colors = nullptr,
                const std::shared_ptr<std::vector<vec3f_t>> normals = nullptr,
@@ -73,6 +74,8 @@ class Object : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_OBJECT; };
 };
+
+using Object_t = std::shared_ptr<Object>;
 
 }  // namespace model
 }  // namespace simview

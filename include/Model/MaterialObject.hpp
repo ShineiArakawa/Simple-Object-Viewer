@@ -11,6 +11,7 @@
 
 namespace simview {
 namespace model {
+
 class MaterialObject : public Primitives {
  public:
   struct MaterialObjectBuffer {
@@ -80,5 +81,8 @@ class MaterialObject : public Primitives {
 
   std::string getObjectType() override { return KEY_MODEL_MATERIAL_OBJECT; };
 };
+
+using MaterialObject_t = std::shared_ptr<MaterialObject>;
+
 }  // namespace model
 }  // namespace simview

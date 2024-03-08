@@ -8,7 +8,7 @@ using namespace model;
 
 Renderer::Renderer(const int* windowWidth,
                    const int* windowHeight,
-                   std::shared_ptr<Model> model,
+                   Model_t model,
                    const bool renderToFrameBuffer) {
   _windowWidth = windowWidth;
   _windowHeight = windowHeight;
@@ -128,11 +128,11 @@ void Renderer::resizeGL() {
   }
 }
 
-Renderer::FrameBuffer_t Renderer::getFrameBuffer() {
+FrameBuffer_t Renderer::getFrameBuffer() {
   return _frameBuffer;
 }
 
-Renderer::DepthRenderer_t Renderer::getDepthRenderer() {
+DepthRenderer_t Renderer::getDepthRenderer() {
   return _depthRenderer;
 }
 
@@ -141,7 +141,7 @@ void Renderer::updateScale(const float acScale) {
 }
 
 void Renderer::updateTranslate(const glm::vec4& newPosScreenSpace, const glm::vec4& oldPosScreenSpace) {
-  glm::mat4 invMvpMat = glm::inverse(_projMat * _viewMat);
+  const glm::mat4 invMvpMat = glm::inverse(_projMat * _viewMat);
 
   glm::vec4 newPosObjSpace = invMvpMat * newPosScreenSpace;
   glm::vec4 oldPosObjSpace = invMvpMat * oldPosScreenSpace;

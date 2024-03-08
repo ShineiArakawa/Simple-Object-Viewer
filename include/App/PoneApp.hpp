@@ -8,10 +8,11 @@
 
 namespace simview {
 namespace app {
+
 class PoneApp {
  public:
   inline static const char* WIN_TITLE = "Pone";
-  inline static std::shared_ptr<model::PoneModel> model = nullptr;
+  inline static model::PoneModel_t model = nullptr;
   inline static GLFWwindow* window = nullptr;
   inline static const std::string DEFAULT_CONFIG_PATH = "../data/sample.json";
 
@@ -21,6 +22,8 @@ class PoneApp {
   void launch();
   static void keyboardEventPone(GLFWwindow* window, int key, int scancode, int action, int mods);
 };
+
+using PoneApp_t = std::shared_ptr<PoneApp>;
 
 }  // namespace app
 }  // namespace simview
