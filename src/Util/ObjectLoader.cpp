@@ -284,7 +284,7 @@ void ObjectLoader::readMshFile(const std::string &filePath,
     // =========================================================================================
     // Extract surface
     // =========================================================================================
-    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(200, triangles, vertexCoords);
+    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(250, triangles, vertexCoords);
 
     const int nSurfaceTriangles = surfaceTriangles->size() / 3;
     LOG_INFO("nSurfaceTriangles: " + std::to_string(nSurfaceTriangles));
@@ -410,6 +410,62 @@ void ObjectLoader::readPchFile(const std::string &filePath,
       (*elements)[offset + 2] = std::stoi(tokens[2]);
     }
     LOG_INFO("Reading elements done.");
+
+    // =========================================================================================
+    // Calc vertex normal
+    // =========================================================================================
+    veci_pt countNodes = std::make_shared<std::vector<int>>();
+    countNodes->resize(nVertices);
+    for (int iNode = 0; iNode < nVertices; ++iNode) {
+      (*countNodes)[iNode] = 0;
+    }
+    for (int iElement = 0; iElement < nElements; ++iElement) {
+      const int offset = 3 * iElement;
+      (*countNodes)[(*elements)[offset + 0]] = (*countNodes)[(*elements)[offset + 0]] + 1;
+      (*countNodes)[(*elements)[offset + 1]] = (*countNodes)[(*elements)[offset + 1]] + 1;
+      (*countNodes)[(*elements)[offset + 2]] = (*countNodes)[(*elements)[offset + 2]] + 1;
+    }
+
+    veci_pt cumsumCountNodes = std::make_shared<std::vector<int>>();
+    cumsumCountNodes->resize(nVertices);
+
+    int cumsum = 0;
+    for (int iNode = 0; iNode < nVertices; ++iNode) {
+      (*cumsumCountNodes)[iNode] = cumsum;
+      cumsum += (*countNodes)[iNode];
+    }
+
+    veci_pt belongTo = std::make_shared<std::vector<int>>();
+    belongTo->resize(cumsum);
+
+    veci_pt tmpCumsumCountNodes = std::make_shared<std::vector<int>>();
+    tmpCumsumCountNodes->resize(nVertices);
+
+    for (int iNode = 0; iNode < nVertices; ++iNode) {
+      (*tmpCumsumCountNodes)[iNode] = 0;
+    }
+
+    for (int iElement = 0; iElement < nElements; ++iElement) {
+      const int offset = 3 * iElement;
+
+      const int nodeId0 = (*elements)[offset + 0];
+      const int nodeId1 = (*elements)[offset + 1];
+      const int nodeId2 = (*elements)[offset + 2];
+
+      const int offset0 = (*cumsumCountNodes)[nodeId0] + (*tmpCumsumCountNodes)[nodeId0];
+      (*belongTo)[offset0] = iElement;
+      (*tmpCumsumCountNodes)[nodeId0] = (*tmpCumsumCountNodes)[nodeId0] + 1;
+
+      const int offset1 = (*cumsumCountNodes)[nodeId1] + (*tmpCumsumCountNodes)[nodeId1];
+      (*belongTo)[offset1] = iElement;
+      (*tmpCumsumCountNodes)[nodeId1] = (*tmpCumsumCountNodes)[nodeId1] + 1;
+
+      const int offset2 = (*cumsumCountNodes)[nodeId2] + (*tmpCumsumCountNodes)[nodeId2];
+      (*belongTo)[offset2] = iElement;
+      (*tmpCumsumCountNodes)[nodeId2] = (*tmpCumsumCountNodes)[nodeId2] + 1;
+    }
+
+    // TODO
 
     // =========================================================================================
     // Convert data to program compat format
@@ -928,10 +984,18 @@ std::pair<glm::vec3, glm::vec3> ObjectLoader::getCorners(VertexArray_t vertices)
 
   for (int i = 0; i < vertices->size(); i++) {
     const Vertex &vertex = (*vertices)[i];
+
     for (int direction = 0; direction < 3; direction++) {
+      if (i == 0) {
+        minCoords[direction] = vertex.position[direction];
+        maxCoords[direction] = vertex.position[direction];
+        continue;
+      }
+
       if (vertex.position[direction] > maxCoords[direction]) {
         maxCoords[direction] = vertex.position[direction];
       }
+
       if (vertex.position[direction] < minCoords[direction]) {
         minCoords[direction] = vertex.position[direction];
       }
