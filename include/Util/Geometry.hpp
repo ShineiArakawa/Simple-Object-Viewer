@@ -64,6 +64,8 @@ class Geometry {
   static veci_pt extractSurfaceTriangle(const int &nDivsBucket,
                                         const veci_pt &originalTriangles,
                                         const vecf_pt &vertexCoords);
+  static void calcVertexNormals(const int &nNodes,
+                                const veci_pt &triangles);
 };
 
 }  // namespace util

@@ -26,6 +26,8 @@ void ObjectLoader::readFromFile(const std::string &filePath,
     readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else if (extension == ".msh") {
     readMshFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+  } else if (extension == ".pch") {
+    readPchFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else if (extension == ".las") {
     readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else {
@@ -220,17 +222,18 @@ void ObjectLoader::readMshFile(const std::string &filePath,
 
       const int offset = 10 * iElement;
 
-      (*elements)[offset + 0] = std::stoll(tokens[0]);
-      (*elements)[offset + 1] = std::stoll(tokens[1]);
-      (*elements)[offset + 2] = std::stoll(tokens[2]);
-      (*elements)[offset + 3] = std::stoll(tokens[3]);
-      (*elements)[offset + 4] = std::stoll(tokens[4]);
-      (*elements)[offset + 5] = std::stoll(tokens[5]);
-      (*elements)[offset + 6] = std::stoll(tokens[6]);
-      (*elements)[offset + 7] = std::stoll(tokens[7]);
-      (*elements)[offset + 8] = std::stoll(tokens[8]);
-      (*elements)[offset + 9] = std::stoll(tokens[9]);
+      (*elements)[offset + 0] = std::stoi(tokens[0]);
+      (*elements)[offset + 1] = std::stoi(tokens[1]);
+      (*elements)[offset + 2] = std::stoi(tokens[2]);
+      (*elements)[offset + 3] = std::stoi(tokens[3]);
+      (*elements)[offset + 4] = std::stoi(tokens[4]);
+      (*elements)[offset + 5] = std::stoi(tokens[5]);
+      (*elements)[offset + 6] = std::stoi(tokens[6]);
+      (*elements)[offset + 7] = std::stoi(tokens[7]);
+      (*elements)[offset + 8] = std::stoi(tokens[8]);
+      (*elements)[offset + 9] = std::stoi(tokens[9]);
     }
+    LOG_INFO("Reading elements done.");
 
     // =========================================================================================
     // Read vertex coords
@@ -253,6 +256,7 @@ void ObjectLoader::readMshFile(const std::string &filePath,
       (*vertexCoords)[offset + 1] = std::stof(tokens[1]);
       (*vertexCoords)[offset + 2] = std::stof(tokens[2]);
     }
+    LOG_INFO("Reading vertex coords done.");
 
     // =========================================================================================
     // Triangulate
@@ -275,19 +279,20 @@ void ObjectLoader::readMshFile(const std::string &filePath,
 
     const int nTriangles = triangles->size() / 3;
     LOG_INFO("nTriangles: " + std::to_string(nTriangles));
+    LOG_INFO("Triangulation done.");
 
     // =========================================================================================
     // Extract surface
     // =========================================================================================
-    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(300, triangles, vertexCoords);
+    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(200, triangles, vertexCoords);
 
     const int nSurfaceTriangles = surfaceTriangles->size() / 3;
     LOG_INFO("nSurfaceTriangles: " + std::to_string(nSurfaceTriangles));
+    LOG_INFO("Surface extraction done.");
 
     // =========================================================================================
     // Convert data to program compat format
     // =========================================================================================
-    // Convert to object
     vertices->resize(nSurfaceTriangles * 3);
     indices->resize(nSurfaceTriangles * 3);
 
@@ -338,6 +343,126 @@ void ObjectLoader::readMshFile(const std::string &filePath,
       (*indices)[index0] = index0;
       (*indices)[index1] = index1;
       (*indices)[index2] = index2;
+    }
+  }
+
+  ObjectLoader::moveToOrigin(vertices);
+  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
+
+  LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
+  LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
+}
+
+void ObjectLoader::readPchFile(const std::string &filePath,
+                               VertexArray_t vertices,
+                               IndexArray_t indices,
+                               const float offsetX,
+                               const float offsetY,
+                               const float offsetZ) {
+  std::ifstream ifstream = std::ifstream(filePath, std::ios::in);
+
+  if (ifstream) {
+    std::string buffer;
+    std::vector<std::string> tokens;
+
+    // =========================================================================================
+    // Read vertex coords
+    // =========================================================================================
+    // Read num vertices
+    std::getline(ifstream, buffer);
+    const int nVertices = std::stoi(buffer);
+
+    // Read vertices
+    vecf_pt vertexCoords = std::make_shared<std::vector<float>>();
+    vertexCoords->resize(3 * nVertices);
+
+    for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
+      std::getline(ifstream, buffer);
+      splitText(buffer, ' ', tokens);
+
+      const int offset = 3 * iVertex;
+
+      (*vertexCoords)[offset + 0] = std::stof(tokens[0]);
+      (*vertexCoords)[offset + 1] = std::stof(tokens[1]);
+      (*vertexCoords)[offset + 2] = std::stof(tokens[2]);
+    }
+    LOG_INFO("Reading vertex coords done.");
+
+    // =========================================================================================
+    // Read elements
+    // =========================================================================================
+    // Read num elements
+    std::getline(ifstream, buffer);
+    const int nElements = std::stoi(buffer);
+
+    // Read elements
+    veci_pt elements = std::make_shared<std::vector<int>>();
+    elements->resize(3 * nElements);
+
+    for (int iElement = 0; iElement < nElements; ++iElement) {
+      std::getline(ifstream, buffer);
+      splitText(buffer, ' ', tokens);
+
+      const int offset = 3 * iElement;
+
+      (*elements)[offset + 0] = std::stoi(tokens[0]);
+      (*elements)[offset + 1] = std::stoi(tokens[1]);
+      (*elements)[offset + 2] = std::stoi(tokens[2]);
+    }
+    LOG_INFO("Reading elements done.");
+
+    // =========================================================================================
+    // Convert data to program compat format
+    // =========================================================================================
+    vertices->resize(nElements * 3);
+    indices->resize(nElements * 3);
+
+    for (int iElement = 0; iElement < nElements; ++iElement) {
+      const int offset = 3 * iElement;
+      const int offset0 = offset + 0;
+      const int offset1 = offset + 1;
+      const int offset2 = offset + 2;
+
+      const int vertexIdOffset0 = 3 * (*elements)[offset0];
+      const int vertexIdOffset1 = 3 * (*elements)[offset1];
+      const int vertexIdOffset2 = 3 * (*elements)[offset2];
+
+      const glm::vec3 vertexCoord0 = glm::vec3((*vertexCoords)[vertexIdOffset0 + 0],
+                                               (*vertexCoords)[vertexIdOffset0 + 1],
+                                               (*vertexCoords)[vertexIdOffset0 + 2]);
+      const glm::vec3 vertexCoord1 = glm::vec3((*vertexCoords)[vertexIdOffset1 + 0],
+                                               (*vertexCoords)[vertexIdOffset1 + 1],
+                                               (*vertexCoords)[vertexIdOffset1 + 2]);
+      const glm::vec3 vertexCoord2 = glm::vec3((*vertexCoords)[vertexIdOffset2 + 0],
+                                               (*vertexCoords)[vertexIdOffset2 + 1],
+                                               (*vertexCoords)[vertexIdOffset2 + 2]);
+
+      const Vertex vertex0(vertexCoord0,
+                           glm::vec3(1.0f),
+                           glm::vec3(0.0f),
+                           BARY_CENTER[0],
+                           glm::vec2(0.0f),
+                           0.0f);
+      const Vertex vertex1(vertexCoord1,
+                           glm::vec3(1.0f),
+                           glm::vec3(0.0f),
+                           BARY_CENTER[1],
+                           glm::vec2(0.0f),
+                           0.0f);
+      const Vertex vertex2(vertexCoord2,
+                           glm::vec3(1.0f),
+                           glm::vec3(0.0f),
+                           BARY_CENTER[2],
+                           glm::vec2(0.0f),
+                           0.0f);
+
+      (*vertices)[offset0] = vertex0;
+      (*vertices)[offset1] = vertex1;
+      (*vertices)[offset2] = vertex2;
+
+      (*indices)[offset0] = offset0;
+      (*indices)[offset1] = offset1;
+      (*indices)[offset2] = offset2;
     }
   }
 

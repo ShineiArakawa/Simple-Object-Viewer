@@ -30,7 +30,7 @@ void TriangleBucket::initBucket(const float &interval,
   LOG_INFO("  interval  = " + std::to_string(_interval));
   LOG_INFO("  minCoords = (" + std::to_string(_minCoords[0]) + ", " + std::to_string(_minCoords[1]) + ", " + std::to_string(_minCoords[2]) + ")");
   LOG_INFO("  maxCoords = (" + std::to_string(_maxCoords[0]) + ", " + std::to_string(_maxCoords[1]) + ", " + std::to_string(_maxCoords[2]) + ")");
-  LOG_INFO("  nBuckets  = (" + std::to_string(_nBucketsX) + ", " + std::to_string(_nBucketsY) + ", " + std::to_string(_nBucketsY) + ")");
+  LOG_INFO("  nBuckets  = (" + std::to_string(_nBucketsX) + ", " + std::to_string(_nBucketsY) + ", " + std::to_string(_nBucketsZ) + ")");
 
   resetBuckets();
 }
@@ -152,7 +152,7 @@ vecf_pt Geometry::calcBaryCentricCoord(const veci_pt &triangles,
 }
 
 std::pair<vec3f_t, vec3f_t> Geometry::calcModelBounds(const vecf_pt &vertexCoords) {
-  const int nVertices = vertexCoords->size();
+  const int nVertices = vertexCoords->size() / 3;
 
   vec3f_t minCoords;
   vec3f_t maxCoords;
@@ -231,7 +231,13 @@ veci_pt Geometry::extractSurfaceTriangle(const int &nDivsBucket,
     sort3Elems(iIndex0, iIndex1, iIndex2);
 
     for (int jTriangle = 0; jTriangle < nInBucket; ++jTriangle) {
-      const int jOffset = 3 * (*idsInBucket)[jTriangle];
+      const int id = (*idsInBucket)[jTriangle];
+
+      if (id == iTriangle) {
+        continue;
+      }
+
+      const int jOffset = 3 * id;
 
       int jIndex0 = (*originalTriangles)[jOffset + 0];
       int jIndex1 = (*originalTriangles)[jOffset + 1];
@@ -252,6 +258,15 @@ veci_pt Geometry::extractSurfaceTriangle(const int &nDivsBucket,
   }
 
   return surfaceTriangles;
+}
+
+void Geometry::calcVertexNormals(const int &nNodes,
+                                 const veci_pt &triangles) {
+  // Count
+  ReservedArrayi countNodes(nNodes);
+  for (const auto &triangleId : *triangles) {
+    countNodes.setValue(triangleId, countNodes.getValue(triangleId) + 1);
+  }
 }
 
 }  // namespace util
