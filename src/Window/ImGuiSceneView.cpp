@@ -73,7 +73,9 @@ void ImGuiSceneView::resizeGL(const int& width, const int& height) {
 
 glm::vec3 ImGuiSceneView::getVector(const double& x, const double& y) {
   const int shortSide = std::min(WIN_WIDTH, WIN_HEIGHT);
-  glm::vec3 pt(2.0f * x / (float)shortSide - 1.0f, -2.0f * y / (float)shortSide + 1.0f, 0.0f);
+  glm::vec3 pt(2.0f * x / (float)shortSide - 1.0f,
+               -2.0f * y / (float)shortSide + 1.0f,
+               0.0f);
 
   const double xySquared = pt.x * pt.x + pt.y * pt.y;
   if (xySquared <= 1.0) {
@@ -86,8 +88,8 @@ glm::vec3 ImGuiSceneView::getVector(const double& x, const double& y) {
 }
 
 void ImGuiSceneView::updateRotate() {
-  const glm::vec3 u = getVector(oldPos.x, oldPos.y);
-  const glm::vec3 v = getVector(newPos.x, newPos.y);
+  const glm::vec3& u = getVector(oldPos.x, oldPos.y);
+  const glm::vec3& v = getVector(newPos.x, newPos.y);
 
   _renderer->updateRotate(u, v);
 }

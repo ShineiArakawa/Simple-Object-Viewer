@@ -24,6 +24,8 @@ void ObjectLoader::readFromFile(const std::string &filePath,
   if (extension == ".obj") {
 #endif
     readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+  } else if (extension == ".msh") {
+    readMshFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else if (extension == ".las") {
     readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else {
@@ -38,7 +40,7 @@ void ObjectLoader::readObjFile(const std::string &filePath,
                                const float offsetX,
                                const float offsetY,
                                const float offsetZ) {
-  LOG_INFO("### Loaded obj file: " + filePath);
+  LOG_INFO("### Load obj file: " + filePath);
 
 #if defined(USE_ASSIMP)
   Assimp::Importer importer;
@@ -170,6 +172,143 @@ void ObjectLoader::readObjFile(const std::string &filePath,
   LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
 }
 
+void ObjectLoader::readMshFile(const std::string &filePath,
+                               std::shared_ptr<std::vector<model::Vertex>> vertices,
+                               std::shared_ptr<std::vector<uint32_t>> indices,
+                               const float offsetX,
+                               const float offsetY,
+                               const float offsetZ) {
+  LOG_INFO("### Load obj file: " + filePath);
+
+  std::ifstream ifstream = std::ifstream(filePath, std::ios::in);
+
+  const int faces[16][3] = {
+      {0, 6, 5},
+      {6, 3, 8},
+      {8, 5, 6},
+      {5, 8, 2},
+      {0, 5, 4},
+      {5, 2, 7},
+      {7, 4, 5},
+      {4, 7, 1},
+      {0, 4, 6},
+      {4, 1, 9},
+      {9, 6, 4},
+      {6, 9, 3},
+      {1, 7, 9},
+      {7, 2, 8},
+      {8, 9, 7},
+      {9, 8, 3},
+  };
+
+  if (ifstream) {
+    std::string buffer;
+    std::vector<std::string> tokens;
+
+    // Read num elements
+    std::getline(ifstream, buffer);
+    const int nElements = std::stoi(buffer);
+
+    // Read elements
+    std::vector<std::array<int, 10>> elements;
+    elements.resize(nElements);
+
+    for (int iElement = 0; iElement < nElements; ++iElement) {
+      std::getline(ifstream, buffer);
+      splitText(buffer, ' ', tokens);
+
+      std::array<int, 10> element = {
+          std::stoi(tokens[0]),
+          std::stoi(tokens[1]),
+          std::stoi(tokens[2]),
+          std::stoi(tokens[3]),
+          std::stoi(tokens[4]),
+          std::stoi(tokens[5]),
+          std::stoi(tokens[6]),
+          std::stoi(tokens[7]),
+          std::stoi(tokens[8]),
+          std::stoi(tokens[9]),
+      };
+
+      elements[iElement] = element;
+    }
+
+    // Read num vertices
+    std::getline(ifstream, buffer);
+    const int nVertices = std::stoi(buffer);
+
+    // Read vertices
+    std::vector<glm::vec3> vertexCoords;
+    vertexCoords.resize(nVertices);
+
+    for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
+      std::getline(ifstream, buffer);
+      splitText(buffer, ' ', tokens);
+
+      glm::vec3 vertexCoord = {
+          std::stof(tokens[0]),  // X
+          std::stof(tokens[1]),  // Y
+          std::stof(tokens[2])   // X
+      };
+
+      vertexCoords[iVertex] = vertexCoord;
+    }
+
+    // Convert to object
+    vertices->resize(nElements * 16 * 3);
+    indices->resize(nElements * 16 * 3);
+
+    for (int iElement = 0; iElement < nElements; ++iElement) {
+      const int offsetElement = 3 * 16 * iElement;
+
+      for (int iFace = 0; iFace < 16; ++iFace) {
+        const int offsetFace = 3 * iFace;
+
+        const int vertexId0 = elements[iElement][faces[iFace][0]];
+        const int vertexId1 = elements[iElement][faces[iFace][1]];
+        const int vertexId2 = elements[iElement][faces[iFace][2]];
+
+        const Vertex vertex0(vertexCoords[vertexId0],
+                             glm::vec3(1.0f),
+                             glm::vec3(0.0f),
+                             BARY_CENTER[0],
+                             glm::vec2(0.0f),
+                             0.0f);
+        const Vertex vertex1(vertexCoords[vertexId1],
+                             glm::vec3(1.0f),
+                             glm::vec3(0.0f),
+                             BARY_CENTER[1],
+                             glm::vec2(0.0f),
+                             0.0f);
+        const Vertex vertex2(vertexCoords[vertexId2],
+                             glm::vec3(1.0f),
+                             glm::vec3(0.0f),
+                             BARY_CENTER[2],
+                             glm::vec2(0.0f),
+                             0.0f);
+
+        const int index0 = offsetElement + offsetFace + 0;
+        const int index1 = offsetElement + offsetFace + 1;
+        const int index2 = offsetElement + offsetFace + 2;
+
+        (*vertices)[index0] = vertex0;
+        (*vertices)[index1] = vertex1;
+        (*vertices)[index2] = vertex2;
+
+        (*indices)[index0] = index0;
+        (*indices)[index1] = index1;
+        (*indices)[index2] = index2;
+      }
+    }
+  }
+
+  ObjectLoader::moveToOrigin(vertices);
+  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
+
+  LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
+  LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
+}
+
 void ObjectLoader::readLazFile(const std::string &filePath, std::shared_ptr<std::vector<Vertex>> vertices, std::shared_ptr<std::vector<uint32_t>> indices, const float offsetX, const float offsetY, const float offsetZ) {
   // std::ifstream ifs(filePath, std::ios::in | std::ios::binary);
 
@@ -233,6 +372,8 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   unsigned int nVertices = 0;
 
 #if defined(USE_ASSIMP)
+  LOG_INFO("### Load obj file: " + filePath);
+
   Assimp::Importer importer;
   unsigned int flag = 0;
   flag |= aiProcess_Triangulate;
@@ -626,6 +767,20 @@ std::pair<glm::vec3, glm::vec3> ObjectLoader::getCorners(std::shared_ptr<std::ve
   }
 
   return {std::move(minCoords), std::move(maxCoords)};
+}
+
+void ObjectLoader::splitText(const std::string &s,
+                             const char delim,
+                             std::vector<std::string> &tokens) {
+  tokens.clear();
+  std::stringstream ss(s);
+  std::string item;
+
+  while (getline(ss, item, delim)) {
+    if (!item.empty() && item != "null") {
+      tokens.push_back(item);
+    }
+  }
 }
 
 }  // namespace util

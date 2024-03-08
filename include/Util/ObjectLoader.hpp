@@ -38,6 +38,12 @@ class ObjectLoader {
                           const float offsetX = 0.0f,
                           const float offsetY = 0.0f,
                           const float offsetZ = 0.0f);
+  static void readMshFile(const std::string& filePath,
+                          std::shared_ptr<std::vector<model::Vertex>> vertices,
+                          std::shared_ptr<std::vector<uint32_t>> indices,
+                          const float offsetX = 0.0f,
+                          const float offsetY = 0.0f,
+                          const float offsetZ = 0.0f);
   static void readLazFile(const std::string& filePath,
                           std::shared_ptr<std::vector<model::Vertex>> vertices,
                           std::shared_ptr<std::vector<uint32_t>> indices,
@@ -71,6 +77,8 @@ class ObjectLoader {
                             std::shared_ptr<std::vector<model::Vertex>>& distVertices,
                             std::shared_ptr<std::vector<unsigned int>>& distIndices);
   static std::pair<glm::vec3, glm::vec3> getCorners(std::shared_ptr<std::vector<model::Vertex>> vertices);
+  static void ObjectLoader::splitText(const std::string& s, const char delim, std::vector<std::string>& tokens);
 };
+
 }  // namespace util
 }  // namespace simview
