@@ -85,9 +85,9 @@ class ObjectLoader {
                             VertexArray_t& distVertices,
                             IndexArray_t& distIndices);
   static std::pair<glm::vec3, glm::vec3> getCorners(VertexArray_t vertices);
-  static void ObjectLoader::splitText(const std::string& s,
-                                      const char delim,
-                                      std::vector<std::string>& tokens);
+  static void splitText(const std::string& s,
+                        const char delim,
+                        std::vector<std::string>& tokens);
 };
 
 }  // namespace util
