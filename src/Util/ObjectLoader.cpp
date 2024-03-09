@@ -18,6 +18,8 @@ void ObjectLoader::readFromFile(const std::string &filePath,
 
   LOG_INFO("### Start load obj file: " + filePath);
 
+  const auto startTime = std::chrono::system_clock::now();
+
 #if defined(USE_ASSIMP)
   if (extension == ".obj" || extension == ".stl") {
 #else
@@ -35,7 +37,10 @@ void ObjectLoader::readFromFile(const std::string &filePath,
     return;
   }
 
-  LOG_INFO("### Done.");
+  const auto endTime = std::chrono::system_clock::now();
+  const double elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+
+  LOG_INFO("### Done. Elapsed time: " + std::to_string(elapsedTime / 1e6) + " [sec]");
 }
 
 void ObjectLoader::readObjFile(const std::string &filePath,
@@ -120,7 +125,6 @@ void ObjectLoader::readObjFile(const std::string &filePath,
     throw std::runtime_error("Failed to load OBJ file: " + filePath);
   }
 
-  // Vertex配列の作成
   // Create vertex array
 
   glm::vec3 maxCoords(0.0f);
@@ -284,11 +288,49 @@ void ObjectLoader::readMshFile(const std::string &filePath,
     // =========================================================================================
     // Extract surface
     // =========================================================================================
-    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(250, triangles, vertexCoords);
+    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(350, triangles, vertexCoords);
 
     const int nSurfaceTriangles = surfaceTriangles->size() / 3;
     LOG_INFO("nSurfaceTriangles: " + std::to_string(nSurfaceTriangles));
     LOG_INFO("Surface extraction done.");
+
+    // =========================================================================================
+    // Calc face normals
+    // =========================================================================================
+    vecf_pt faceNormal = std::make_shared<std::vector<float>>();
+    faceNormal->resize(3 * nSurfaceTriangles);
+
+    for (int iSurfaceTriangle = 0; iSurfaceTriangle < nSurfaceTriangles; ++iSurfaceTriangle) {
+      const int offset = 3 * iSurfaceTriangle;
+
+      const int nodeIdOffset0 = 3 * (*surfaceTriangles)[offset + 0];
+      const int nodeIdOffset1 = 3 * (*surfaceTriangles)[offset + 1];
+      const int nodeIdOffset2 = 3 * (*surfaceTriangles)[offset + 2];
+
+      const float relVec0X = (*vertexCoords)[nodeIdOffset1 + 0] - (*vertexCoords)[nodeIdOffset0 + 0];
+      const float relVec0Y = (*vertexCoords)[nodeIdOffset1 + 1] - (*vertexCoords)[nodeIdOffset0 + 1];
+      const float relVec0Z = (*vertexCoords)[nodeIdOffset1 + 2] - (*vertexCoords)[nodeIdOffset0 + 2];
+
+      const float relVec1X = (*vertexCoords)[nodeIdOffset2 + 0] - (*vertexCoords)[nodeIdOffset0 + 0];
+      const float relVec1Y = (*vertexCoords)[nodeIdOffset2 + 1] - (*vertexCoords)[nodeIdOffset0 + 1];
+      const float relVec1Z = (*vertexCoords)[nodeIdOffset2 + 2] - (*vertexCoords)[nodeIdOffset0 + 2];
+
+      // Calc outer product
+      // 0:   x y z x
+      // 1:   x y z x
+      float normalX, normalY, normalZ;
+      math::outerProduct(relVec0X, relVec0Y, relVec0Z,
+                         relVec1X, relVec1Y, relVec1Z,
+                         normalX, normalY, normalZ);
+
+      // Normalize
+      math::normalize(normalX, normalY, normalZ);
+
+      // Set
+      (*faceNormal)[offset + 0] = normalX;
+      (*faceNormal)[offset + 1] = normalY;
+      (*faceNormal)[offset + 2] = normalZ;
+    }
 
     // =========================================================================================
     // Convert data to program compat format
@@ -313,21 +355,31 @@ void ObjectLoader::readMshFile(const std::string &filePath,
                                                (*vertexCoords)[vertexIdOffset2 + 1],
                                                (*vertexCoords)[vertexIdOffset2 + 2]);
 
+      const glm::vec3 vertexNormal0 = glm::vec3((*faceNormal)[offset + 0],
+                                                (*faceNormal)[offset + 1],
+                                                (*faceNormal)[offset + 2]);
+      const glm::vec3 vertexNormal1 = glm::vec3((*faceNormal)[offset + 0],
+                                                (*faceNormal)[offset + 1],
+                                                (*faceNormal)[offset + 2]);
+      const glm::vec3 vertexNormal2 = glm::vec3((*faceNormal)[offset + 0],
+                                                (*faceNormal)[offset + 1],
+                                                (*faceNormal)[offset + 2]);
+
       const Vertex vertex0(vertexCoord0,
                            glm::vec3(1.0f),
-                           glm::vec3(0.0f),
+                           vertexNormal0,
                            BARY_CENTER[0],
                            glm::vec2(0.0f),
                            0.0f);
       const Vertex vertex1(vertexCoord1,
                            glm::vec3(1.0f),
-                           glm::vec3(0.0f),
+                           vertexNormal1,
                            BARY_CENTER[1],
                            glm::vec2(0.0f),
                            0.0f);
       const Vertex vertex2(vertexCoord2,
                            glm::vec3(1.0f),
-                           glm::vec3(0.0f),
+                           vertexNormal2,
                            BARY_CENTER[2],
                            glm::vec2(0.0f),
                            0.0f);
@@ -412,8 +464,51 @@ void ObjectLoader::readPchFile(const std::string &filePath,
     LOG_INFO("Reading elements done.");
 
     // =========================================================================================
+    // Calc face normals
+    // =========================================================================================
+    vecf_pt faceNormal = std::make_shared<std::vector<float>>();
+    faceNormal->resize(3 * nElements);
+
+    for (int iElement = 0; iElement < nElements; ++iElement) {
+      const int offset = 3 * iElement;
+
+      const int nodeId0 = (*elements)[offset + 0];
+      const int nodeId1 = (*elements)[offset + 1];
+      const int nodeId2 = (*elements)[offset + 2];
+
+      const int nodeIdOffset0 = 3 * nodeId0;
+      const int nodeIdOffset1 = 3 * nodeId1;
+      const int nodeIdOffset2 = 3 * nodeId2;
+
+      const float relVec0X = (*vertexCoords)[nodeIdOffset1 + 0] - (*vertexCoords)[nodeIdOffset0 + 0];
+      const float relVec0Y = (*vertexCoords)[nodeIdOffset1 + 1] - (*vertexCoords)[nodeIdOffset0 + 1];
+      const float relVec0Z = (*vertexCoords)[nodeIdOffset1 + 2] - (*vertexCoords)[nodeIdOffset0 + 2];
+
+      const float relVec1X = (*vertexCoords)[nodeIdOffset2 + 0] - (*vertexCoords)[nodeIdOffset0 + 0];
+      const float relVec1Y = (*vertexCoords)[nodeIdOffset2 + 1] - (*vertexCoords)[nodeIdOffset0 + 1];
+      const float relVec1Z = (*vertexCoords)[nodeIdOffset2 + 2] - (*vertexCoords)[nodeIdOffset0 + 2];
+
+      // Calc outer product
+      // 0:   x y z x
+      // 1:   x y z x
+      float normalX, normalY, normalZ;
+      math::outerProduct(relVec0X, relVec0Y, relVec0Z,
+                         relVec1X, relVec1Y, relVec1Z,
+                         normalX, normalY, normalZ);
+
+      // Normalize
+      math::normalize(normalX, normalY, normalZ);
+
+      // Set
+      (*faceNormal)[offset + 0] = normalX;
+      (*faceNormal)[offset + 1] = normalY;
+      (*faceNormal)[offset + 2] = normalZ;
+    }
+
+    // =========================================================================================
     // Calc vertex normal
     // =========================================================================================
+#if defined(CALC_VERTEX_NORMAL_FROM_NEIGHBOR_FACES)
     veci_pt countNodes = std::make_shared<std::vector<int>>();
     countNodes->resize(nVertices);
     for (int iNode = 0; iNode < nVertices; ++iNode) {
@@ -435,14 +530,15 @@ void ObjectLoader::readPchFile(const std::string &filePath,
       cumsum += (*countNodes)[iNode];
     }
 
+    // Calc belong to array
     veci_pt belongTo = std::make_shared<std::vector<int>>();
     belongTo->resize(cumsum);
 
-    veci_pt tmpCumsumCountNodes = std::make_shared<std::vector<int>>();
-    tmpCumsumCountNodes->resize(nVertices);
+    veci_pt belongToCounter = std::make_shared<std::vector<int>>();
+    belongToCounter->resize(nVertices);
 
     for (int iNode = 0; iNode < nVertices; ++iNode) {
-      (*tmpCumsumCountNodes)[iNode] = 0;
+      (*belongToCounter)[iNode] = 0;
     }
 
     for (int iElement = 0; iElement < nElements; ++iElement) {
@@ -452,20 +548,57 @@ void ObjectLoader::readPchFile(const std::string &filePath,
       const int nodeId1 = (*elements)[offset + 1];
       const int nodeId2 = (*elements)[offset + 2];
 
-      const int offset0 = (*cumsumCountNodes)[nodeId0] + (*tmpCumsumCountNodes)[nodeId0];
+      const int offset0 = (*cumsumCountNodes)[nodeId0] + (*belongToCounter)[nodeId0];
       (*belongTo)[offset0] = iElement;
-      (*tmpCumsumCountNodes)[nodeId0] = (*tmpCumsumCountNodes)[nodeId0] + 1;
+      (*belongToCounter)[nodeId0] = (*belongToCounter)[nodeId0] + 1;
 
-      const int offset1 = (*cumsumCountNodes)[nodeId1] + (*tmpCumsumCountNodes)[nodeId1];
+      const int offset1 = (*cumsumCountNodes)[nodeId1] + (*belongToCounter)[nodeId1];
       (*belongTo)[offset1] = iElement;
-      (*tmpCumsumCountNodes)[nodeId1] = (*tmpCumsumCountNodes)[nodeId1] + 1;
+      (*belongToCounter)[nodeId1] = (*belongToCounter)[nodeId1] + 1;
 
-      const int offset2 = (*cumsumCountNodes)[nodeId2] + (*tmpCumsumCountNodes)[nodeId2];
+      const int offset2 = (*cumsumCountNodes)[nodeId2] + (*belongToCounter)[nodeId2];
       (*belongTo)[offset2] = iElement;
-      (*tmpCumsumCountNodes)[nodeId2] = (*tmpCumsumCountNodes)[nodeId2] + 1;
+      (*belongToCounter)[nodeId2] = (*belongToCounter)[nodeId2] + 1;
     }
 
-    // TODO
+    // Calc vertex normals
+    vecf_pt vertexNormal = std::make_shared<std::vector<float>>();
+    vertexNormal->resize(3 * nVertices);
+
+    for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
+      const int offset = 3 * iVertex;
+
+      const int belongToOffset = (*cumsumCountNodes)[iVertex];
+      const int nBelongTo = (*belongToCounter)[iVertex];
+
+      float vertexNormalX = 0.0f;
+      float vertexNormalY = 0.0f;
+      float vertexNormalZ = 0.0f;
+
+      for (int iBelongTo = 0; iBelongTo < nBelongTo; ++iBelongTo) {
+        const int elementId = (*belongTo)[belongToOffset + iBelongTo];
+        const int elementOffset = 3 * elementId;
+
+        vertexNormalX += (*faceNormal)[elementOffset + 0];
+        vertexNormalY += (*faceNormal)[elementOffset + 1];
+        vertexNormalZ += (*faceNormal)[elementOffset + 2];
+      }
+
+      vertexNormalX /= (float)nBelongTo;
+      vertexNormalY /= (float)nBelongTo;
+      vertexNormalZ /= (float)nBelongTo;
+
+      // Normalize
+      const float length = std::sqrt(vertexNormalX * vertexNormalX + vertexNormalY * vertexNormalY + vertexNormalZ * vertexNormalZ);
+      vertexNormalX /= length;
+      vertexNormalY /= length;
+      vertexNormalZ /= length;
+
+      (*vertexNormal)[offset + 0] = vertexNormalX;
+      (*vertexNormal)[offset + 1] = vertexNormalY;
+      (*vertexNormal)[offset + 2] = vertexNormalZ;
+    }
+#endif
 
     // =========================================================================================
     // Convert data to program compat format
@@ -493,21 +626,43 @@ void ObjectLoader::readPchFile(const std::string &filePath,
                                                (*vertexCoords)[vertexIdOffset2 + 1],
                                                (*vertexCoords)[vertexIdOffset2 + 2]);
 
+#if defined(CALC_VERTEX_NORMAL_FROM_NEIGHBOR_FACES)
+      const glm::vec3 vertexNormal0 = glm::vec3((*vertexNormal)[vertexIdOffset0 + 0],
+                                                (*vertexNormal)[vertexIdOffset0 + 1],
+                                                (*vertexNormal)[vertexIdOffset0 + 2]);
+      const glm::vec3 vertexNormal1 = glm::vec3((*vertexNormal)[vertexIdOffset1 + 0],
+                                                (*vertexNormal)[vertexIdOffset1 + 1],
+                                                (*vertexNormal)[vertexIdOffset1 + 2]);
+      const glm::vec3 vertexNormal2 = glm::vec3((*vertexNormal)[vertexIdOffset2 + 0],
+                                                (*vertexNormal)[vertexIdOffset2 + 1],
+                                                (*vertexNormal)[vertexIdOffset2 + 2]);
+#else
+      const glm::vec3 vertexNormal0 = glm::vec3((*faceNormal)[offset + 0],
+                                                (*faceNormal)[offset + 1],
+                                                (*faceNormal)[offset + 2]);
+      const glm::vec3 vertexNormal1 = glm::vec3((*faceNormal)[offset + 0],
+                                                (*faceNormal)[offset + 1],
+                                                (*faceNormal)[offset + 2]);
+      const glm::vec3 vertexNormal2 = glm::vec3((*faceNormal)[offset + 0],
+                                                (*faceNormal)[offset + 1],
+                                                (*faceNormal)[offset + 2]);
+#endif
+
       const Vertex vertex0(vertexCoord0,
                            glm::vec3(1.0f),
-                           glm::vec3(0.0f),
+                           vertexNormal0,
                            BARY_CENTER[0],
                            glm::vec2(0.0f),
                            0.0f);
       const Vertex vertex1(vertexCoord1,
                            glm::vec3(1.0f),
-                           glm::vec3(0.0f),
+                           vertexNormal1,
                            BARY_CENTER[1],
                            glm::vec2(0.0f),
                            0.0f);
       const Vertex vertex2(vertexCoord2,
                            glm::vec3(1.0f),
-                           glm::vec3(0.0f),
+                           vertexNormal2,
                            BARY_CENTER[2],
                            glm::vec2(0.0f),
                            0.0f);

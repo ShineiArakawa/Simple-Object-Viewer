@@ -34,6 +34,45 @@ using vecd_pt = vec_pt<double>;
 using veci_pt = vec_pt<int>;
 using vecull_pt = vec_pt<size_t>;
 
+namespace math {
+
+inline vec3f_t outerProduct(const vec3f_t& vec0,
+                            const vec3f_t& vec1) {
+  return {
+      vec0[1] * vec1[2] - vec0[2] * vec1[1],  // vec0.y * vec1.z - vec0.z * vec1.y
+      vec0[2] * vec1[0] - vec0[0] * vec1[2],  // vec0.z * vec1.x - vec0.x * vec1.z
+      vec0[0] * vec1[1] - vec0[1] * vec1[0]   // vec0.x * vec1.y - vec0.y * vec1.x
+  };
+}
+
+inline void outerProduct(const float& x0, const float& y0, const float& z0,
+                         const float& x1, const float& y1, const float& z1,
+                         float& x, float& y, float& z) {
+  x = y0 * z1 - z0 * y1;
+  y = z0 * x1 - x0 * z1;
+  z = x0 * y1 - y0 * x1;
+}
+
+inline void normalize(vec3f_t& vec) {
+  const float length = std::sqrt(vec[0] * vec[0] +
+                                 vec[1] * vec[1] +
+                                 vec[2] * vec[3]);
+  vec[0] = vec[0] / length;
+  vec[1] = vec[1] / length;
+  vec[2] = vec[2] / length;
+}
+
+inline void normalize(float& x, float& y, float& z) {
+  const float length = std::sqrt(x * x +
+                                 y * y +
+                                 z * z);
+  x /= length;
+  y /= length;
+  z /= length;
+}
+
+}  // namespace math
+
 template <class DType, class InternalIndexing>
 class ReservedArray {
  private:

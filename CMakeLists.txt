@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(OpenGLExample CXX)
+project(SimpleObjectViewer CXX)
 
 # #################################################
 # #### Compile Options ############################
@@ -105,13 +105,19 @@ set(
 )
 
 set(
-  OpenGLTemplate_INCLUDE_DIR
+  SimpleObjectViewer_INCLUDE_DIR
   ${PROJECT_INCLUDE_DIR}
   ${EXTERNAL_INCLUDE_DIR}
   CACHE
   STRING
-  "All include directories for OpenGL Template library"
+  "All include directories for Simeple Object Viewer library"
 )
+
+
+# #### Set install config
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SimView/" FILES_MATCHING PATTERN "*.hpp")
+
+set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "" FORCE)
 
 # #### Add subdirectory
 add_subdirectory(src)
@@ -155,7 +161,7 @@ message("#    NFD_INCLUDE_DIR                      : ${NFD_INCLUDE_DIR}")
 message("#    SPD_LOG_INCLUDE_DIR                  : ${SPD_LOG_INCLUDE_DIR}")
 message("#    ASSIMP_INCLUDE_DIR                   : ${ASSIMP_INCLUDE_DIR}")
 message("# ")
-message("#    OpenGLTemplate_INCLUDE_DIR           : ${OpenGLTemplate_INCLUDE_DIR}")
+message("#    SimpleObjectViewer_INCLUDE_DIR       : ${SimpleObjectViewer_INCLUDE_DIR}")
 message("# =======================================================================================================")
 
 

@@ -198,8 +198,8 @@ veci_pt Geometry::extractSurfaceTriangle(const int &nDivsBucket,
   const float modelWidhtX = maxCoords[0] - minCoords[0];
   const float modelWidhtY = maxCoords[1] - minCoords[1];
   const float modelWidhtZ = maxCoords[2] - minCoords[2];
-  const float minModelWidth = std::min(std::min(modelWidhtX, modelWidhtY), modelWidhtZ);
-  const float interval = minModelWidth / (float)nDivsBucket;
+  const float maxModelWidth = std::max(std::max(modelWidhtX, modelWidhtY), modelWidhtZ);
+  const float interval = maxModelWidth / (float)nDivsBucket;
 
   bucket.initBucket(interval, minCoords, maxCoords);
 
@@ -251,9 +251,9 @@ veci_pt Geometry::extractSurfaceTriangle(const int &nDivsBucket,
     }
 
     if (isSurface) {
-      surfaceTriangles->push_back(iIndex0);
-      surfaceTriangles->push_back(iIndex1);
-      surfaceTriangles->push_back(iIndex2);
+      surfaceTriangles->push_back((*originalTriangles)[iOffset + 0]);
+      surfaceTriangles->push_back((*originalTriangles)[iOffset + 1]);
+      surfaceTriangles->push_back((*originalTriangles)[iOffset + 2]);
     }
   }
 

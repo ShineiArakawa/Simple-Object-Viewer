@@ -5,6 +5,7 @@
 #include <Util/FileUtil.hpp>
 #include <Util/Geometry.hpp>
 #include <Util/Logging.hpp>
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -19,6 +20,8 @@
 
 #include <assimp/Importer.hpp>  // C++ importer interface
 #endif
+
+// #define CALC_VERTEX_NORMAL_FROM_NEIGHBOR_FACES
 
 namespace simview {
 namespace util {

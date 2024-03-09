@@ -156,5 +156,6 @@ void ViewerApp::keyboardEventViewer(GLFWwindow* window, int key, int scancode, i
     model->setMaskMode(Window::isMaskMode);
   }
 }
+
 }  // namespace app
 }  // namespace simview
