@@ -81,7 +81,7 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
     target_include_directories(
       ${PROJECT_NAME}
       PUBLIC
-      ${OpenGLTemplate_INCLUDE_DIR}
+      ${SimpleObjectViewer_INCLUDE_DIR}
     )
 
     target_link_libraries(
