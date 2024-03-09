@@ -1,10 +1,30 @@
 project(ViewerGUI CXX)
 
-add_executable(
-  ${PROJECT_NAME}
+set(
+  VIEWER_GUI_SOURCES
   "main.cpp"
   ${IMGUI_SOURCE_FILES}
 )
+
+if(WIN32)
+  list(APPEND VIEWER_GUI_SOURCES "main.rc")
+  add_executable(
+    ${PROJECT_NAME}
+    WIN32
+    ${VIEWER_GUI_SOURCES}
+  )
+elseif (APPLE)
+  add_executable(
+    ${PROJECT_NAME}
+    MACOSX_BUNDLE
+    ${VIEWER_GUI_SOURCES}
+  )
+else ()
+  add_executable(
+    ${PROJECT_NAME}
+    ${VIEWER_GUI_SOURCES}
+  )
+endif()
 
 # =========================================================
 # Set Libraries ===========================================
@@ -15,7 +35,6 @@ target_include_directories(
   ${PROJECT_INCLUDE_DIR}
   ${EXTERNAL_INCLUDE_DIR}
 )
-
 
 target_link_libraries(
   ${PROJECT_NAME}
