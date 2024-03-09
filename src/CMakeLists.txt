@@ -70,6 +70,7 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
       "Util/ModelParser.cpp"
       "Util/FileUtil.cpp"
       "Util/StbAdapter.cpp"
+      "Util/Geometry.cpp"
       "Window/Window.cpp"
       "Window/ImGuiSceneView.cpp"
       "Window/ImGuiMainView.cpp"
