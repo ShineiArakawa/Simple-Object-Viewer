@@ -7,32 +7,34 @@ namespace shader {
 
 class DefaultModelShader {
  public:
-  inline static const char* UNIFORM_NAME_MV_MAT = "u_mvMat";
-  inline static const char* UNIFORM_NAME_MVP_MAT = "u_mvpMat";
-  inline static const char* UNIFORM_NAME_NORM_MAT = "u_normMat";
-  inline static const char* UNIFORM_NAME_LIGHT_MAT = "u_lightMat";
-  inline static const char* UNIFORM_NAME_LIGHT_POS = "u_lightPos";
-  inline static const char* UNIFORM_NAME_SHININESS = "u_shininess";
-  inline static const char* UNIFORM_NAME_AMBIENT_INTENSITY = "u_ambientIntensity";
-  inline static const char* UNIFORM_NAME_AMBIENT_COLOR = "u_ambientColor";
-  inline static const char* UNIFORM_NAME_DIFFUSE_COLOR = "u_diffuseColor";
-  inline static const char* UNIFORM_NAME_SPECULAR_COLOR = "u_specularColor";
-  inline static const char* UNIFORM_NAME_WIRE_FRAME_MODE = "u_wireFrameMode";
-  inline static const char* UNIFORM_NAME_WIRE_FRAME_COLOR = "u_wireFrameColor";
-  inline static const char* UNIFORM_NAME_WIRE_FRAME_WIDTH = "u_wireFrameWidth";
-  inline static const char* UNIFORM_NAME_RENDER_TYPE = "u_renderType";
-  inline static const char* UNIFORM_NAME_BUMP_MAP = "u_bumpMap";
-  inline static const char* UNIFORM_NAME_LIGHT_MVP_MAT = "u_lightMvpMat";
-  inline static const char* UNIFORM_NAME_SHADOW_MAPPING = "u_shadowMapping";
+  // clang-format off
+  inline static const char* UNIFORM_NAME_MV_MAT                     = "u_mvMat";
+  inline static const char* UNIFORM_NAME_MVP_MAT                    = "u_mvpMat";
+  inline static const char* UNIFORM_NAME_NORM_MAT                   = "u_normMat";
+  inline static const char* UNIFORM_NAME_LIGHT_MAT                  = "u_lightMat";
+  inline static const char* UNIFORM_NAME_LIGHT_POS                  = "u_lightPos";
+  inline static const char* UNIFORM_NAME_SHININESS                  = "u_shininess";
+  inline static const char* UNIFORM_NAME_AMBIENT_INTENSITY          = "u_ambientIntensity";
+  inline static const char* UNIFORM_NAME_AMBIENT_COLOR              = "u_ambientColor";
+  inline static const char* UNIFORM_NAME_DIFFUSE_COLOR              = "u_diffuseColor";
+  inline static const char* UNIFORM_NAME_SPECULAR_COLOR             = "u_specularColor";
+  inline static const char* UNIFORM_NAME_WIRE_FRAME_MODE            = "u_wireFrameMode";
+  inline static const char* UNIFORM_NAME_WIRE_FRAME_COLOR           = "u_wireFrameColor";
+  inline static const char* UNIFORM_NAME_WIRE_FRAME_WIDTH           = "u_wireFrameWidth";
+  inline static const char* UNIFORM_NAME_RENDER_TYPE                = "u_renderType";
+  inline static const char* UNIFORM_NAME_BUMP_MAP                   = "u_bumpMap";
+  inline static const char* UNIFORM_NAME_LIGHT_MVP_MAT              = "u_lightMvpMat";
+  inline static const char* UNIFORM_NAME_SHADOW_MAPPING             = "u_shadowMapping";
 
-  inline static const char* UNIFORM_NAME_AMBIENT_TEXTURE = "u_ambientTexture";
-  inline static const char* UNIFORM_NAME_DIFFUSE_TEXTURE = "u_diffuseTexture";
-  inline static const char* UNIFORM_NAME_SPECULAR_TEXTURE = "u_specularTexture";
-  inline static const char* UNIFORM_NAME_NORMAL_MAP = "u_normalMap";
-  inline static const char* UNIFORM_NAME_AMBIENT_TEXTURE_FLAG = "u_hasAmbientTexture";
-  inline static const char* UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG = "u_hasDiffuseTexture";
-  inline static const char* UNIFORM_NAME_SPECULAR_TEXTURE_FLAG = "u_hasSpecularTexture";
-  inline static const char* UNIFORM_NAME_DEPTH_TEXTURE = "u_depthTexture";
+  inline static const char* UNIFORM_NAME_AMBIENT_TEXTURE            = "u_ambientTexture";
+  inline static const char* UNIFORM_NAME_DIFFUSE_TEXTURE            = "u_diffuseTexture";
+  inline static const char* UNIFORM_NAME_SPECULAR_TEXTURE           = "u_specularTexture";
+  inline static const char* UNIFORM_NAME_NORMAL_MAP                 = "u_normalMap";
+  inline static const char* UNIFORM_NAME_AMBIENT_TEXTURE_FLAG       = "u_hasAmbientTexture";
+  inline static const char* UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG       = "u_hasDiffuseTexture";
+  inline static const char* UNIFORM_NAME_SPECULAR_TEXTURE_FLAG      = "u_hasSpecularTexture";
+  inline static const char* UNIFORM_NAME_DEPTH_TEXTURE              = "u_depthTexture";
+  // clang-format on
 
   inline static const std::string VERT_SHADER =
       "#version 460\n"

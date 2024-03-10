@@ -7,17 +7,17 @@ namespace model {
 using namespace util;
 using namespace shader;
 
-Object::Object(const std::string &filePath,
-               const float offsetX,
-               const float offsetY,
-               const float offsetZ,
-               const float scale)
+Object::Object(const std::string &filePath,  // filePath
+               const float offsetX,          // offsetX
+               const float offsetY,          // offsetY
+               const float offsetZ,          // offsetZ
+               const float scale             // scale
+               )
     : _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),
-      _scale(scale) {
-}
+      _scale(scale) {}
 
 Object::~Object() {}
 
@@ -36,27 +36,34 @@ void Object::initVAO() {
   initVAO(vertices, indices);
 }
 
-void Object::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,
-                     const std::shared_ptr<std::vector<vec3f_t>> colors,
-                     const std::shared_ptr<std::vector<vec3f_t>> normals,
-                     const std::shared_ptr<std::vector<vec2f_t>> uvCoords,
-                     const std::shared_ptr<std::vector<int>> ids) {
+void Object::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,  // positions
+                     const std::shared_ptr<std::vector<vec3f_t>> colors,     // colors
+                     const std::shared_ptr<std::vector<vec3f_t>> normals,    // normals
+                     const std::shared_ptr<std::vector<vec2f_t>> uvCoords,   // uvCoords
+                     const std::shared_ptr<std::vector<int>> ids             // ids
+) {
   VertexArray_t vertices = std::make_shared<std::vector<Vertex>>();
   IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
 
   const int nVetiices = positions->size();
 
   for (int iVertex = 0; iVertex < nVetiices; ++iVertex) {
-    const glm::vec3 position = glm::vec3((*positions)[iVertex][0], (*positions)[iVertex][1], (*positions)[iVertex][2]);
+    const glm::vec3 position = glm::vec3((*positions)[iVertex][0],
+                                         (*positions)[iVertex][1],
+                                         (*positions)[iVertex][2]);
 
     glm::vec3 color(0.0f);
     if (colors != nullptr) {
-      color = glm::vec3((*colors)[iVertex][0], (*colors)[iVertex][1], (*colors)[iVertex][2]);
+      color = glm::vec3((*colors)[iVertex][0],
+                        (*colors)[iVertex][1],
+                        (*colors)[iVertex][2]);
     }
 
     glm::vec3 normal(0.0f);
     if (normals != nullptr) {
-      normal = glm::vec3((*normals)[iVertex][0], (*normals)[iVertex][1], (*normals)[iVertex][2]);
+      normal = glm::vec3((*normals)[iVertex][0],
+                         (*normals)[iVertex][1],
+                         (*normals)[iVertex][2]);
     }
 
     const int iBary = iVertex % 3;
@@ -133,16 +140,17 @@ void Object::initVAO(const VertexArray_t &vertices,
   _bbox = std::make_shared<AxisAlignedBoundingBox>(minCoords, maxCoords);
 }
 
-void Object::paintGL(const glm::mat4 &mvMat,
-                     const glm::mat4 &mvpMat,
-                     const glm::mat4 &lightMat,
-                     const glm::vec3 &lightPos,
-                     const float &shininess,
-                     const float &ambientIntensity,
-                     const glm::vec3 &wireFrameColor,
-                     const float &wireFrameWidth,
-                     const GLuint &depthTextureId,
-                     const glm::mat4 &lightMvpMat) {
+void Object::paintGL(const glm::mat4 &mvMat,           // mvMat
+                     const glm::mat4 &mvpMat,          // mvpMat
+                     const glm::mat4 &lightMat,        // lightMat
+                     const glm::vec3 &lightPos,        // lightPos
+                     const float &shininess,           // shininess
+                     const float &ambientIntensity,    // ambientIntensity
+                     const glm::vec3 &wireFrameColor,  // wireFrameColor
+                     const float &wireFrameWidth,      // wireFrameWidth
+                     const GLuint &depthTextureId,     // depthTextureId
+                     const glm::mat4 &lightMvpMat      // lightMvpMat
+) {
   if (_isVisible) {
     const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
@@ -151,33 +159,34 @@ void Object::paintGL(const glm::mat4 &mvMat,
 
     paintBBOX(mvtMat, mvptMat, normMat);
 
-    bindShader(
-        mvtMat,
-        mvptMat,
-        normMat,
-        lightMat,
-        lightPos,
-        shininess,
-        ambientIntensity,
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        getRenderType(),
-        getWireFrameMode(),
-        wireFrameColor,
-        wireFrameWidth,
-        depthTextureId,
-        lightMvptMat,
-        false,
-        _isEnabledNormalMap);
+    bindShader(mvtMat,                   // mvMat
+               mvptMat,                  // mvpMat
+               normMat,                  // normMat
+               lightMat,                 // lightMat
+               lightPos,                 // lightPos
+               shininess,                // shininess
+               ambientIntensity,         // ambientIntensity
+               glm::vec3(0.0f),          // ambientColor
+               glm::vec3(0.0f),          // diffuseColor
+               glm::vec3(0.0f),          // specularColor
+               getRenderType(),          // renderType
+               getWireFrameMode(),       // wireFrameMode
+               wireFrameColor,           // wireFrameColor
+               wireFrameWidth,           // wireFrameWidth
+               depthTextureId,           // depthTextureId
+               lightMvptMat,             // lightMvpMat
+               _isEnabledShadowMapping,  // isEnabledShadowMapping
+               false,                    // disableDepthTest
+               _isEnabledNormalMap       // isEnabledNormalMap
+    );
 
     {
       // Activate texture image
       _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE, _textureId);
-      _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, 1.0f);
+      _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, true);
 
       _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, _textureId);
-      _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, 1.0f);
+      _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, true);
     }
 
     {
@@ -201,7 +210,8 @@ void Object::drawGL(const int &index) {
 void Object::drawAllGL(const glm::mat4 &lightMvpMat) {
   if (_isVisible) {
     const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
-    _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+    _depthShader->setUniformVariable(
+        DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
 
     drawGL();
   }

@@ -105,28 +105,32 @@ void Box::paintGL(const glm::mat4& mvMat,
     const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
 
     bindShader(
-        mvtMat,
-        mvptMat,
-        normMat,
-        lightMat,
-        lightPos,
-        shininess,
-        ambientIntensity,
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        getRenderType(),
-        getWireFrameMode(),
-        wireFrameColor,
-        wireFrameWidth,
-        depthTextureId,
-        lightMvptMat);
+        mvtMat,                   // mvMat
+        mvptMat,                  // mvpMat
+        normMat,                  // normMat
+        lightMat,                 // lightMat
+        lightPos,                 // lightPos
+        shininess,                // shininess
+        ambientIntensity,         // ambientIntensity
+        glm::vec3(0.0f),          // ambientColor
+        glm::vec3(0.0f),          // diffuseColor
+        glm::vec3(0.0f),          // specularColor
+        getRenderType(),          // renderType
+        getWireFrameMode(),       // wireFrameMode
+        wireFrameColor,           // wireFrameColor
+        wireFrameWidth,           // wireFrameWidth
+        depthTextureId,           // depthTextureId
+        lightMvptMat,             // lightMvpMat
+        _isEnabledShadowMapping,  // isEnabledShadowMapping
+        false,                    // disableDepthTest
+        false                     // isEnabledNormalMap
+    );
 
     _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE, _textureId);
-    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, 1.0f);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, true);
 
     _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, _textureId);
-    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, 1.0f);
+    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, true);
 
     drawGL();
 
@@ -154,6 +158,9 @@ void Box::drawAllGL(const glm::mat4& lightMvpMat) {
   }
 }
 
-void Box::loadTexture(const std::string& filePath) { Texture::loadTexture(filePath, _textureId); }
+void Box::loadTexture(const std::string& filePath) {
+  Texture::loadTexture(filePath, _textureId);
+}
+
 }  // namespace model
 }  // namespace simview

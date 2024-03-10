@@ -87,24 +87,26 @@ void Background::paintGL(const glm::mat4& mvMat,
                          const glm::mat4& lightMvpMat) {
   if (_isVisible) {
     bindShader(
-        glm::mat4(1.0f),
-        glm::mat4(1.0f),
-        glm::mat4(1.0f),
-        lightMat,
-        lightPos,
-        shininess,
-        ambientIntensity,
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        getRenderType(false, Primitives::RenderType::TEXTURE),
-        getWireFrameMode(),
-        wireFrameColor,
-        wireFrameWidth,
-        depthTextureId,
-        lightMvpMat,
-        true,
-        true);
+        glm::mat4(1.0f),                                        // mvMat
+        glm::mat4(1.0f),                                        // mvpMat
+        glm::mat4(1.0f),                                        // normMat
+        lightMat,                                               // lightMat
+        lightPos,                                               // lightPos
+        shininess,                                              // shininess
+        ambientIntensity,                                       // ambientIntensity
+        glm::vec3(0.0f),                                        // ambientColor
+        glm::vec3(0.0f),                                        // diffuseColor
+        glm::vec3(0.0f),                                        // specularColor
+        getRenderType(false, Primitives::RenderType::TEXTURE),  // renderType
+        getWireFrameMode(),                                     // wireFrameMode
+        wireFrameColor,                                         // wireFrameColor
+        wireFrameWidth,                                         // wireFrameWidth
+        depthTextureId,                                         // depthTextureId
+        lightMvpMat,                                            // lightMvpMat
+        false,                                                  // isEnabledShadowMapping
+        true,                                                   // disableDepthTest
+        false                                                   // isEnabledNormalMap
+    );
 
     _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, _textureId);
     _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, 1.0f);

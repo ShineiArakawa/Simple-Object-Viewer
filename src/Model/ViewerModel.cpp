@@ -32,29 +32,41 @@ void ViewerModel::initVAO() {
   }
 }
 
-void ViewerModel::paintGL(const glm::mat4 &mvMat,
-                          const glm::mat4 &mvpMat,
-                          const glm::mat4 &lightMat,
-                          const glm::mat4 &lightMvpMat,
-                          const GLuint &depthMapId) {
+void ViewerModel::paintGL(const glm::mat4 &mvMat,        // mvMat
+                          const glm::mat4 &mvpMat,       // mvpMat
+                          const glm::mat4 &lightMat,     // lightMat
+                          const glm::mat4 &lightMvpMat,  // lightMvpMat
+                          const GLuint &depthMapId       // depthMapId
+) {
   if (_backgroundIDtoDraw >= 0 && _backgroundIDtoDraw < _backgrounds->size()) {
     getBackground(_backgroundIDtoDraw)->update();
-    getBackground(_backgroundIDtoDraw)->paintGL(mvMat, mvpMat, lightMat, _lightPosition.xyz(), _shininess, _ambientIntensity, _wireFrameColor, _wireFrameWidth, depthMapId, lightMvpMat);
+    getBackground(_backgroundIDtoDraw)->paintGL(mvMat,                 // mvMat
+                                                mvpMat,                // mvpMat
+                                                lightMat,              // lightMat
+                                                _lightPosition.xyz(),  // lightPos
+                                                _shininess,            // shininess
+                                                _ambientIntensity,     // ambientIntensity
+                                                _wireFrameColor,       // wireFrameColor
+                                                _wireFrameWidth,       // wireFrameWidth
+                                                depthMapId,            // depthTextureId
+                                                lightMvpMat            // lightMvpMat
+    );
   }
 
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->update();
     getObject(iModel)->paintGL(
-        mvMat,
-        mvpMat,
-        lightMat,
-        _lightPosition.xyz(),
-        _shininess,
-        _ambientIntensity,
-        _wireFrameColor,
-        _wireFrameWidth,
-        depthMapId,
-        lightMvpMat);
+        mvMat,                 // mvMat
+        mvpMat,                // mvpMat
+        lightMat,              // lightMat
+        _lightPosition.xyz(),  // lightPos
+        _shininess,            // shininess
+        _ambientIntensity,     // ambientIntensity
+        _wireFrameColor,       // wireFrameColor
+        _wireFrameWidth,       // wireFrameWidth
+        depthMapId,            // depthTextureId
+        lightMvpMat            // lightMvpMat
+    );
   }
 }
 

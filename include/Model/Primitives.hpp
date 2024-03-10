@@ -48,11 +48,9 @@ class Primitives {
     return renderType;
   }
 
-  enum class WireFrameMode {
-    OFF,
-    ON,
-    ONLY
-  };
+  enum class WireFrameMode { OFF,
+                             ON,
+                             ONLY };
 
   // ==================================================================================================
   // Variable defines
@@ -88,21 +86,65 @@ class Primitives {
   // nothing
 
  public:
-  void setMaskMode(bool maskMode) { _maskMode = maskMode; };
-  void setVisible(bool isVisible) { _isVisible = isVisible; };
-  void setIsEnabledNormalMap(bool isEnabledNormalMap) { _isEnabledNormalMap = isEnabledNormalMap; };
-  void setIsEnabledShadowMapping(bool isEnabledShadowMapping) { _isEnabledShadowMapping = isEnabledShadowMapping; };
-  void setVisibleBBOX(bool isVisibleBBOX) { _isVisibleBBOX = isVisibleBBOX; };
-  void setName(std::string name) { _name = name; };
-  void setModelShader(shader::ModelShader_t shader) { _shader = shader; };
-  void setDepthShader(shader::DepthShader_t shader) { _depthShader = shader; };
-  std::string getName() { return _name; };
-  glm::vec3 getPosition() { return _position; };
-  void setPosition(glm::vec3 position) { _position = position; };
-  glm::vec3 getVecocity() { return _vecocity; };
-  void setVecocity(glm::vec3 vecocity) { _vecocity = vecocity; };
-  void forward(float deltaT) { _position = _position + deltaT * _vecocity; };
-  bool* getPointerToIsVisible() { return &_isVisible; };
+  void setMaskMode(bool maskMode) {
+    _maskMode = maskMode;
+  };
+
+  void setVisible(bool isVisible) {
+    _isVisible = isVisible;
+  };
+
+  void setIsEnabledNormalMap(bool isEnabledNormalMap) {
+    _isEnabledNormalMap = isEnabledNormalMap;
+  };
+
+  void setIsEnabledShadowMapping(bool isEnabledShadowMapping) {
+    _isEnabledShadowMapping = isEnabledShadowMapping;
+  };
+
+  void setVisibleBBOX(bool isVisibleBBOX) {
+    _isVisibleBBOX = isVisibleBBOX;
+  };
+
+  void setName(std::string name) {
+    _name = name;
+  };
+
+  void setModelShader(shader::ModelShader_t shader) {
+    _shader = shader;
+  };
+
+  void setDepthShader(shader::DepthShader_t shader) {
+    _depthShader = shader;
+  };
+
+  void setPosition(const glm::vec3& position) {
+    _position = position;
+  };
+
+  void setVecocity(glm::vec3 vecocity) {
+    _vecocity = vecocity;
+  };
+
+  void forward(const float& deltaT) {
+    _position = _position + deltaT * _vecocity;
+  };
+
+  std::string getName() const {
+    return _name;
+  };
+
+  glm::vec3 getPosition() const {
+    return _position;
+  };
+
+  glm::vec3 getVecocity() const {
+    return _vecocity;
+  };
+
+  bool* getPointerToIsVisible() {
+    return &_isVisible;
+  };
 
   virtual std::string getObjectType() = 0;
 
@@ -114,21 +156,28 @@ class Primitives {
     _renderType = renderType;
   };
 
-  void resetRenderType() { _renderType = _defaultRenderType; };
+  void resetRenderType() {
+    _renderType = _defaultRenderType;
+  };
 
-  void setRenderType(const RenderType& renderType) { _renderType = renderType; };
+  void setRenderType(const RenderType& renderType) {
+    _renderType = renderType;
+  };
 
-  float getRenderType() {
+  float getRenderType() const {
     return getRenderType(_maskMode, _renderType);
   };
 
-  void setWireFrameMode(const WireFrameMode& wireFrameMode) { _wireFrameMode = wireFrameMode; };
+  void setWireFrameMode(const WireFrameMode& wireFrameMode) {
+    _wireFrameMode = wireFrameMode;
+  };
 
   float getWireFrameMode() const {
     return getWireFrameMode(_wireFrameMode);
   };
 
-  inline static float getRenderType(const bool& maskMode, const RenderType& renderType) {
+  inline static float getRenderType(const bool& maskMode,
+                                    const RenderType& renderType) {
     float renderTypeValue = 0.0f;
 
     if (maskMode) {
@@ -168,46 +217,49 @@ class Primitives {
   // Rendering
   // ==================================================================================================
   inline void bindShader(
-      const glm::mat4& mvMat,
-      const glm::mat4& mvpMat,
-      const glm::mat4& normMat,
-      const glm::mat4& lightMat,
-      const glm::vec3& lightPos,
-      const float& shininess,
-      const float& ambientIntensity,
-      const glm::vec3& ambientColor,
-      const glm::vec3& diffuseColor,
-      const glm::vec3& specularColor,
-      const float& renderType,
-      const float& wireFrameMode,
-      const glm::vec3& wireFrameColor,
-      const float& wireFrameWidth,
-      const GLuint& depthTextureId,
-      const glm::mat4& lightMvpMat,
-      const bool& disableShadowMapping = false,
-      const bool& disableDepthTest = false,
-      const bool& isEnabledNormalMap = false) const {
+      const glm::mat4& mvMat,              // mvMat
+      const glm::mat4& mvpMat,             // mvpMat
+      const glm::mat4& normMat,            // normMat
+      const glm::mat4& lightMat,           // lightMat
+      const glm::vec3& lightPos,           // lightPos
+      const float& shininess,              // shininess
+      const float& ambientIntensity,       // ambientIntensity
+      const glm::vec3& ambientColor,       // ambientColor
+      const glm::vec3& diffuseColor,       // diffuseColor
+      const glm::vec3& specularColor,      // specularColor
+      const float& renderType,             // renderType
+      const float& wireFrameMode,          // wireFrameMode
+      const glm::vec3& wireFrameColor,     // wireFrameColor
+      const float& wireFrameWidth,         // wireFrameWidth
+      const GLuint& depthTextureId,        // depthTextureId
+      const glm::mat4& lightMvpMat,        // lightMvpMat
+      const bool& isEnabledShadowMapping,  // isEnabledShadowMapping
+      const bool& disableDepthTest,        // disableDepthTest
+      const bool& isEnabledNormalMap       // isEnabledNormalMap
+  ) const {
+    // NOTE: Disable depth test for background draw
     _shader->bind(disableDepthTest);
 
     // Transfer uniform variables
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MV_MAT, mvMat);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MVP_MAT, mvpMat);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_NORM_MAT, normMat);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_LIGHT_MAT, lightMat);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_LIGHT_POS, lightPos);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_SHININESS, shininess);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_AMBIENT_INTENSITY, ambientIntensity);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_AMBIENT_COLOR, ambientColor);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_DIFFUSE_COLOR, diffuseColor);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_SPECULAR_COLOR, specularColor);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_MODE, wireFrameMode);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_COLOR, wireFrameColor);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_WIDTH, wireFrameWidth);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, renderType);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_BUMP_MAP, isEnabledNormalMap);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvpMat);
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_SHADOW_MAPPING, _isEnabledShadowMapping);
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MV_MAT, mvMat);                        // mvMat
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MVP_MAT, mvpMat);                      // mvpMat
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_NORM_MAT, normMat);                    // normMat
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_LIGHT_MAT, lightMat);                  // lightMat
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_LIGHT_POS, lightPos);                  // lightPos
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_SHININESS, shininess);                 // shininess
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_AMBIENT_INTENSITY, ambientIntensity);  // ambientIntensity
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_AMBIENT_COLOR, ambientColor);          // ambientColor
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_DIFFUSE_COLOR, diffuseColor);          // diffuseColor
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_SPECULAR_COLOR, specularColor);        // specularColor
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_MODE, wireFrameMode);       // wireFrameMode
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_COLOR, wireFrameColor);     // wireFrameColor
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_WIDTH, wireFrameWidth);     // wireFrameWidth
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, renderType);              // renderType
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_BUMP_MAP, isEnabledNormalMap);         // isEnabledNormalMap
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvpMat);           // lightMvpMat
 
+    // Shadow mapping
+    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_SHADOW_MAPPING, isEnabledShadowMapping);  // isEnabledShadowMapping
     _shader->setUniformTexture(shader::DefaultModelShader::UNIFORM_NAME_DEPTH_TEXTURE, depthTextureId);
   };
 
@@ -233,17 +285,17 @@ class Primitives {
 
   virtual void update() = 0;
   virtual void initVAO() = 0;
-  virtual void paintGL(
-      const glm::mat4& mvMat,
-      const glm::mat4& mvpMat,
-      const glm::mat4& lightMat,
-      const glm::vec3& lightPos,
-      const float& shininess,
-      const float& ambientIntensity,
-      const glm::vec3& wireFrameColor,
-      const float& wireFrameWidth,
-      const GLuint& depthTextureId,
-      const glm::mat4& lightMvpMat) = 0;
+  virtual void paintGL(const glm::mat4& mvMat,           // mvMat
+                       const glm::mat4& mvpMat,          // mvpMat
+                       const glm::mat4& lightMat,        // lightMat
+                       const glm::vec3& lightPos,        // lightPos
+                       const float& shininess,           // shininess
+                       const float& ambientIntensity,    // ambientIntensity
+                       const glm::vec3& wireFrameColor,  // wireFrameColor
+                       const float& wireFrameWidth,      // wireFrameWidth
+                       const GLuint& depthTextureId,     // depthTextureId
+                       const glm::mat4& lightMvpMat      // lightMvpMat
+                       ) = 0;
   virtual void drawGL(const int& index) = 0;
   virtual void drawAllGL(const glm::mat4& lightMvpMat) = 0;
 };

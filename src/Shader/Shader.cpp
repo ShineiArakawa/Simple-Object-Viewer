@@ -5,10 +5,11 @@ namespace shader {
 
 Shader::~Shader() = default;
 
-void Shader::setShaders(const std::string& vertShaderCode, const std::string& fragShaderCode) {
+void Shader::setShaders(const std::string& vertShaderCode,
+                        const std::string& fragShaderCode) {
   LOG_INFO("Start compiling shaders");
   _shaderID = ShaderCompiler::buildShaderProgram(vertShaderCode, fragShaderCode);
-  LOG_INFO("Finish compiling shaders");
+  LOG_INFO("Finish compiling shaders: " + std::to_string(_shaderID));
 }
 
 void Shader::bind(const bool& disableDepthTest) {
@@ -26,7 +27,8 @@ void Shader::unbind() {
   glEnable(GL_DEPTH_TEST);
 
   // Unbind all texture
-  for (int iTexture = 0; iTexture < _textureCounter - _textureCounterOffset; iTexture++) {
+  for (int iTexture = 0; iTexture < _textureCounter - _textureCounterOffset;
+       iTexture++) {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
@@ -36,32 +38,34 @@ void Shader::unbind() {
   glUseProgram(0);
 }
 
-void Shader::setUniformVariable(const std::string& name, const glm::mat4& matrix) {
+void Shader::setUniformVariable(const std::string& name,
+                                const glm::mat4& matrix) const {
   const GLuint& uid = glGetUniformLocation(_shaderID, name.c_str());
   glUniformMatrix4fv(uid, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::setUniformVariable(const std::string& name, const glm::vec3& vec) {
+void Shader::setUniformVariable(const std::string& name, const glm::vec3& vec) const {
   const GLuint& uid = glGetUniformLocation(_shaderID, name.c_str());
   glUniform3fv(uid, 1, glm::value_ptr(vec));
 }
 
-void Shader::setUniformVariable(const std::string& name, const float& value) {
+void Shader::setUniformVariable(const std::string& name, const float& value) const {
   const GLuint& uid = glGetUniformLocation(_shaderID, name.c_str());
   glUniform1f(uid, value);
 }
 
-void Shader::setUniformVariable(const std::string& name, const int& value) {
+void Shader::setUniformVariable(const std::string& name, const int& value) const {
   const GLuint& uid = glGetUniformLocation(_shaderID, name.c_str());
   glUniform1f(uid, (float)value);
 }
 
-void Shader::setUniformVariable(const std::string& name, const bool& value) {
+void Shader::setUniformVariable(const std::string& name, const bool& value) const {
   const GLuint& uid = glGetUniformLocation(_shaderID, name.c_str());
   glUniform1f(uid, (float)value);
 }
 
-void Shader::setUniformTexture(const std::string& name, const GLuint& textureId) {
+void Shader::setUniformTexture(const std::string& name,
+                               const GLuint& textureId) {
   glActiveTexture(GL_TEXTURE_IDS[_textureCounter]);
   glBindTexture(GL_TEXTURE_2D, textureId);
   const GLuint& uid = glGetUniformLocation(_shaderID, name.c_str());

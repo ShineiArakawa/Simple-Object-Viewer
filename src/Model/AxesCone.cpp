@@ -170,22 +170,26 @@ void AxesCone::paintGL(const glm::mat4& mvMat,
     const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
 
     bindShader(
-        mvtMat,
-        mvptMat,
-        normMat,
-        lightMat,
-        lightPos,
-        shininess,
-        ambientIntensity,
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        getRenderType(false, Primitives::RenderType::SHADE),
-        getWireFrameMode(),
-        wireFrameColor,
-        wireFrameWidth,
-        depthTextureId,
-        lightMvptMat);
+        mvtMat,                                               // mvMat
+        mvptMat,                                              // mvpMat
+        normMat,                                              // normMat
+        lightMat,                                             // lightMat
+        lightPos,                                             // lightPos
+        shininess,                                            // shininess
+        ambientIntensity,                                     // ambientIntensity
+        glm::vec3(0.0f),                                      // ambientColor
+        glm::vec3(0.0f),                                      // diffuseColor
+        glm::vec3(0.0f),                                      // specularColor
+        getRenderType(false, Primitives::RenderType::SHADE),  // renderType
+        getWireFrameMode(),                                   // wireFrameMode
+        wireFrameColor,                                       // wireFrameColor
+        wireFrameWidth,                                       // wireFrameWidth
+        depthTextureId,                                       // depthTextureId
+        lightMvptMat,                                         // lightMvpMat
+        false,                                                // isEnabledShadowMapping
+        false,                                                // disableDepthTest
+        false                                                 // isEnabledNormalMap
+    );
 
     drawGL();
 
@@ -205,7 +209,7 @@ void AxesCone::drawGL(const int& index) {
 }
 
 void AxesCone::drawAllGL(const glm::mat4& lightMvpMat) {
-  if (_isVisible) {
+  if (_isVisible && _isEnabledShadowMapping) {
     const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
     _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
 

@@ -7,13 +7,14 @@ namespace model {
 using namespace util;
 using namespace shader;
 
-Terrain::Terrain(const std::string &filePath,
-                 const float offsetX,
-                 const float offsetY,
-                 const float offsetZ,
-                 const float scaleX,
-                 const float scaleY,
-                 const float scaleH)
+Terrain::Terrain(const std::string &filePath,  // filePath
+                 const float offsetX,          // offsetX
+                 const float offsetY,          // offsetY
+                 const float offsetZ,          // offsetZ
+                 const float scaleX,           // scaleX
+                 const float scaleY,           // scaleY
+                 const float scaleH            // scaleH
+                 )
     : _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
@@ -138,16 +139,17 @@ void Terrain::initVAO() {
   LOG_INFO("Elapsed time: " + std::to_string(elapsedTime / 1000.0) + " [sec]\n");
 }
 
-void Terrain::paintGL(const glm::mat4 &mvMat,
-                      const glm::mat4 &mvpMat,
-                      const glm::mat4 &lightMat,
-                      const glm::vec3 &lightPos,
-                      const float &shininess,
-                      const float &ambientIntensity,
-                      const glm::vec3 &wireFrameColor,
-                      const float &wireFrameWidth,
-                      const GLuint &depthTextureId,
-                      const glm::mat4 &lightMvpMat) {
+void Terrain::paintGL(const glm::mat4 &mvMat,           // mvMat
+                      const glm::mat4 &mvpMat,          // mvpMat
+                      const glm::mat4 &lightMat,        // lightMat
+                      const glm::vec3 &lightPos,        // lightPos
+                      const float &shininess,           // shininess
+                      const float &ambientIntensity,    // ambientIntensity
+                      const glm::vec3 &wireFrameColor,  // wireFrameColor
+                      const float &wireFrameWidth,      // wireFrameWidth
+                      const GLuint &depthTextureId,     // depthTextureId
+                      const glm::mat4 &lightMvpMat      // lightMvpMat
+) {
   if (_isVisible) {
     const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
@@ -157,22 +159,26 @@ void Terrain::paintGL(const glm::mat4 &mvMat,
     paintBBOX(mvtMat, mvptMat, normMat);
 
     bindShader(
-        mvtMat,
-        mvptMat,
-        normMat,
-        lightMat,
-        lightPos,
-        shininess,
-        ambientIntensity,
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        getRenderType(),
-        getWireFrameMode(),
-        wireFrameColor,
-        wireFrameWidth,
-        depthTextureId,
-        lightMvptMat);
+        mvtMat,                   // mvMat
+        mvptMat,                  // mvpMat
+        normMat,                  // normMat
+        lightMat,                 // lightMat
+        lightPos,                 // lightPos
+        shininess,                // shininess
+        ambientIntensity,         // ambientIntensity
+        glm::vec3(0.0f),          // ambientColor
+        glm::vec3(0.0f),          // diffuseColor
+        glm::vec3(0.0f),          // specularColor
+        getRenderType(),          // renderType
+        getWireFrameMode(),       // wireFrameMode
+        wireFrameColor,           // wireFrameColor
+        wireFrameWidth,           // wireFrameWidth
+        depthTextureId,           // depthTextureId
+        lightMvptMat,             // lightMvpMat
+        _isEnabledShadowMapping,  // isEnabledShadowMapping
+        false,                    // disableDepthTest
+        false                     // isEnabledNormalMap
+    );
 
     drawGL();
 
@@ -199,5 +205,6 @@ void Terrain::drawAllGL(const glm::mat4 &lightMvpMat) {
     drawGL();
   }
 }
+
 }  // namespace model
 }  // namespace simview

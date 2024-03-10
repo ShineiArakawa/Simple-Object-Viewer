@@ -115,24 +115,26 @@ void MaterialObject::paintGL(const glm::mat4& mvMat,
       {
         // Prepare
         bindShader(
-            mvtMat,
-            mvptMat,
-            normMat,
-            lightMat,
-            lightPos,
-            object->materialGroup->shininess,
-            ambientIntensity,
-            object->materialGroup->ambientColor,
-            object->materialGroup->diffuseColor,
-            object->materialGroup->specularColor,
-            getRenderType(),
-            getWireFrameMode(),
-            wireFrameColor,
-            wireFrameWidth,
-            depthTextureId,
-            lightMvptMat,
-            false,
-            object->enabledBumpTexture);
+            mvtMat,                                            // mvMat
+            mvptMat,                                           // mvpMat
+            normMat,                                           // normMat
+            lightMat,                                          // lightMat
+            lightPos,                                          // lightPos
+            object->materialGroup->shininess,                  // shininess
+            ambientIntensity,                                  // ambientIntensity
+            object->materialGroup->ambientColor,               // ambientColor
+            object->materialGroup->diffuseColor,               // diffuseColor
+            object->materialGroup->specularColor,              // specularColor
+            getRenderType(),                                   // renderType
+            getWireFrameMode(),                                // wireFrameMode
+            wireFrameColor,                                    // wireFrameColor
+            wireFrameWidth,                                    // wireFrameWidth
+            depthTextureId,                                    // depthTextureId
+            lightMvptMat,                                      // lightMvpMat
+            _isEnabledShadowMapping,                           // isEnabledShadowMapping
+            false,                                             // disableDepthTest
+            _isEnabledNormalMap && object->enabledBumpTexture  // isEnabledNormalMap
+        );
 
         _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE, object->ambientTextureId);
         _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, object->enabledAmbientTexture);

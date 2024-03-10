@@ -53,10 +53,10 @@ ViewerGUIApp::ViewerGUIApp() : _window(nullptr),
   _model = std::make_shared<ViewerModel>();
 
 #ifdef DEBUG_SHADOW_MAPPING
-  // model->setModelVertShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/model.vert"));
-  // model->setModelFragShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/model.frag"));
-  // model->setDepthVertShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/depth.vert"));
-  // model->setDepthFragShaderPath(std::make_shared<std::string>("C:/Users/PC_Arakawa/Projects/OpenGLTemplate/include/Shader/depth.frag"));
+   model->setModelVertShaderPath(std::make_shared<std::string>("C:/Users/araka/Projects/Simple-Object-Viewer/include/Shader/model.vert"));
+   model->setModelFragShaderPath(std::make_shared<std::string>("C:/Users/araka/Projects/Simple-Object-Viewer/include/Shader/model.frag"));
+   model->setDepthVertShaderPath(std::make_shared<std::string>("C:/Users/araka/Projects/Simple-Object-Viewer/include/Shader/depth.vert"));
+   model->setDepthFragShaderPath(std::make_shared<std::string>("C:/Users/araka/Projects/Simple-Object-Viewer/include/Shader/depth.frag"));
 #endif
 
   _model->compileShaders();

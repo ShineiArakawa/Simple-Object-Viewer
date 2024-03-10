@@ -65,11 +65,11 @@ class Shader {
   void bind(const bool& disableDepthTest = false);
   void unbind();
 
-  void setUniformVariable(const std::string& name, const glm::mat4& matrix);
-  void setUniformVariable(const std::string& name, const glm::vec3& vec);
-  void setUniformVariable(const std::string& name, const float& value);
-  void setUniformVariable(const std::string& name, const int& value);
-  void setUniformVariable(const std::string& name, const bool& value);
+  void setUniformVariable(const std::string& name, const glm::mat4& matrix) const;
+  void setUniformVariable(const std::string& name, const glm::vec3& vec) const;
+  void setUniformVariable(const std::string& name, const float& value) const;
+  void setUniformVariable(const std::string& name, const int& value) const;
+  void setUniformVariable(const std::string& name, const bool& value) const;
   void setUniformTexture(const std::string& name, const GLuint& textureId);
 };
 

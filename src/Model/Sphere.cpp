@@ -6,14 +6,15 @@ namespace model {
 using namespace util;
 using namespace shader;
 
-Sphere::Sphere(const int nDivs,
-               const float offsetX,
-               const float offsetY,
-               const float offsetZ,
-               const float scaleX,
-               const float scaleY,
-               const float scaleZ,
-               const glm::vec3 color)
+Sphere::Sphere(const int nDivs,       // nDivs
+               const float offsetX,   // offsetX
+               const float offsetY,   // offsetY
+               const float offsetZ,   // offsetZ
+               const float scaleX,    // scaleX
+               const float scaleY,    // scaleY
+               const float scaleZ,    // scaleZ
+               const glm::vec3 color  // color
+               )
     : _nDivs(nDivs),
       _offsetX(offsetX),
       _offsetY(offsetY),
@@ -79,16 +80,17 @@ void Sphere::initVAO() {
   _bbox = std::make_shared<AxisAlignedBoundingBox>(minCoords, maxCoords);
 }
 
-void Sphere::paintGL(const glm::mat4 &mvMat,
-                     const glm::mat4 &mvpMat,
-                     const glm::mat4 &lightMat,
-                     const glm::vec3 &lightPos,
-                     const float &shininess,
-                     const float &ambientIntensity,
-                     const glm::vec3 &wireFrameColor,
-                     const float &wireFrameWidth,
-                     const GLuint &depthTextureId,
-                     const glm::mat4 &lightMvpMat) {
+void Sphere::paintGL(const glm::mat4 &mvMat,           // mvMat
+                     const glm::mat4 &mvpMat,          // mvpMat
+                     const glm::mat4 &lightMat,        // lightMat
+                     const glm::vec3 &lightPos,        // lightPos
+                     const float &shininess,           // shininess
+                     const float &ambientIntensity,    // ambientIntensity
+                     const glm::vec3 &wireFrameColor,  // wireFrameColor
+                     const float &wireFrameWidth,      // wireFrameWidth
+                     const GLuint &depthTextureId,     // depthTextureId
+                     const glm::mat4 &lightMvpMat      // lightMvpMat
+) {
   if (_isVisible) {
     const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
     const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
@@ -98,22 +100,26 @@ void Sphere::paintGL(const glm::mat4 &mvMat,
     paintBBOX(mvtMat, mvptMat, normMat);
 
     bindShader(
-        mvtMat,
-        mvptMat,
-        normMat,
-        lightMat,
-        lightPos,
-        shininess,
-        ambientIntensity,
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        getRenderType(),
-        getWireFrameMode(),
-        wireFrameColor,
-        wireFrameWidth,
-        depthTextureId,
-        lightMvptMat);
+        mvtMat,                   // mvMat
+        mvptMat,                  // mvpMat
+        normMat,                  // normMat
+        lightMat,                 // lightMat
+        lightPos,                 // lightPos
+        shininess,                // shininess
+        ambientIntensity,         // ambientIntensity
+        glm::vec3(0.0f),          // ambientColor
+        glm::vec3(0.0f),          // diffuseColor
+        glm::vec3(0.0f),          // specularColor
+        getRenderType(),          // renderType
+        getWireFrameMode(),       // wireFrameMode
+        wireFrameColor,           // wireFrameColor
+        wireFrameWidth,           // wireFrameWidth
+        depthTextureId,           // depthTextureId
+        lightMvptMat,             // lightMvpMat
+        _isEnabledShadowMapping,  // isEnabledShadowMapping
+        false,                    // disableDepthTest
+        false                     // isEnabledNormalMap
+    );
 
     drawGL();
 

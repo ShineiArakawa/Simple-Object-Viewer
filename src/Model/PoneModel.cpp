@@ -59,70 +59,75 @@ void PoneModel::paintGL(const glm::mat4 &mvMat,
                         const GLuint &depthMapId) {
   if (_phase == GamePhase::START) {
     _backgroundStart->paintGL(
-        mvMat,
-        mvpMat,
-        lightMat,
-        _lightPosition.xyz(),
-        _shininess,
-        _ambientIntensity,
-        _wireFrameColor,
-        _wireFrameWidth,
-        depthMapId,
-        lightMvpMat);
+        mvMat,                 // mvMat
+        mvpMat,                // mvpMat
+        lightMat,              // lightMat
+        _lightPosition.xyz(),  // lightPos
+        _shininess,            // shininess
+        _ambientIntensity,     // ambientIntensity
+        _wireFrameColor,       // wireFrameColor
+        _wireFrameWidth,       // wireFrameWidth
+        depthMapId,            // depthTextureId
+        lightMvpMat            // lightMvpMat
+    );
   } else if (_phase == GamePhase::PLAYING) {
     for (int iWall = 0; iWall < (int)_walls->size(); iWall++) {
       (*_walls)[iWall]->update();
       (*_walls)[iWall]->paintGL(
-          mvMat,
-          mvpMat,
-          lightMat,
-          _lightPosition.xyz(),
-          _shininess,
-          _ambientIntensity,
-          _wireFrameColor,
-          _wireFrameWidth,
-          depthMapId,
-          lightMvpMat);
+          mvMat,                 // mvMat
+          mvpMat,                // mvpMat
+          lightMat,              // lightMat
+          _lightPosition.xyz(),  // lightPos
+          _shininess,            // shininess
+          _ambientIntensity,     // ambientIntensity
+          _wireFrameColor,       // wireFrameColor
+          _wireFrameWidth,       // wireFrameWidth
+          depthMapId,            // depthTextureId
+          lightMvpMat            // lightMvpMat
+      );
     }
 
     _sphere->update();
     _sphere->paintGL(
-        mvMat,
-        mvpMat,
-        lightMat,
-        _lightPosition.xyz(),
-        _shininess,
-        _ambientIntensity,
-        _wireFrameColor,
-        _wireFrameWidth,
-        depthMapId,
-        lightMvpMat);
+        mvMat,                 // mvMat
+        mvpMat,                // mvpMat
+        lightMat,              // lightMat
+        _lightPosition.xyz(),  // lightPos
+        _shininess,            // shininess
+        _ambientIntensity,     // ambientIntensity
+        _wireFrameColor,       // wireFrameColor
+        _wireFrameWidth,       // wireFrameWidth
+        depthMapId,            // depthTextureId
+        lightMvpMat            // lightMvpMat
+    );
 
     _paddle->update();
     _paddle->paintGL(
-        mvMat,
-        mvpMat,
-        lightMat,
-        _lightPosition.xyz(),
-        _shininess,
-        _ambientIntensity,
-        _wireFrameColor,
-        _wireFrameWidth,
-        depthMapId,
-        lightMvpMat);
+        mvMat,                 // mvMat
+        mvpMat,                // mvpMat
+        lightMat,              // lightMat
+        _lightPosition.xyz(),  // lightPos
+        _shininess,            // shininess
+        _ambientIntensity,     // ambientIntensity
+        _wireFrameColor,       // wireFrameColor
+        _wireFrameWidth,       // wireFrameWidth
+        depthMapId,            // depthTextureId
+        lightMvpMat            // lightMvpMat
+    );
 
   } else if (_phase == GamePhase::GAME_OVER) {
     _backgroundGameOver->paintGL(
-        mvMat,
-        mvpMat,
-        lightMat,
-        _lightPosition.xyz(),
-        _shininess,
-        _ambientIntensity,
-        _wireFrameColor,
-        _wireFrameWidth,
-        depthMapId,
-        lightMvpMat);
+        mvMat,                 // mvMat
+        mvpMat,                // mvpMat
+        lightMat,              // lightMat
+        _lightPosition.xyz(),  // lightPos
+        _shininess,            // shininess
+        _ambientIntensity,     // ambientIntensity
+        _wireFrameColor,       // wireFrameColor
+        _wireFrameWidth,       // wireFrameWidth
+        depthMapId,            // depthTextureId
+        lightMvpMat            // lightMvpMat
+    );
   }
 }
 
