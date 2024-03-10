@@ -12,7 +12,7 @@
 namespace simview {
 namespace model {
 
-class Object : public Primitives {
+class Object : public Primitive {
  private:
   std::string _filePath;
   int _indexBufferSize;

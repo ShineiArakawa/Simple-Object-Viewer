@@ -25,9 +25,9 @@ class ViewerGUIApp {
   ~ViewerGUIApp();
 
   void launch();
-  void addObject(const model::Primitives_t& object, bool toInitializeVAO = true);
+  void addObject(const model::Primitive_t& object, bool toInitializeVAO = true);
   void addBackground(const model::Background_t& background);
-  void setRenderType(const model::Primitives::RenderType renderType);
+  void setRenderType(const model::Primitive::RenderType renderType);
 };
 
 using ViewerGUIApp_t = std::shared_ptr<ViewerGUIApp>;

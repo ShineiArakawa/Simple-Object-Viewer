@@ -19,7 +19,7 @@ namespace model {
 
 class Model {
  public:
-  using Objects_t = std::shared_ptr<std::vector<Primitives_t>>;
+  using Objects_t = std::shared_ptr<std::vector<Primitive_t>>;
   using Backgrounds_t = std::shared_ptr<std::vector<Background_t>>;
   using String_t = std::shared_ptr<std::string>;
 
@@ -27,7 +27,7 @@ class Model {
   // Nothing
 
  protected:
-  Objects_t _objects = std::make_shared<std::vector<Primitives_t>>();
+  Objects_t _objects = std::make_shared<std::vector<Primitive_t>>();
   Backgrounds_t _backgrounds = std::make_shared<std::vector<Background_t>>();
   glm::vec4 _backgroundColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -85,7 +85,7 @@ class Model {
     }
   };
 
-  void addObject(const Primitives_t &object, bool toInitializeVAO = true) {
+  void addObject(const Primitive_t &object, bool toInitializeVAO = true) {
     try {
       object->setModelShader(getModelShader());
       object->setDepthShader(getDepthShader());
@@ -123,7 +123,7 @@ class Model {
 
   Objects_t getObjects() { return _objects; };
 
-  Primitives_t getObject(const int index) { return (*_objects)[index]; };
+  Primitive_t getObject(const int index) { return (*_objects)[index]; };
 
   int getNumObjects() { return (int)_objects->size(); };
 
@@ -155,7 +155,7 @@ class Model {
 
   void setMaskMode(bool maskMode);
 
-  void setRenderType(Primitives::RenderType renderType);
+  void setRenderType(Primitive::RenderType renderType);
 
   void setIsEnabledNormalMap(bool isEnabledNormalMap);
 
@@ -163,7 +163,7 @@ class Model {
 
   void setIsVisibleBBOX(bool isEnabledShadowMapping);
 
-  void setWireFrameMode(Primitives::WireFrameMode wireFrameMode);
+  void setWireFrameMode(Primitive::WireFrameMode wireFrameMode);
 
   void setBackgroundIDtoDraw(const int index) { _backgroundIDtoDraw = index; };
 

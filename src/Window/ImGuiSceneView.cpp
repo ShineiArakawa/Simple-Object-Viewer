@@ -50,16 +50,24 @@ void ImGuiSceneView::resetLightPose() {
 }
 
 void ImGuiSceneView::paintGL() {
-  {
-    if (enabledModelRotationMode) {
-      _renderer->rotateModel(glm::radians(rotateAnimationAngle), cameraUp);
-    }
-    if (enabledLightRotationMode) {
-      _renderer->rotateLight(glm::radians(rotateAnimationAngle), cameraUp);
-    }
-
-    _renderer->paintGL(isEnabledShadowMapping);
+  // =======================================================================================
+  // Update model rotation animation
+  // =======================================================================================
+  if (enabledModelRotationMode) {
+    _renderer->rotateModel(glm::radians(rotateAnimationAngle), cameraUp);
   }
+
+  // =======================================================================================
+  // Update light rotation animation
+  // =======================================================================================
+  if (enabledLightRotationMode) {
+    _renderer->rotateLight(glm::radians(rotateAnimationAngle), cameraUp);
+  }
+
+  // =======================================================================================
+  // Draw scene
+  // =======================================================================================
+  _renderer->paintGL(isEnabledShadowMapping);
 }
 
 void ImGuiSceneView::resizeGL(const int& width, const int& height) {
@@ -108,7 +116,9 @@ void ImGuiSceneView::updateTranslate() {
   _renderer->updateTranslate(newPosScreenSpace, oldPosScreenSpace);
 }
 
-void ImGuiSceneView::updateScale() { _renderer->updateScale(acScale); }
+void ImGuiSceneView::updateScale() {
+  _renderer->updateScale(acScale);
+}
 
 void ImGuiSceneView::updateTransform() {
   switch (arcballMode) {

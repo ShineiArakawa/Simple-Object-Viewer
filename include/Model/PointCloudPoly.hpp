@@ -7,7 +7,7 @@
 namespace simview {
 namespace model {
 
-class PointCloudPoly : public Primitives {
+class PointCloudPoly : public Primitive {
  private:
   inline static const int NUM_DIVISIONS = 3;
 

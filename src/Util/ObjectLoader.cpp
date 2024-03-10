@@ -21,7 +21,7 @@ void ObjectLoader::readFromFile(const std::string &filePath,
   const auto startTime = std::chrono::system_clock::now();
 
 #if defined(USE_ASSIMP)
-  if (extension == ".obj" || extension == ".stl") {
+  if (extension == ".obj" || extension == ".stl" || extension == ".fbx" || extension == ".3ds") {
 #else
   if (extension == ".obj") {
 #endif
@@ -55,6 +55,7 @@ void ObjectLoader::readObjFile(const std::string &filePath,
   flag |= aiProcess_Triangulate;
   flag |= aiProcess_CalcTangentSpace;
   flag |= aiProcess_RemoveRedundantMaterials;
+  flag |= aiProcess_GenNormals;
 
   const aiScene *scene = importer.ReadFile(filePath, flag);
 
@@ -186,7 +187,7 @@ void ObjectLoader::readMshFile(const std::string &filePath,
                                const float offsetZ) {
   std::ifstream ifstream = std::ifstream(filePath, std::ios::in);
 
-  const int faces[16][3] = {
+  static const int faces[16][3] = {
       {0, 6, 5},
       {6, 3, 8},
       {8, 5, 6},

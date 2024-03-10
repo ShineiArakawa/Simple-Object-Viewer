@@ -21,7 +21,7 @@
 namespace simview {
 namespace model {
 
-class Primitives {
+class Primitive {
   // ==================================================================================================
   // Type defines
   // ==================================================================================================
@@ -36,7 +36,7 @@ class Primitives {
     MATERIAL
   };
 
-  static RenderType getRenderType(std::string string) {
+  static RenderType getRenderType(const std::string& string) {
     RenderType renderType = RenderType::NORMAL;
     if (string == "NORMAL") {
       renderType = RenderType::NORMAL;
@@ -48,9 +48,11 @@ class Primitives {
     return renderType;
   }
 
-  enum class WireFrameMode { OFF,
-                             ON,
-                             ONLY };
+  enum class WireFrameMode {
+    OFF,
+    ON,
+    ONLY
+  };
 
   // ==================================================================================================
   // Variable defines
@@ -122,7 +124,7 @@ class Primitives {
     _position = position;
   };
 
-  void setVecocity(glm::vec3 vecocity) {
+  void setVecocity(const glm::vec3& vecocity) {
     _vecocity = vecocity;
   };
 
@@ -216,6 +218,27 @@ class Primitives {
   // ==================================================================================================
   // Rendering
   // ==================================================================================================
+
+  /// @brief Bind shader program and attach uniform variables
+  /// @param mvMat Model view matrix
+  /// @param mvpMat Model view projection matrix
+  /// @param normMat Normal matrix
+  /// @param lightMat Light model view matrix
+  /// @param lightPos Light position
+  /// @param shininess Specular exponent
+  /// @param ambientIntensity Ambient factor
+  /// @param ambientColor Ambient color
+  /// @param diffuseColor Diffuse color
+  /// @param specularColor Specular color
+  /// @param renderType Rendering mode
+  /// @param wireFrameMode Wire frame mode
+  /// @param wireFrameColor Wire frame color
+  /// @param wireFrameWidth Wire frame width
+  /// @param depthTextureId Depth texture map id
+  /// @param lightMvpMat Light model view projection matrix
+  /// @param isEnabledShadowMapping Whether to render shadows using depth map
+  /// @param disableDepthTest Disable depth during rendering
+  /// @param isEnabledNormalMap Whether to enable bump mapping
   inline void bindShader(
       const glm::mat4& mvMat,              // mvMat
       const glm::mat4& mvpMat,             // mvpMat
@@ -240,7 +263,9 @@ class Primitives {
     // NOTE: Disable depth test for background draw
     _shader->bind(disableDepthTest);
 
+    // ==================================================================================================
     // Transfer uniform variables
+    // ==================================================================================================
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MV_MAT, mvMat);                        // mvMat
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MVP_MAT, mvpMat);                      // mvpMat
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_NORM_MAT, normMat);                    // normMat
@@ -258,7 +283,9 @@ class Primitives {
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_BUMP_MAP, isEnabledNormalMap);         // isEnabledNormalMap
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvpMat);           // lightMvpMat
 
-    // Shadow mapping
+    // ==================================================================================================
+    // Transfer uniform variables for shadow mapping
+    // ==================================================================================================
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_SHADOW_MAPPING, isEnabledShadowMapping);  // isEnabledShadowMapping
     _shader->setUniformTexture(shader::DefaultModelShader::UNIFORM_NAME_DEPTH_TEXTURE, depthTextureId);
   };
@@ -285,22 +312,23 @@ class Primitives {
 
   virtual void update() = 0;
   virtual void initVAO() = 0;
-  virtual void paintGL(const glm::mat4& mvMat,           // mvMat
-                       const glm::mat4& mvpMat,          // mvpMat
-                       const glm::mat4& lightMat,        // lightMat
-                       const glm::vec3& lightPos,        // lightPos
-                       const float& shininess,           // shininess
-                       const float& ambientIntensity,    // ambientIntensity
-                       const glm::vec3& wireFrameColor,  // wireFrameColor
-                       const float& wireFrameWidth,      // wireFrameWidth
-                       const GLuint& depthTextureId,     // depthTextureId
-                       const glm::mat4& lightMvpMat      // lightMvpMat
-                       ) = 0;
+  virtual void paintGL(
+      const glm::mat4& mvMat,           // mvMat
+      const glm::mat4& mvpMat,          // mvpMat
+      const glm::mat4& lightMat,        // lightMat
+      const glm::vec3& lightPos,        // lightPos
+      const float& shininess,           // shininess
+      const float& ambientIntensity,    // ambientIntensity
+      const glm::vec3& wireFrameColor,  // wireFrameColor
+      const float& wireFrameWidth,      // wireFrameWidth
+      const GLuint& depthTextureId,     // depthTextureId
+      const glm::mat4& lightMvpMat      // lightMvpMat
+      ) = 0;
   virtual void drawGL(const int& index) = 0;
   virtual void drawAllGL(const glm::mat4& lightMvpMat) = 0;
 };
 
-using Primitives_t = std::shared_ptr<Primitives>;
+using Primitive_t = std::shared_ptr<Primitive>;
 
 }  // namespace model
 }  // namespace simview

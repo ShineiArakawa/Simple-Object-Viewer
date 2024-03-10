@@ -31,7 +31,7 @@ void PoneModel::initVAO() {
 
   int nModels = getNumObjects();
   for (int iModel = 0; iModel < nModels; iModel++) {
-    Primitives_t model = getObject(iModel);
+    Primitive_t model = getObject(iModel);
     model->initVAO();
 
     std::cout << model->getName() << std::endl;

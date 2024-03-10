@@ -12,7 +12,7 @@
 namespace simview {
 namespace model {
 
-class MaterialObject : public Primitives {
+class MaterialObject : public Primitive {
  public:
   struct MaterialObjectBuffer {
     MaterialObjectBuffer()

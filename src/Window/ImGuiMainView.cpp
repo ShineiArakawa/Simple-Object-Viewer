@@ -8,7 +8,7 @@ using namespace model;
 ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
     : _menuBarHeight(0.0f),
       _isForcusedOnScene(false),
-      _renderTypeID(static_cast<int>(Primitives::RenderType::NORMAL)),
+      _renderTypeID(static_cast<int>(Primitive::RenderType::NORMAL)),
       _wheelOffset(0.0f),
       _sceneAreaMin(ImVec2(0.0f, 0.0f)),
       _sceneAreaMax(ImVec2(0.0f, 0.0f)),
@@ -18,6 +18,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
       _depthSceneView(nullptr),
       _depthSceneModel(nullptr),
       _objectAddDialog(nullptr),
+      _isVisibleSideBar(true),
       moveOn(true) {
   _sceneModel = sceneModel;
 
@@ -38,7 +39,6 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
   _depthSceneView = std::make_shared<ImGuiSceneView>(mainWindow, _depthSceneModel);
 
   auto background = std::make_shared<Background>(_sceneView->getRenderer()->getDepthRenderer()->getDepthMapId());
-
   _depthSceneModel->addBackground(background);
 
   // ====================================================================
@@ -61,7 +61,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
   ImGui::StyleColorsDark();
 
   ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
-  ImGui_ImplOpenGL3_Init("#version 330");
+  ImGui_ImplOpenGL3_Init("#version 460");
 
   NFD_Init();
 }
@@ -80,9 +80,13 @@ void ImGuiMainView::destroy() {
 }
 
 void ImGuiMainView::paintMenuBar() {
+  // ========================================================================================
+  // Menu bar
+  // ========================================================================================
   if (ImGui::BeginMainMenuBar()) {
     _menuBarHeight = ImGui::GetWindowHeight();
 
+    // File menu
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("Quit")) {
         LOG_INFO("Quit the program");
@@ -92,6 +96,15 @@ void ImGuiMainView::paintMenuBar() {
       ImGui::EndMenu();
     }
 
+    // Window menu
+    if (ImGui::BeginMenu("Window")) {
+      if (ImGui::MenuItem("Side bar")) {
+        _isVisibleSideBar = !_isVisibleSideBar;
+      }
+      ImGui::EndMenu();
+    }
+
+    // Help menu
     if (ImGui::BeginMenu("Help")) {
       if (ImGui::MenuItem("help", "Ctrl+H")) {
       }
@@ -103,14 +116,14 @@ void ImGuiMainView::paintMenuBar() {
 }
 
 void ImGuiMainView::paintSideBar() {
-  if (ImGui::BeginViewportSideBar("Settings", ImGui::GetWindowViewport(), ImGuiDir_Left, SIDEBAR_WIDTH, true)) {
+  if (_isVisibleSideBar && ImGui::BeginViewportSideBar("Settings", ImGui::GetWindowViewport(), ImGuiDir_Left, SIDEBAR_WIDTH, true)) {
     // ========================================================================================
     // Rendering section
     // ========================================================================================
     if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
       // Render type
       ImGui::Combo("Render Type", &_renderTypeID, RENDER_TYPE_ITEMS);
-      _sceneModel->setRenderType(static_cast<Primitives::RenderType>(_renderTypeID));
+      _sceneModel->setRenderType(static_cast<Primitive::RenderType>(_renderTypeID));
 
       // Mask mode
       ImGui::Checkbox("Mask mode", &_sceneView->isMaskMode);
@@ -127,11 +140,16 @@ void ImGuiMainView::paintSideBar() {
       ImGui::Checkbox("Show axes cone", &isShownAxesCone);
       _sceneModel->setAxesConeState(isShownAxesCone);
 
+      // Axes cone
+      static bool isShownGridPlane = false;
+      ImGui::Checkbox("Show XY-grid", &isShownGridPlane);
+      _sceneModel->setGridPlaneState(isShownGridPlane);
+
       // Wire frame mode
       static int wireFrameMode;
       static const char* wireFrameModeItems = "OFF\0ON\0Wire frame only\0";
       ImGui::Combo("Wire Frame", &wireFrameMode, wireFrameModeItems);
-      _sceneModel->setWireFrameMode(static_cast<Primitives::WireFrameMode>(wireFrameMode));
+      _sceneModel->setWireFrameMode(static_cast<Primitive::WireFrameMode>(wireFrameMode));
 
       // Wire frame width
       float wireFrameWidth = _sceneModel->getWireFrameWidth();
@@ -235,7 +253,7 @@ void ImGuiMainView::paintSideBar() {
           ImGui::PopID();
 
           ImGui::TableNextColumn();
-          if (object->getObjectType() != AxesCone::KEY_MODEL_AXES_CONE) {
+          if (object->getObjectType() != AxesCone::KEY_MODEL_AXES_CONE && object->getObjectType() != GridPlane::KEY_MODEL_GRID_PLANE) {
             ImGui::PushID(iObject * 4 + 3);
             if (ImGui::Button("Remove")) {
               _sceneModel->removeObject(iObject);
@@ -326,14 +344,23 @@ void ImGuiMainView::paintSideBar() {
 }
 
 void ImGuiMainView::paintSceneWindow() {
+  // ========================================================================================
+  // Calculate the orign and size of scene window
+  // ========================================================================================
   const ImVec2 viewportPos = ImGui::GetWindowViewport()->Pos;
   ImGui::SetNextWindowPos(ImVec2(viewportPos.x + SIDEBAR_WIDTH, viewportPos.y + _menuBarHeight), ImGuiCond_Once);
   const ImVec2 sceneWindowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - SIDEBAR_WIDTH, ImGui::GetWindowViewport()->Size.y - _menuBarHeight);
   ImGui::SetNextWindowSize(sceneWindowSize, ImGuiCond_Once);
 
+  // ========================================================================================
+  // Begin scene window
+  // ========================================================================================
   ImGui::Begin("Scene");
 
+  // Cursor is on this window?
   _isForcusedOnScene = ImGui::IsWindowFocused();
+
+  // Actual scene size (inner)
   const ImVec2 sceneAreaSize = ImGui::GetContentRegionAvail();
   _sceneView->resizeGL(sceneAreaSize.x, sceneAreaSize.y);
 
@@ -341,25 +368,34 @@ void ImGuiMainView::paintSceneWindow() {
   _sceneAreaMin = ImVec2(sceneAreaOrigin.x, sceneAreaOrigin.y);
   _sceneAreaMax = ImVec2(sceneAreaOrigin.x + sceneAreaSize.x, sceneAreaOrigin.y + sceneAreaSize.y);
 
+  // Update mouse wheel state
   _wheelOffset = _io->MouseWheel;
 
+  // Attach render buffer data as texture image
   ImGui::GetWindowDrawList()->AddImage(
-      reinterpret_cast<void*>(_sceneView->getFrameBuffer()->getFrameTexture()),
-      _sceneAreaMin,
-      _sceneAreaMax,
-      ImVec2(0, 1),
-      ImVec2(1, 0));
+      reinterpret_cast<void*>(_sceneView->getFrameBuffer()->getFrameTexture()),  // Texture ID
+      _sceneAreaMin,                                                             // Min coords of area
+      _sceneAreaMax,                                                             // Max coords of area
+      ImVec2(0, 1),                                                              // Min uv coords
+      ImVec2(1, 0)                                                               // Max uv coords
+  );
 
   ImGui::End();
 }
 
 void ImGuiMainView::paintDepthSceneWindow() {
   if (_sceneView->isEnabledShadowMapping && _depthSceneView != nullptr) {
+    // ========================================================================================
+    // Calculate the orign and size of scene window
+    // ========================================================================================
     const ImVec2 viewportPos = ImGui::GetWindowViewport()->Pos;
     ImGui::SetNextWindowPos(ImVec2(viewportPos.x + SIDEBAR_WIDTH, viewportPos.y + _menuBarHeight), ImGuiCond_Once);
     const ImVec2 sceneWindowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - SIDEBAR_WIDTH, ImGui::GetWindowViewport()->Size.y - _menuBarHeight);
     ImGui::SetNextWindowSize(sceneWindowSize, ImGuiCond_Once);
 
+    // ========================================================================================
+    // Begin scene window
+    // ========================================================================================
     ImGui::Begin("Depth");
 
     const ImVec2 sceneAreaSize = ImGui::GetContentRegionAvail();
@@ -369,12 +405,14 @@ void ImGuiMainView::paintDepthSceneWindow() {
     ImVec2 sceneAreaMax;
 
     if (sceneAreaSize.x > sceneAreaSize.y) {
+      // width > height
       const float frameWidth = (float)(_depthSceneView->WIN_WIDTH / _depthSceneView->WIN_HEIGHT) * sceneAreaSize.y;
       sceneAreaMin.x = sceneAreaOrigin.x + (sceneAreaSize.x - frameWidth) / 2.0f;
       sceneAreaMin.y = sceneAreaOrigin.y;
       sceneAreaMax.x = sceneAreaOrigin.x + (sceneAreaSize.x + frameWidth) / 2.0f;
       sceneAreaMax.y = sceneAreaOrigin.y + sceneAreaSize.y;
     } else {
+      // width <= height
       const float frameHeight = (float)(_depthSceneView->WIN_HEIGHT / _depthSceneView->WIN_WIDTH) * sceneAreaSize.x;
       sceneAreaMin.x = sceneAreaOrigin.x;
       sceneAreaMin.y = sceneAreaOrigin.y + (sceneAreaSize.y - frameHeight) / 2.0f;
@@ -383,11 +421,12 @@ void ImGuiMainView::paintDepthSceneWindow() {
     }
 
     ImGui::GetWindowDrawList()->AddImage(
-        reinterpret_cast<void*>(_depthSceneView->getFrameBuffer()->getFrameTexture()),
-        sceneAreaMin,
-        sceneAreaMax,
-        ImVec2(0, 1),
-        ImVec2(1, 0));
+        reinterpret_cast<void*>(_depthSceneView->getFrameBuffer()->getFrameTexture()),  // Texture ID
+        sceneAreaMin,                                                                   // Min coords of area
+        sceneAreaMax,                                                                   // Max coords of area
+        ImVec2(0, 1),                                                                   // Min uv coords
+        ImVec2(1, 0)                                                                    // Max uv coords
+    );
 
     ImGui::End();
   }
@@ -399,10 +438,10 @@ void ImGuiMainView::paint() {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
-  ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+  ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
   // ====================================================================
-  // Generate main frame
+  // Add main frame components
   // ====================================================================
   {
     // Menu Bar
@@ -445,9 +484,9 @@ void ImGuiMainView::paint() {
 
 void ImGuiMainView::listenEvent() {
   if (moveOn) {
-    // ====================================================================
-    // Event handling
-    // ====================================================================
+    // ============================================================================================================================================================================================================
+    // Mouse event handling
+    // ============================================================================================================================================================================================================
     {
       // Mouse on Scene
       const ImVec2 mousePos = ImGui::GetMousePos();
@@ -459,6 +498,9 @@ void ImGuiMainView::listenEvent() {
       _sceneView->motionEvent(isMouseOnScene && _isForcusedOnScene, relMousePos);
     }
 
+    // ============================================================================================================================================================================================================
+    // Keyboard event handling
+    // ============================================================================================================================================================================================================
     {
       // Keyboard
       const auto cameraDirection = glm::normalize(_sceneView->cameraLookAt - _sceneView->cameraPos);
@@ -496,7 +538,7 @@ void ImGuiMainView::listenEvent() {
   }
 }
 
-void ImGuiMainView::setRenderType(const Primitives::RenderType renderType) {
+void ImGuiMainView::setRenderType(const Primitive::RenderType& renderType) {
   _renderTypeID = static_cast<int>(renderType);
 }
 

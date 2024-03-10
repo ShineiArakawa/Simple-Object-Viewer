@@ -281,7 +281,7 @@ void ModelParser::parseModelObject(const std::shared_ptr<picojson::value> jsonVa
     }
 
     if (defaultRenderType != nullptr) {
-      object->setDefaultRenderType(Primitives::getRenderType(*defaultRenderType));
+      object->setDefaultRenderType(Primitive::getRenderType(*defaultRenderType));
     }
 
     object->setName(objectName);

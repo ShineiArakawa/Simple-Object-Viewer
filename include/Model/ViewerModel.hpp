@@ -2,6 +2,7 @@
 
 #include <Model/AxesCone.hpp>
 #include <Model/Background.hpp>
+#include <Model/GridPlane.hpp>
 #include <Model/Model.hpp>
 #include <Model/Primitives.hpp>
 #include <OpenGL.hpp>
@@ -30,7 +31,9 @@ class ViewerModel : public Model {
 
   void tick(float time) override { _time += time; };
 
-  void setAxesConeState(const bool isShown);
+  void setAxesConeState(const bool &isShown);
+
+  void setGridPlaneState(const bool &isShown);
 };
 
 using ViewerModel_t = std::shared_ptr<ViewerModel>;

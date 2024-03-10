@@ -8,7 +8,7 @@
 namespace simview {
 namespace model {
 
-class Background : public Primitives {
+class Background : public Primitive {
  private:
   GLuint _vaoId;
   GLuint _vertexBufferId;

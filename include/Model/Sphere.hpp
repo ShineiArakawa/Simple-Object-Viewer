@@ -5,7 +5,7 @@
 
 namespace simview {
 namespace model {
-class Sphere : public Primitives {
+class Sphere : public Primitive {
  private:
   float _offsetX;
   float _offsetY;

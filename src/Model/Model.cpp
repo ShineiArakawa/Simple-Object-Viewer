@@ -75,13 +75,13 @@ void Model::setMaskMode(const bool maskMode) {
   }
 }
 
-void Model::setRenderType(const Primitives::RenderType renderType) {
+void Model::setRenderType(const Primitive::RenderType renderType) {
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->setRenderType(renderType);
   }
 }
 
-void Model::setWireFrameMode(Primitives::WireFrameMode wireFrameMode) {
+void Model::setWireFrameMode(Primitive::WireFrameMode wireFrameMode) {
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->setWireFrameMode(wireFrameMode);
   }

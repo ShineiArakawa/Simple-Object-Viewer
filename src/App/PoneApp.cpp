@@ -31,16 +31,16 @@ void PoneApp::keyboardEventPone(GLFWwindow* window, int key, int scancode, int a
     } else if (key == GLFW_KEY_M) {
       Window::isMaskMode = !Window::isMaskMode;
     } else if (key == GLFW_KEY_N) {
-      model->setRenderType(Primitives::RenderType::NORMAL);
+      model->setRenderType(Primitive::RenderType::NORMAL);
       Window::isMaskMode = false;
     } else if (key == GLFW_KEY_C) {
-      model->setRenderType(Primitives::RenderType::COLOR);
+      model->setRenderType(Primitive::RenderType::COLOR);
       Window::isMaskMode = false;
     } else if (key == GLFW_KEY_T) {
-      model->setRenderType(Primitives::RenderType::TEXTURE);
+      model->setRenderType(Primitive::RenderType::TEXTURE);
       Window::isMaskMode = false;
     } else if (key == GLFW_KEY_V) {
-      model->setRenderType(Primitives::RenderType::VERT_NORMAL);
+      model->setRenderType(Primitive::RenderType::VERT_NORMAL);
       Window::isMaskMode = false;
     } else if (key == GLFW_KEY_R) {
       model->resetRenderType();

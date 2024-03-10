@@ -11,7 +11,7 @@
 namespace simview {
 namespace model {
 
-class Terrain : public Primitives {
+class Terrain : public Primitive {
  private:
   std::string _filePath;
   int _indexBufferSize;

@@ -12,7 +12,7 @@
 namespace simview {
 namespace model {
 
-class Box : public Primitives {
+class Box : public Primitive {
  private:
   std::string _filePath;
   float _offsetX;

@@ -52,7 +52,7 @@ void ObjectAddFileDialog::paint() {
     ImGui::SameLine();
     if (ImGui::Button("Browse Obj")) {
       nfdchar_t* outPath;
-      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj,stl,msh,pch"}};
+      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj,stl,fbx,msh,pch"}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
 
       if (result == NFD_OKAY) {
@@ -223,7 +223,7 @@ void ObjectAddFileDialog::paint() {
     // ========================================================================================================================
     // Create objects
     // ========================================================================================================================
-    Primitives_t newObject = nullptr;
+    Primitive_t newObject = nullptr;
     std::string strObjName(objName);
     std::string strObjFilePath(objFilePath);
     std::string strTexFilePath(textureFilePath);

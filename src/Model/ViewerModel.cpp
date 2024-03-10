@@ -38,6 +38,9 @@ void ViewerModel::paintGL(const glm::mat4 &mvMat,        // mvMat
                           const glm::mat4 &lightMvpMat,  // lightMvpMat
                           const GLuint &depthMapId       // depthMapId
 ) {
+  // ================================================================================================
+  // Draw static objects first
+  // ================================================================================================
   if (_backgroundIDtoDraw >= 0 && _backgroundIDtoDraw < _backgrounds->size()) {
     getBackground(_backgroundIDtoDraw)->update();
     getBackground(_backgroundIDtoDraw)->paintGL(mvMat,                 // mvMat
@@ -53,7 +56,11 @@ void ViewerModel::paintGL(const glm::mat4 &mvMat,        // mvMat
     );
   }
 
-  for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+  // ================================================================================================
+  // Draw objects
+  // ================================================================================================
+  const int &nObjects = getNumObjects();
+  for (int iModel = 0; iModel < nObjects; ++iModel) {
     getObject(iModel)->update();
     getObject(iModel)->paintGL(
         mvMat,                 // mvMat
@@ -70,7 +77,7 @@ void ViewerModel::paintGL(const glm::mat4 &mvMat,        // mvMat
   }
 }
 
-void ViewerModel::setAxesConeState(const bool isShown) {
+void ViewerModel::setAxesConeState(const bool &isShown) {
   if (isShown) {
     // Add
     for (int iModel = 0; iModel < getNumObjects(); iModel++) {
@@ -81,14 +88,33 @@ void ViewerModel::setAxesConeState(const bool isShown) {
 
     auto axesCone = std::make_shared<AxesCone>(32, -10.0f, -10.0f, -10.0f, 1.0f);
     axesCone->setName("Axes cone");
-    axesCone->setModelShader(_shader);
-    axesCone->setDepthShader(_depthShader);
-    axesCone->initVAO();
     addObject(axesCone);
   } else {
     // Remove
     for (int iModel = 0; iModel < getNumObjects(); iModel++) {
       if (getObject(iModel)->getObjectType() == AxesCone::KEY_MODEL_AXES_CONE) {
+        removeObject(iModel);
+      }
+    }
+  }
+}
+
+void ViewerModel::setGridPlaneState(const bool &isShown) {
+  if (isShown) {
+    // Add
+    for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+      if (getObject(iModel)->getObjectType() == GridPlane::KEY_MODEL_GRID_PLANE) {
+        return;
+      }
+    }
+
+    auto gridPlane = std::make_shared<GridPlane>(20, glm::vec2(-50.0f, -50.0f), glm::vec2(50.0f, 50.0f));
+    gridPlane->setName("XY-Grid");
+    addObject(gridPlane);
+  } else {
+    // Remove
+    for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+      if (getObject(iModel)->getObjectType() == GridPlane::KEY_MODEL_GRID_PLANE) {
         removeObject(iModel);
       }
     }

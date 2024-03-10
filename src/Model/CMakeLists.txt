@@ -17,6 +17,7 @@ add_library(
   "AxesCone.cpp"
   "MaterialObject.cpp"
   "AxisAlignedBoundingBox.cpp"
+  "GridPlane.cpp"
 )
 
 # =========================================================

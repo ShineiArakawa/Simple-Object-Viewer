@@ -7,7 +7,7 @@
 namespace simview {
 namespace model {
 
-class PointCloud : public Primitives {
+class PointCloud : public Primitive {
  private:
   std::string _filePath;
   float _offsetX;

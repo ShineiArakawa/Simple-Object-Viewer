@@ -87,25 +87,25 @@ void Background::paintGL(const glm::mat4& mvMat,
                          const glm::mat4& lightMvpMat) {
   if (_isVisible) {
     bindShader(
-        glm::mat4(1.0f),                                        // mvMat
-        glm::mat4(1.0f),                                        // mvpMat
-        glm::mat4(1.0f),                                        // normMat
-        lightMat,                                               // lightMat
-        lightPos,                                               // lightPos
-        shininess,                                              // shininess
-        ambientIntensity,                                       // ambientIntensity
-        glm::vec3(0.0f),                                        // ambientColor
-        glm::vec3(0.0f),                                        // diffuseColor
-        glm::vec3(0.0f),                                        // specularColor
-        getRenderType(false, Primitives::RenderType::TEXTURE),  // renderType
-        getWireFrameMode(),                                     // wireFrameMode
-        wireFrameColor,                                         // wireFrameColor
-        wireFrameWidth,                                         // wireFrameWidth
-        depthTextureId,                                         // depthTextureId
-        lightMvpMat,                                            // lightMvpMat
-        false,                                                  // isEnabledShadowMapping
-        true,                                                   // disableDepthTest
-        false                                                   // isEnabledNormalMap
+        glm::mat4(1.0f),                                       // mvMat
+        glm::mat4(1.0f),                                       // mvpMat
+        glm::mat4(1.0f),                                       // normMat
+        lightMat,                                              // lightMat
+        lightPos,                                              // lightPos
+        shininess,                                             // shininess
+        ambientIntensity,                                      // ambientIntensity
+        glm::vec3(0.0f),                                       // ambientColor
+        glm::vec3(0.0f),                                       // diffuseColor
+        glm::vec3(0.0f),                                       // specularColor
+        getRenderType(false, Primitive::RenderType::TEXTURE),  // renderType
+        getWireFrameMode(),                                    // wireFrameMode
+        wireFrameColor,                                        // wireFrameColor
+        wireFrameWidth,                                        // wireFrameWidth
+        depthTextureId,                                        // depthTextureId
+        lightMvpMat,                                           // lightMvpMat
+        false,                                                 // isEnabledShadowMapping
+        true,                                                  // disableDepthTest
+        false                                                  // isEnabledNormalMap
     );
 
     _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, _textureId);

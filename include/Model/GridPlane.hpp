@@ -1,41 +1,35 @@
 #pragma once
 
 #include <Model/Primitives.hpp>
-#include <Util/ObjectLoader.hpp>
 
 namespace simview {
 namespace model {
 
-class AxesCone : public Primitive {
+class GridPlane : public Primitive {
  private:
-  float _offsetX;
-  float _offsetY;
-  float _offsetZ;
-  float _scale;
-  glm::vec3 _color;
   int _nDivs;
-
-  int _indexBufferSize;
+  glm::vec2 _minCoords;
+  glm::vec2 _maxCoords;
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;
+  int _indexBufferSize;
 
  protected:
   // nothing
  public:
-  inline static const std::string KEY_MODEL_AXES_CONE = "Axes Cone";
-
-  inline static const float CONE_HIGHT = 0.2f;
-  inline static const float CONE_RADIUS = 0.2f;
-  inline static const float CYLINDER_RADIUS = 0.1f;
+  inline static const std::string KEY_MODEL_GRID_PLANE = "Grid plane";
 
  private:
   // nothing
  protected:
   // nothing
  public:
-  AxesCone(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scale);
-  ~AxesCone();
+  GridPlane(const int& nDivs,
+            const glm::vec2& minCoords,
+            const glm::vec2& maxCoords);
+  ~GridPlane();
+
   void update() override{};
   void initVAO() override;
   void paintGL(const glm::mat4& mvMat,
@@ -51,14 +45,10 @@ class AxesCone : public Primitive {
   void drawGL(const int& index = 0) override;
   void drawAllGL(const glm::mat4& lightMvpMat) override;
 
-  std::string getObjectType() override { return KEY_MODEL_AXES_CONE; };
-  void createXorientedCone(
-      VertexArray_t& vertices,
-      IndexArray_t& indices,
-      const glm::vec3& color) const;
+  std::string getObjectType() override { return KEY_MODEL_GRID_PLANE; };
 };
 
-using AxesCone_t = std::shared_ptr<AxesCone>;
+using GridPlane_t = std::shared_ptr<GridPlane>;
 
 }  // namespace model
 }  // namespace simview
