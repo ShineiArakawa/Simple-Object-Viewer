@@ -28,7 +28,15 @@ using vec2i_t = vec2_t<int>;
 using vec2ull_t = vec2_t<size_t>;
 
 template <class dtype>
-using vec_pt = std::shared_ptr<std::vector<dtype>>;
+using vec_t = std::vector<dtype>;
+using vecf_t = vec_t<float>;
+using vecd_t = vec_t<double>;
+using veci_t = vec_t<int>;
+using vecull_t = vec_t<size_t>;
+
+template <class dtype>
+using vec_pt = std::shared_ptr<vec_t<dtype>>;
+
 using vecf_pt = vec_pt<float>;
 using vecd_pt = vec_pt<double>;
 using veci_pt = vec_pt<int>;
