@@ -334,7 +334,7 @@ void ImGuiMainView::paintSideBar() {
     }
 
     // ========================================================================================
-    // Statistics section
+    // Resource monitor section
     // ========================================================================================
     ImGui::SeparatorText("Statistics");
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / _io->Framerate, _io->Framerate);

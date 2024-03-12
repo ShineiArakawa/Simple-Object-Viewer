@@ -21,7 +21,7 @@ class ImGuiMainView {
   inline static const char* FLOAT_FORMAT = "%.6f";
   inline static const char* RENDER_TYPE_ITEMS = "Normal\0Color\0Texture\0Vertex Normal\0Shading\0Shading with texture\0Material\0";
 
-  bool _isVisibleSideBar = true;
+  bool _isVisibleSideBar;
 
   float _menuBarHeight;
   bool _isForcusedOnScene;
@@ -40,7 +40,7 @@ class ImGuiMainView {
   ObjectAddFileDialog_t _objectAddDialog;
 
  public:
-  bool moveOn = true;
+  bool moveOn;
 
  private:
   void paintMenuBar();
@@ -65,6 +65,8 @@ class ImGuiMainView {
   ObjectAddFileDialog_t getObjectAddDialog() const { return _objectAddDialog; };
 
   void setRenderType(const model::Primitive::RenderType& renderType);
+
+  void setSideBarVisibility(const bool& isVisible) { _isVisibleSideBar = isVisible; }
 };
 
 using ImGuiMainView_t = std::shared_ptr<ImGuiMainView>;
