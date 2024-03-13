@@ -69,7 +69,7 @@ inline void outerProduct(const float& x0, const float& y0, const float& z0,
 inline void normalize(vec3f_t& vec) {
   const float length = std::sqrt(vec[0] * vec[0] +
                                  vec[1] * vec[1] +
-                                 vec[2] * vec[3]);
+                                 vec[2] * vec[2]);
   vec[0] = vec[0] / length;
   vec[1] = vec[1] / length;
   vec[2] = vec[2] / length;
