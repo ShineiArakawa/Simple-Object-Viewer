@@ -166,3 +166,219 @@ using ReservedArrayi = ReservedArray<int, int_fast32_t>;
 using ReservedArrayd = ReservedArray<double, int_fast32_t>;
 
 }  // namespace simview
+
+// =============================================================================================
+// vec4 operators
+// =============================================================================================
+template <class DType>
+simview::vec4_t<DType> operator+(const simview::vec4_t<DType>& left, const simview::vec4_t<DType>& right) {
+  simview::vec4_t<DType> result;
+  result[0] = left[0] + right[0];
+  result[1] = left[1] + right[1];
+  result[2] = left[2] + right[2];
+  result[3] = left[3] + right[3];
+  return result;
+}
+
+template <class DType>
+simview::vec4_t<DType> operator-(const simview::vec4_t<DType>& left, const simview::vec4_t<DType>& right) {
+  simview::vec4_t<DType> result;
+  result[0] = left[0] - right[0];
+  result[1] = left[1] - right[1];
+  result[2] = left[2] - right[2];
+  result[3] = left[3] - right[3];
+  return result;
+}
+
+template <class DType>
+simview::vec4_t<DType> operator*(const simview::vec4_t<DType>& left, const simview::vec4_t<DType>& right) {
+  simview::vec4_t<DType> result;
+  result[0] = left[0] * right[0];
+  result[1] = left[1] * right[1];
+  result[2] = left[2] * right[2];
+  result[3] = left[3] * right[3];
+  return result;
+}
+
+template <class DType>
+simview::vec4_t<DType> operator/(const simview::vec4_t<DType>& left, const simview::vec4_t<DType>& right) {
+  simview::vec4_t<DType> result;
+  result[0] = left[0] / right[0];
+  result[1] = left[1] / right[1];
+  result[2] = left[2] / right[2];
+  result[3] = left[3] / right[3];
+  return result;
+}
+
+// scalar x vector
+template <class DType>
+simview::vec4_t<DType> operator*(const DType& left, const simview::vec4_t<DType>& right) {
+  simview::vec4_t<DType> result;
+  result[0] = left * right[0];
+  result[1] = left * right[1];
+  result[2] = left * right[2];
+  result[3] = left * right[3];
+  return result;
+}
+
+template <class DType>
+simview::vec4_t<DType> operator*(const simview::vec4_t<DType>& left, const DType& right) {
+  return right * left;
+}
+
+template <class DType>
+simview::vec4_t<DType> operator/(const DType& left, const simview::vec4_t<DType>& right) {
+  simview::vec4_t<DType> result;
+  result[0] = left / right[0];
+  result[1] = left / right[1];
+  result[2] = left / right[2];
+  result[3] = left / right[3];
+  return result;
+}
+
+template <class DType>
+simview::vec4_t<DType> operator/(const simview::vec4_t<DType>& left, const DType& right) {
+  simview::vec4_t<DType> result;
+  result[0] = left[0] / right;
+  result[1] = left[1] / right;
+  result[2] = left[2] / right;
+  result[3] = left[3] / right;
+  return result;
+}
+
+// =============================================================================================
+// vec3 operators
+// =============================================================================================
+template <class DType>
+simview::vec3_t<DType> operator+(const simview::vec3_t<DType>& left, const simview::vec3_t<DType>& right) {
+  simview::vec3_t<DType> result;
+  result[0] = left[0] + right[0];
+  result[1] = left[1] + right[1];
+  result[2] = left[2] + right[2];
+  return result;
+}
+
+template <class DType>
+simview::vec3_t<DType> operator-(const simview::vec3_t<DType>& left, const simview::vec3_t<DType>& right) {
+  simview::vec3_t<DType> result;
+  result[0] = left[0] - right[0];
+  result[1] = left[1] - right[1];
+  result[2] = left[2] - right[2];
+  return result;
+}
+
+template <class DType>
+simview::vec3_t<DType> operator*(const simview::vec3_t<DType>& left, const simview::vec3_t<DType>& right) {
+  simview::vec3_t<DType> result;
+  result[0] = left[0] * right[0];
+  result[1] = left[1] * right[1];
+  result[2] = left[2] * right[2];
+  return result;
+}
+
+template <class DType>
+simview::vec3_t<DType> operator/(const simview::vec3_t<DType>& left, const simview::vec3_t<DType>& right) {
+  simview::vec3_t<DType> result;
+  result[0] = left[0] / right[0];
+  result[1] = left[1] / right[1];
+  result[2] = left[2] / right[2];
+  return result;
+}
+
+// scalar x vector
+template <class DType>
+simview::vec3_t<DType> operator*(const DType& left, const simview::vec3_t<DType>& right) {
+  simview::vec3_t<DType> result;
+  result[0] = left * right[0];
+  result[1] = left * right[1];
+  result[2] = left * right[2];
+  return result;
+}
+
+template <class DType>
+simview::vec3_t<DType> operator*(const simview::vec3_t<DType>& left, const DType& right) {
+  return right * left;
+}
+
+template <class DType>
+simview::vec3_t<DType> operator/(const DType& left, const simview::vec3_t<DType>& right) {
+  simview::vec3_t<DType> result;
+  result[0] = left / right[0];
+  result[1] = left / right[1];
+  result[2] = left / right[2];
+  return result;
+}
+
+template <class DType>
+simview::vec3_t<DType> operator/(const simview::vec3_t<DType>& left, const DType& right) {
+  simview::vec3_t<DType> result;
+  result[0] = left[0] / right;
+  result[1] = left[1] / right;
+  result[2] = left[2] / right;
+  return result;
+}
+
+// =============================================================================================
+// vec2 operators
+// =============================================================================================
+template <class DType>
+simview::vec2_t<DType> operator+(const simview::vec2_t<DType>& left, const simview::vec2_t<DType>& right) {
+  simview::vec2_t<DType> result;
+  result[0] = left[0] + right[0];
+  result[1] = left[1] + right[1];
+  return result;
+}
+
+template <class DType>
+simview::vec2_t<DType> operator-(const simview::vec2_t<DType>& left, const simview::vec2_t<DType>& right) {
+  simview::vec2_t<DType> result;
+  result[0] = left[0] - right[0];
+  result[1] = left[1] - right[1];
+  return result;
+}
+
+template <class DType>
+simview::vec2_t<DType> operator*(const simview::vec2_t<DType>& left, const simview::vec2_t<DType>& right) {
+  simview::vec2_t<DType> result;
+  result[0] = left[0] * right[0];
+  result[1] = left[1] * right[1];
+  return result;
+}
+
+template <class DType>
+simview::vec2_t<DType> operator/(const simview::vec2_t<DType>& left, const simview::vec2_t<DType>& right) {
+  simview::vec2_t<DType> result;
+  result[0] = left[0] / right[0];
+  result[1] = left[1] / right[1];
+  return result;
+}
+
+// scalar x vector
+template <class DType>
+simview::vec2_t<DType> operator*(const DType& left, const simview::vec2_t<DType>& right) {
+  simview::vec2_t<DType> result;
+  result[0] = left * right[0];
+  result[1] = left * right[1];
+  return result;
+}
+
+template <class DType>
+simview::vec2_t<DType> operator*(const simview::vec2_t<DType>& left, const DType& right) {
+  return right * left;
+}
+
+template <class DType>
+simview::vec2_t<DType> operator/(const DType& left, const simview::vec2_t<DType>& right) {
+  simview::vec2_t<DType> result;
+  result[0] = left / right[0];
+  result[1] = left / right[1];
+  return result;
+}
+
+template <class DType>
+simview::vec2_t<DType> operator/(const simview::vec2_t<DType>& left, const DType& right) {
+  simview::vec2_t<DType> result;
+  result[0] = left[0] / right;
+  result[1] = left[1] / right;
+  return result;
+}
