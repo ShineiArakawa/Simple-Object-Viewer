@@ -109,5 +109,9 @@ void ViewerGUIApp::setRenderType(const model::Primitive::RenderType renderType) 
   _view->setRenderType(renderType);
 }
 
+void ViewerGUIApp::setSideBarVisibility(const bool& isVisible) {
+  _view->setSideBarVisibility(isVisible);
+}
+
 }  // namespace app
 }  // namespace simview

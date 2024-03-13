@@ -28,6 +28,7 @@ class ViewerGUIApp {
   void addObject(const model::Primitive_t& object, bool toInitializeVAO = true);
   void addBackground(const model::Background_t& background);
   void setRenderType(const model::Primitive::RenderType renderType);
+  void setSideBarVisibility(const bool& isVisible);
 };
 
 using ViewerGUIApp_t = std::shared_ptr<ViewerGUIApp>;

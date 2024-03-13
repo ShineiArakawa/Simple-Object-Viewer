@@ -40,7 +40,7 @@ class ImGuiMainView {
   ObjectAddFileDialog_t _objectAddDialog;
 
  public:
-  bool moveOn = true;
+  bool moveOn;
 
  private:
   void paintMenuBar();
@@ -65,6 +65,8 @@ class ImGuiMainView {
   ObjectAddFileDialog_t getObjectAddDialog() const { return _objectAddDialog; };
 
   void setRenderType(const model::Primitive::RenderType& renderType);
+
+  void setSideBarVisibility(const bool& isVisible) { _isVisibleSideBar = isVisible; }
 };
 
 using ImGuiMainView_t = std::shared_ptr<ImGuiMainView>;

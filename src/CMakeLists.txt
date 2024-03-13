@@ -58,7 +58,11 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
       "Model/PointCloudPoly.cpp"
       "Model/AxesCone.cpp"
       "Model/MaterialObject.cpp"
+<<<<<<< HEAD
       "Model/WireFrame.cpp"
+=======
+      "Model/GridPlane.cpp"
+>>>>>>> e2a4d4c360be850041c95964a9049087cb5dedc1
       "Renderer/Renderer.cpp"
       "Renderer/DepthRenderer.cpp"
       "Renderer/FrameBuffer.cpp"
