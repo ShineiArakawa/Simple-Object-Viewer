@@ -14,7 +14,6 @@ add_subdirectory(
     spdlog
 )
 
-set(ASSIMP_BUILD_TESTS off)
 add_subdirectory(
     assimp
 )

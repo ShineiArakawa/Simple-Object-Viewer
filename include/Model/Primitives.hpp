@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include <Model/AxisAlignedBoundingBox.hpp>
+#include <Model/WireFrame.hpp>
 #include <OpenGL.hpp>
 #include <Shader/DefaultShaders.hpp>
 #include <Shader/DepthShader.hpp>
@@ -74,6 +75,7 @@ class Primitive {
   glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
   glm::vec3 _vecocity = glm::vec3(0.0f, 0.0f, 0.0f);
   AxisAlignedBoundingBox_t _bbox = nullptr;
+  WireFrame_t _wireFrame = nullptr;
 
  public:
   // nothing
@@ -305,6 +307,22 @@ class Primitive {
       _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, getRenderType(false, RenderType::COLOR));
 
       _bbox->draw();
+
+      _shader->unbind();
+    }
+  };
+
+  inline void paintWireFrame(const glm::mat4& mvMat,
+                             const glm::mat4& mvpMat,
+                             const glm::mat4& normMat) const {
+    if (_wireFrame != nullptr && (_wireFrameMode == WireFrameMode::ON || _wireFrameMode == WireFrameMode::ONLY)) {
+      _shader->bind();
+      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MV_MAT, mvMat);
+      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MVP_MAT, mvpMat);
+      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_NORM_MAT, normMat);
+      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, getRenderType(false, RenderType::COLOR));
+
+      _wireFrame->draw();
 
       _shader->unbind();
     }

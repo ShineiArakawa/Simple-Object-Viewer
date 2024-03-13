@@ -18,6 +18,7 @@ add_library(
   "MaterialObject.cpp"
   "AxisAlignedBoundingBox.cpp"
   "GridPlane.cpp"
+  "WireFrame.cpp"
 )
 
 # =========================================================

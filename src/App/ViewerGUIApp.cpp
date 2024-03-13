@@ -83,6 +83,7 @@ ViewerGUIApp::ViewerGUIApp() : _window(nullptr),
 ViewerGUIApp::~ViewerGUIApp() {
   glfwDestroyWindow(_window);
   glfwTerminate();
+  LOG_INFO("Bye!");
 }
 
 void ViewerGUIApp::launch() {

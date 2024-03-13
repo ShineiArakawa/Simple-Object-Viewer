@@ -211,6 +211,9 @@ void ImGuiSceneView::saveScreenShot(const std::string& filePath) {
     }
 
     stb::saveImage(WIN_WIDTH, WIN_HEIGHT, 4, bytesTransposedTexture, filePath);
+
+    free(bytesTexture);
+    free(bytesTransposedTexture);
   } else {
     LOG_WARN("The scene was not rendered to the current frame buffer.");
   }

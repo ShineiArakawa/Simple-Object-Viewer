@@ -347,10 +347,10 @@ void ObjectAddFileDialog::paint() {
 
   if (!_errorMessage.empty()) {
     ImGui::Separator();
-    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), _errorMessage.c_str());
+    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "%s", _errorMessage.c_str());
   } else if (!_message.empty()) {
     ImGui::Separator();
-    ImGui::Text(_message.c_str());
+    ImGui::Text("%s", _message.c_str());
   }
 }
 

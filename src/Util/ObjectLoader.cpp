@@ -289,7 +289,7 @@ void ObjectLoader::readMshFile(const std::string &filePath,
     // =========================================================================================
     // Extract surface
     // =========================================================================================
-    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(350, triangles, vertexCoords);
+    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(500, triangles, vertexCoords);
 
     const int nSurfaceTriangles = surfaceTriangles->size() / 3;
     LOG_INFO("nSurfaceTriangles: " + std::to_string(nSurfaceTriangles));

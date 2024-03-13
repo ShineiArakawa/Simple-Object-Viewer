@@ -45,7 +45,9 @@ class Model {
   glm::vec4 _lightPosition = glm::vec4(5.0f, 5.0f, 5.0f, 1.0f);
   float _shininess = 50.0f;
   float _ambientIntensity = 0.1f;
-  glm::vec3 _wireFrameColor = glm::vec3(1.0f, 1.0f, 1.0f);
+  glm::vec3 _wireFrameColor = glm::vec3(15.0f / 255.0f,
+                                        230.0f / 255.0f,
+                                        130.0f / 255.0f);
   float _wireFrameWidth = 0.01f;
 
  public:

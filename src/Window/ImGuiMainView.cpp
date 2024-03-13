@@ -13,15 +13,13 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
       _sceneAreaMin(ImVec2(0.0f, 0.0f)),
       _sceneAreaMax(ImVec2(0.0f, 0.0f)),
       _io(nullptr),
+      _sceneModel(sceneModel),
       _sceneView(nullptr),
-      _sceneModel(nullptr),
       _depthSceneView(nullptr),
       _depthSceneModel(nullptr),
       _objectAddDialog(nullptr),
       _isVisibleSideBar(true),
       moveOn(true) {
-  _sceneModel = sceneModel;
-
   // ====================================================================
   // Initialize scene window
   // ====================================================================
@@ -239,12 +237,12 @@ void ImGuiMainView::paintSideBar() {
 
           ImGui::TableNextColumn();
           ImGui::PushID(iObject * 4 + 0);
-          ImGui::Text(object->getName().c_str());
+          ImGui::Text("%s", object->getName().c_str());
           ImGui::PopID();
 
           ImGui::TableNextColumn();
           ImGui::PushID(iObject * 4 + 1);
-          ImGui::Text(object->getObjectType().c_str());
+          ImGui::Text("%s", object->getObjectType().c_str());
           ImGui::PopID();
 
           ImGui::TableNextColumn();
@@ -262,7 +260,7 @@ void ImGuiMainView::paintSideBar() {
           }
         }
 
-        bool* backgoundFlags = (bool*)calloc(_sceneModel->getNumBackgrounds(), sizeof(bool));
+        std::shared_ptr<bool[]> backgoundFlags(new bool[_sceneModel->getNumBackgrounds()]);
         if (_sceneModel->getNumBackgrounds() > 0) {
           backgoundFlags[_sceneModel->getBackgroundIDtoDraw()] = true;
         }
@@ -274,12 +272,12 @@ void ImGuiMainView::paintSideBar() {
 
           ImGui::TableNextColumn();
           ImGui::PushID((_sceneModel->getNumObjects() + iBackground) * 4 + 0);
-          ImGui::Text(background->getName().c_str());
+          ImGui::Text("%s", background->getName().c_str());
           ImGui::PopID();
 
           ImGui::TableNextColumn();
           ImGui::PushID((_sceneModel->getNumObjects() + iBackground) * 4 + 1);
-          ImGui::Text(background->getObjectType().c_str());
+          ImGui::Text("%s", background->getObjectType().c_str());
           ImGui::PopID();
 
           ImGui::TableNextColumn();
