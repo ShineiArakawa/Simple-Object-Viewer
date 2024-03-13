@@ -44,6 +44,11 @@ using vecull_pt = vec_pt<size_t>;
 
 namespace math {
 
+inline float innerProduct(const vec3f_t& vec0,
+                          const vec3f_t& vec1) {
+  return vec0[0] * vec1[0] + vec0[1] * vec1[1] + vec0[2] * vec1[2];
+}
+
 inline vec3f_t outerProduct(const vec3f_t& vec0,
                             const vec3f_t& vec1) {
   return {
