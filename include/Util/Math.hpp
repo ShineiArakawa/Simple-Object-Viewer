@@ -36,7 +36,6 @@ using vecull_t = vec_t<size_t>;
 
 template <class dtype>
 using vec_pt = std::shared_ptr<vec_t<dtype>>;
-
 using vecf_pt = vec_pt<float>;
 using vecd_pt = vec_pt<double>;
 using veci_pt = vec_pt<int>;
@@ -66,13 +65,17 @@ inline void outerProduct(const float& x0, const float& y0, const float& z0,
   z = x0 * y1 - y0 * x1;
 }
 
+inline float length(vec3f_t& vec) {
+  return std::sqrt(vec[0] * vec[0] +
+                   vec[1] * vec[1] +
+                   vec[2] * vec[2]);
+}
+
 inline void normalize(vec3f_t& vec) {
-  const float length = std::sqrt(vec[0] * vec[0] +
-                                 vec[1] * vec[1] +
-                                 vec[2] * vec[2]);
-  vec[0] = vec[0] / length;
-  vec[1] = vec[1] / length;
-  vec[2] = vec[2] / length;
+  const float len= length(vec);
+  vec[0] = vec[0] / len;
+  vec[1] = vec[1] / len;
+  vec[2] = vec[2] / len;
 }
 
 inline void normalize(float& x, float& y, float& z) {

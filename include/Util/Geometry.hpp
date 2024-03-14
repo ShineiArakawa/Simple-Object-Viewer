@@ -43,6 +43,8 @@ class TriangleBucket {
   void addToBucket(const float &, const float &, const float &, const int &);
 };
 
+using TriangleBucket_t = std::shared_ptr<TriangleBucket>;
+
 class Geometry {
  public:
   template <class Indexing>
