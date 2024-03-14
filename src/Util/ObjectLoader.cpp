@@ -29,7 +29,7 @@ std::vector<std::string> ObjectLoader::getReadableExtensionList() {
   strExtensions = StringUtil::remove(strExtensions, '*');
 
   // Separate by ';'
-  std::vector<std::string> &tmpExtensions = StringUtil::splitText(strExtensions, ';');
+  std::vector<std::string> tmpExtensions = StringUtil::splitText(strExtensions, ';');
 
   for (std::string extension : tmpExtensions) {
     // Remove '.' at head
@@ -251,7 +251,7 @@ void ObjectLoader::readMshFile(const std::string &filePath,
 
     for (int iElement = 0; iElement < nElements; ++iElement) {
       std::getline(ifstream, buffer);
-      std::vector<std::string> &tokens = StringUtil::splitText(buffer, ' ');
+      std::vector<std::string> tokens = StringUtil::splitText(buffer, ' ');
 
       const int offset = 10 * iElement;
 
@@ -281,7 +281,7 @@ void ObjectLoader::readMshFile(const std::string &filePath,
 
     for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
       std::getline(ifstream, buffer);
-      std::vector<std::string> &tokens = StringUtil::splitText(buffer, ' ');
+      std::vector<std::string> tokens = StringUtil::splitText(buffer, ' ');
 
       const int offset = 3 * iVertex;
 
@@ -458,7 +458,7 @@ void ObjectLoader::readPchFile(const std::string &filePath,
 
     for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
       std::getline(ifstream, buffer);
-      std::vector<std::string> &tokens = StringUtil::splitText(buffer, ' ');
+      std::vector<std::string> tokens = StringUtil::splitText(buffer, ' ');
 
       const int offset = 3 * iVertex;
 
@@ -481,7 +481,7 @@ void ObjectLoader::readPchFile(const std::string &filePath,
 
     for (int iElement = 0; iElement < nElements; ++iElement) {
       std::getline(ifstream, buffer);
-      std::vector<std::string> &tokens = StringUtil::splitText(buffer, ' ');
+      std::vector<std::string> tokens = StringUtil::splitText(buffer, ' ');
 
       const int offset = 3 * iElement;
 

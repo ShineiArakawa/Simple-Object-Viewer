@@ -168,7 +168,7 @@ void AxesCone::paintGL(
     const glm::mat4& mvpMat = transCtx.projMat * mvMat;
     const glm::mat4& lightMat = mvMat * transCtx.lightTransMat;
 
-    glm::vec4& cameraSpaceCoords = glm::inverse(transCtx.projMat) * POSITION_IN_DEVICE_SPACE;
+    glm::vec4 cameraSpaceCoords = glm::inverse(transCtx.projMat) * POSITION_IN_DEVICE_SPACE;
     cameraSpaceCoords /= cameraSpaceCoords.w;
     const glm::vec3& positionInModelSpace = (glm::inverse(mvMat) * cameraSpaceCoords).xyz();
 
