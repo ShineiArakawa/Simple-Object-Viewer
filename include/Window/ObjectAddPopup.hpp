@@ -17,7 +17,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <variant>
+#include <thread>
 
 namespace simview {
 namespace window {
@@ -28,13 +28,10 @@ class ObjectAddFileDialog {
  private:
   inline static const char* FLOAT_FORMAT = "%.6f";
 
-  using Attrib_t = std::variant<int, float, std::string>;
-
   inline static const std::string TITLE = "Add Object";
 
   std::string _objectTypes;
   model::ViewerModel_t _model;
-  std::map<std::string, Attrib_t> _attributeBuffer;
   std::string _message = "";
   std::string _errorMessage = "";
 

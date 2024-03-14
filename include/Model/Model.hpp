@@ -45,9 +45,8 @@ class Model {
   glm::vec4 _lightPosition = glm::vec4(5.0f, 5.0f, 5.0f, 1.0f);
   float _shininess = 50.0f;
   float _ambientIntensity = 0.1f;
-  glm::vec3 _wireFrameColor = glm::vec3(15.0f / 255.0f,
-                                        230.0f / 255.0f,
-                                        130.0f / 255.0f);
+  glm::vec3 _wireFrameColor =
+      glm::vec3(15.0f / 255.0f, 230.0f / 255.0f, 130.0f / 255.0f);
   float _wireFrameWidth = 0.01f;
 
  public:
@@ -60,10 +59,8 @@ class Model {
  public:
   virtual ~Model();
   virtual void initVAO() = 0;
-  virtual void paintGL(const glm::mat4 &mvMat,
-                       const glm::mat4 &mvpMat,
-                       const glm::mat4 &lightMat,
-                       const glm::mat4 &lightMvpMat,
+  virtual void paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat,
+                       const glm::mat4 &lightMat, const glm::mat4 &lightMvpMat,
                        const GLuint &depthMapId) = 0;
   virtual void tick(float time) = 0;
 
@@ -119,7 +116,9 @@ class Model {
 
   shader::DepthShader_t getDepthShader() { return _depthShader; };
 
-  Background_t getBackground(const int index) { return (*_backgrounds)[index]; };
+  Background_t getBackground(const int index) {
+    return (*_backgrounds)[index];
+  };
 
   int getNumBackgrounds() { return (int)_backgrounds->size(); };
 
@@ -143,13 +142,21 @@ class Model {
 
   float getWireFrameWidth() { return _wireFrameWidth; };
 
-  void setModelVertShaderPath(const String_t &vertShaderPath) { _modelVertMShaderPath = vertShaderPath; };
+  void setModelVertShaderPath(const String_t &vertShaderPath) {
+    _modelVertMShaderPath = vertShaderPath;
+  };
 
-  void setModelFragShaderPath(const String_t &fragShaderPath) { _modelFragShaderPath = fragShaderPath; };
+  void setModelFragShaderPath(const String_t &fragShaderPath) {
+    _modelFragShaderPath = fragShaderPath;
+  };
 
-  void setDepthVertShaderPath(const String_t &vertShaderPath) { _depthVertMShaderPath = vertShaderPath; };
+  void setDepthVertShaderPath(const String_t &vertShaderPath) {
+    _depthVertMShaderPath = vertShaderPath;
+  };
 
-  void setDepthFragShaderPath(const String_t &fragShaderPath) { _depthFragShaderPath = fragShaderPath; };
+  void setDepthFragShaderPath(const String_t &fragShaderPath) {
+    _depthFragShaderPath = fragShaderPath;
+  };
 
   void setModelShader(shader::ModelShader_t shader);
 
@@ -171,7 +178,8 @@ class Model {
 
   void resetRenderType();
 
-  void setBackgroundColor(const float &r, const float &g, const float &b, const float &a) {
+  void setBackgroundColor(const float &r, const float &g, const float &b,
+                          const float &a) {
     _backgroundColor.x = r;
     _backgroundColor.y = g;
     _backgroundColor.z = b;
@@ -184,7 +192,8 @@ class Model {
     _wireFrameColor.z = b;
   }
 
-  void setLightPosition(const float &x, const float &y, const float &z, const float &w = 1.0f) {
+  void setLightPosition(const float &x, const float &y, const float &z,
+                        const float &w = 1.0f) {
     _lightPosition.x = x;
     _lightPosition.y = y;
     _lightPosition.z = z;
@@ -193,15 +202,23 @@ class Model {
 
   void setBackgroundColor(const glm::vec4 &rgba) { _backgroundColor = rgba; }
 
-  void setLightPosition(const glm::vec4 &lightPos) { _lightPosition = lightPos; }
+  void setLightPosition(const glm::vec4 &lightPos) {
+    _lightPosition = lightPos;
+  }
 
   void setShiniess(const float &shininess) { _shininess = shininess; }
 
-  void setAmbientIntensity(const float &ambientIntensity) { _ambientIntensity = ambientIntensity; }
+  void setAmbientIntensity(const float &ambientIntensity) {
+    _ambientIntensity = ambientIntensity;
+  }
 
-  void setWireFrameColor(const glm::vec3 &wireFrameColor) { _wireFrameColor = wireFrameColor; }
+  void setWireFrameColor(const glm::vec3 &wireFrameColor) {
+    _wireFrameColor = wireFrameColor;
+  }
 
-  void setWireFrameWidth(const float &wireFrameWidth) { _wireFrameWidth = wireFrameWidth; }
+  void setWireFrameWidth(const float &wireFrameWidth) {
+    _wireFrameWidth = wireFrameWidth;
+  }
 };
 
 using Model_t = std::shared_ptr<Model>;

@@ -80,9 +80,9 @@ void ImGuiSceneView::resizeGL(const int& width, const int& height) {
 }
 
 glm::vec3 ImGuiSceneView::getVector(const double& x, const double& y) {
-  const int shortSide = std::min(WIN_WIDTH, WIN_HEIGHT);
-  glm::vec3 pt(2.0f * x / (float)shortSide - 1.0f,
-               -2.0f * y / (float)shortSide + 1.0f,
+  //const int shortSide = std::min(WIN_WIDTH, WIN_HEIGHT);
+  glm::vec3 pt(2.0f * x / (float)WIN_WIDTH - 1.0f,
+               -2.0f * y / (float)WIN_HEIGHT + 1.0f,
                0.0f);
 
   const double xySquared = pt.x * pt.x + pt.y * pt.y;
@@ -110,8 +110,14 @@ void ImGuiSceneView::updateTranslate() {
   glm::vec4 originScreenSpace = _renderer->getOriginScreenSpace();
   originScreenSpace /= originScreenSpace.w;
 
-  glm::vec4 newPosScreenSpace(2.0f * newPos.x / WIN_WIDTH - 1.0f, -2.0f * newPos.y / WIN_HEIGHT + 1.0f, originScreenSpace.z, 1.0f);
-  glm::vec4 oldPosScreenSpace(2.0f * oldPos.x / WIN_WIDTH - 1.0f, -2.0f * oldPos.y / WIN_HEIGHT + 1.0f, originScreenSpace.z, 1.0f);
+  glm::vec4 newPosScreenSpace(2.0f * newPos.x / WIN_WIDTH - 1.0f,
+                              -2.0f * newPos.y / WIN_HEIGHT + 1.0f,
+                              originScreenSpace.z,
+                              1.0f);
+  glm::vec4 oldPosScreenSpace(2.0f * oldPos.x / WIN_WIDTH - 1.0f,
+                              -2.0f * oldPos.y / WIN_HEIGHT + 1.0f,
+                              originScreenSpace.z,
+                              1.0f);
 
   _renderer->updateTranslate(newPosScreenSpace, oldPosScreenSpace);
 }
