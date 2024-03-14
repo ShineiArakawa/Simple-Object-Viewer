@@ -52,82 +52,40 @@ void PoneModel::initVAO() {
   reset();
 }
 
-void PoneModel::paintGL(const glm::mat4 &mvMat,
-                        const glm::mat4 &mvpMat,
-                        const glm::mat4 &lightMat,
-                        const glm::mat4 &lightMvpMat,
-                        const GLuint &depthMapId) {
+void PoneModel::paintGL(
+    const TransformationContext &transCtx,  // transCtx
+    const GLuint &depthMapId                // depthMapId
+) {
+  const glm::vec3 &lightPosition = _lightPosition.xyz();
+
+  const model::LightingContext lightingCtx(
+      lightPosition,     // lightPos
+      _shininess,        // shininess
+      _ambientIntensity  // ambientIntensity
+  );
+
+  const model::RenderingContext renderingCtx(
+      _wireFrameColor,  // wireFrameColor
+      _wireFrameWidth,  // wireFrameWidth
+      depthMapId        // depthTextureId
+  );
+
   if (_phase == GamePhase::START) {
-    _backgroundStart->paintGL(
-        mvMat,                 // mvMat
-        mvpMat,                // mvpMat
-        lightMat,              // lightMat
-        _lightPosition.xyz(),  // lightPos
-        _shininess,            // shininess
-        _ambientIntensity,     // ambientIntensity
-        _wireFrameColor,       // wireFrameColor
-        _wireFrameWidth,       // wireFrameWidth
-        depthMapId,            // depthTextureId
-        lightMvpMat            // lightMvpMat
-    );
+    _backgroundStart->paintGL(transCtx, lightingCtx, renderingCtx);
   } else if (_phase == GamePhase::PLAYING) {
     for (int iWall = 0; iWall < (int)_walls->size(); iWall++) {
       (*_walls)[iWall]->update();
-      (*_walls)[iWall]->paintGL(
-          mvMat,                 // mvMat
-          mvpMat,                // mvpMat
-          lightMat,              // lightMat
-          _lightPosition.xyz(),  // lightPos
-          _shininess,            // shininess
-          _ambientIntensity,     // ambientIntensity
-          _wireFrameColor,       // wireFrameColor
-          _wireFrameWidth,       // wireFrameWidth
-          depthMapId,            // depthTextureId
-          lightMvpMat            // lightMvpMat
-      );
+      (*_walls)[iWall]->paintGL(transCtx, lightingCtx, renderingCtx);
     }
 
     _sphere->update();
-    _sphere->paintGL(
-        mvMat,                 // mvMat
-        mvpMat,                // mvpMat
-        lightMat,              // lightMat
-        _lightPosition.xyz(),  // lightPos
-        _shininess,            // shininess
-        _ambientIntensity,     // ambientIntensity
-        _wireFrameColor,       // wireFrameColor
-        _wireFrameWidth,       // wireFrameWidth
-        depthMapId,            // depthTextureId
-        lightMvpMat            // lightMvpMat
-    );
+    _sphere->paintGL(transCtx, lightingCtx, renderingCtx);
 
     _paddle->update();
-    _paddle->paintGL(
-        mvMat,                 // mvMat
-        mvpMat,                // mvpMat
-        lightMat,              // lightMat
-        _lightPosition.xyz(),  // lightPos
-        _shininess,            // shininess
-        _ambientIntensity,     // ambientIntensity
-        _wireFrameColor,       // wireFrameColor
-        _wireFrameWidth,       // wireFrameWidth
-        depthMapId,            // depthTextureId
-        lightMvpMat            // lightMvpMat
-    );
+    _paddle->paintGL(transCtx, lightingCtx, renderingCtx);
 
   } else if (_phase == GamePhase::GAME_OVER) {
-    _backgroundGameOver->paintGL(
-        mvMat,                 // mvMat
-        mvpMat,                // mvpMat
-        lightMat,              // lightMat
-        _lightPosition.xyz(),  // lightPos
-        _shininess,            // shininess
-        _ambientIntensity,     // ambientIntensity
-        _wireFrameColor,       // wireFrameColor
-        _wireFrameWidth,       // wireFrameWidth
-        depthMapId,            // depthTextureId
-        lightMvpMat            // lightMvpMat
-    );
+    _backgroundGameOver->paintGL(transCtx, lightingCtx, renderingCtx);
   }
 }
 

@@ -109,38 +109,33 @@ void GridPlane::initVAO() {
   glBindVertexArray(0);
 }
 
-void GridPlane::paintGL(const glm::mat4& mvMat,
-                        const glm::mat4& mvpMat,
-                        const glm::mat4& lightMat,
-                        const glm::vec3& lightPos,
-                        const float& shininess,
-                        const float& ambientIntensity,
-                        const glm::vec3& wireFrameColor,
-                        const float& wireFrameWidth,
-                        const GLuint& depthTextureId,
-                        const glm::mat4& lightMvpMat) {
+void GridPlane::paintGL(
+    const TransformationContext& transCtx,  // transCtx
+    const LightingContext& lightingCtx,     // lightingCtx
+    const RenderingContext& renderingCtx    // renderingCtx
+) {
   if (_isVisible) {
-    const glm::mat4& mvtMat = mvMat * glm::translate(_position);
-    const glm::mat4& mvptMat = mvpMat * glm::translate(_position);
+    const glm::mat4& mvtMat = transCtx.mvMat * glm::translate(_position);
+    const glm::mat4& mvptMat = transCtx.mvpMat * glm::translate(_position);
     const glm::mat4& normMat = glm::transpose(glm::inverse(mvtMat));
-    const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
+    const glm::mat4& lightMvptMat = transCtx.lightMvpMat * glm::translate(_position);
 
     bindShader(
         mvtMat,                                              // mvMat
         mvptMat,                                             // mvpMat
         normMat,                                             // normMat
-        lightMat,                                            // lightMat
-        lightPos,                                            // lightPos
-        shininess,                                           // shininess
-        ambientIntensity,                                    // ambientIntensity
+        transCtx.lightMat,                                   // lightMat
+        lightingCtx.lightPos,                                // lightPos
+        lightingCtx.shininess,                               // shininess
+        lightingCtx.ambientIntensity,                        // ambientIntensity
         glm::vec3(0.0f),                                     // ambientColor
         glm::vec3(0.0f),                                     // diffuseColor
         glm::vec3(0.0f),                                     // specularColor
         getRenderType(false, Primitive::RenderType::COLOR),  // renderType
         getWireFrameMode(Primitive::WireFrameMode::OFF),     // wireFrameMode
-        wireFrameColor,                                      // wireFrameColor
-        wireFrameWidth,                                      // wireFrameWidth
-        depthTextureId,                                      // depthTextureId
+        renderingCtx.wireFrameColor,                         // wireFrameColor
+        renderingCtx.wireFrameWidth,                         // wireFrameWidth
+        renderingCtx.depthTextureId,                         // depthTextureId
         lightMvptMat,                                        // lightMvpMat
         false,                                               // isEnabledShadowMapping
         false,                                               // disableDepthTest

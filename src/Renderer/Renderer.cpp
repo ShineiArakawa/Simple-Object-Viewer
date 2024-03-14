@@ -1,5 +1,4 @@
 #include <Renderer/Renderer.hpp>
-#include <iostream>
 
 namespace simview {
 namespace renderer {
@@ -102,13 +101,21 @@ void Renderer::paintGL(const bool& renderShadowMap) {
   const glm::mat4& lightMat = mvMat * _lightTrasMat;
 
   {
-    _model->paintGL(
-        mvMat,                           // mvMat
-        mvpMat,                          // mvpMat
-        lightMat,                        // lightMat
-        lightMvpMat,                     // lightMvpMat
-        _depthRenderer->getDepthMapId()  // depthMapId
+    const model::TransformationContext transCtx(
+        mvMat,         // mvMat
+        mvpMat,        // mvpMat
+        lightMat,      // lightMat
+        lightMvpMat,   // lightMvpMat
+        modelMat,      // modelMat
+        _viewMat,      // viewMat
+        _projMat,      // projMat
+        _acTransMat,   // transMat
+        _acRotMat,     // rotMat
+        _acScaleMat,   // scaleMat
+        _lightTrasMat  // lightTrasMat
     );
+
+    _model->paintGL(transCtx, _depthRenderer->getDepthMapId());
   }
 
   if (_frameBuffer != nullptr) {

@@ -139,45 +139,39 @@ void Terrain::initVAO() {
   LOG_INFO("Elapsed time: " + std::to_string(elapsedTime / 1000.0) + " [sec]\n");
 }
 
-void Terrain::paintGL(const glm::mat4 &mvMat,           // mvMat
-                      const glm::mat4 &mvpMat,          // mvpMat
-                      const glm::mat4 &lightMat,        // lightMat
-                      const glm::vec3 &lightPos,        // lightPos
-                      const float &shininess,           // shininess
-                      const float &ambientIntensity,    // ambientIntensity
-                      const glm::vec3 &wireFrameColor,  // wireFrameColor
-                      const float &wireFrameWidth,      // wireFrameWidth
-                      const GLuint &depthTextureId,     // depthTextureId
-                      const glm::mat4 &lightMvpMat      // lightMvpMat
+void Terrain::paintGL(
+    const TransformationContext &transCtx,  // transCtx
+    const LightingContext &lightingCtx,     // lightingCtx
+    const RenderingContext &renderingCtx    // renderingCtx
 ) {
   if (_isVisible) {
-    const glm::mat4 &mvtMat = mvMat * glm::translate(_position);
-    const glm::mat4 &mvptMat = mvpMat * glm::translate(_position);
+    const glm::mat4 &mvtMat = transCtx.mvMat * glm::translate(_position);
+    const glm::mat4 &mvptMat = transCtx.mvpMat * glm::translate(_position);
     const glm::mat4 &normMat = glm::transpose(glm::inverse(mvtMat));
-    const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
+    const glm::mat4 &lightMvptMat = transCtx.lightMvpMat * glm::translate(_position);
 
     paintBBOX(mvtMat, mvptMat, normMat);
 
     bindShader(
-        mvtMat,                   // mvMat
-        mvptMat,                  // mvpMat
-        normMat,                  // normMat
-        lightMat,                 // lightMat
-        lightPos,                 // lightPos
-        shininess,                // shininess
-        ambientIntensity,         // ambientIntensity
-        glm::vec3(0.0f),          // ambientColor
-        glm::vec3(0.0f),          // diffuseColor
-        glm::vec3(0.0f),          // specularColor
-        getRenderType(),          // renderType
-        getWireFrameMode(),       // wireFrameMode
-        wireFrameColor,           // wireFrameColor
-        wireFrameWidth,           // wireFrameWidth
-        depthTextureId,           // depthTextureId
-        lightMvptMat,             // lightMvpMat
-        _isEnabledShadowMapping,  // isEnabledShadowMapping
-        false,                    // disableDepthTest
-        false                     // isEnabledNormalMap
+        mvtMat,                        // mvMat
+        mvptMat,                       // mvpMat
+        normMat,                       // normMat
+        transCtx.lightMat,             // lightMat
+        lightingCtx.lightPos,          // lightPos
+        lightingCtx.shininess,         // shininess
+        lightingCtx.ambientIntensity,  // ambientIntensity
+        glm::vec3(0.0f),               // ambientColor
+        glm::vec3(0.0f),               // diffuseColor
+        glm::vec3(0.0f),               // specularColor
+        getRenderType(),               // renderType
+        getWireFrameMode(),            // wireFrameMode
+        renderingCtx.wireFrameColor,   // wireFrameColor
+        renderingCtx.wireFrameWidth,   // wireFrameWidth
+        renderingCtx.depthTextureId,   // depthTextureId
+        lightMvptMat,                  // lightMvpMat
+        _isEnabledShadowMapping,       // isEnabledShadowMapping
+        false,                         // disableDepthTest
+        false                          // isEnabledNormalMap
     );
 
     drawGL();

@@ -111,8 +111,11 @@ void AxesCone::initVAO() {
   ObjectLoader::mergeVertices(yConeVertices, yConeIndices, vertices, indices);
   ObjectLoader::mergeVertices(zConeVertices, zConeIndices, vertices, indices);
 
+  // NOTE: Scale object
   // ObjectLoader::scaleObject(vertices, _scale);
-  ObjectLoader::translateObject(vertices, _offsetX, _offsetY, _offsetZ);
+
+  // NOTE: Translate object
+  // ObjectLoader::translateObject(vertices, _offsetX, _offsetY, _offsetZ);
 
   // Create VAO
   glGenVertexArrays(1, &_vaoId);
@@ -153,39 +156,43 @@ void AxesCone::initVAO() {
   glBindVertexArray(0);
 }
 
-void AxesCone::paintGL(const glm::mat4& mvMat,
-                       const glm::mat4& mvpMat,
-                       const glm::mat4& lightMat,
-                       const glm::vec3& lightPos,
-                       const float& shininess,
-                       const float& ambientIntensity,
-                       const glm::vec3& wireFrameColor,
-                       const float& wireFrameWidth,
-                       const GLuint& depthTextureId,
-                       const glm::mat4& lightMvpMat) {
+void AxesCone::paintGL(
+    const TransformationContext& transCtx,  // transCtx
+    const LightingContext& lightingCtx,     // lightingCtx
+    const RenderingContext& renderingCtx    // renderingCtx
+) {
   if (_isVisible) {
-    const glm::mat4& mvtMat = mvMat * glm::translate(_position);
-    const glm::mat4& mvptMat = mvpMat * glm::translate(_position);
+    // Recompute mvp matrices
+    const glm::mat4& modelMat = transCtx.rotMat;
+    const glm::mat4& mvMat = transCtx.viewMat * modelMat;
+    const glm::mat4& mvpMat = transCtx.projMat * mvMat;
+    const glm::mat4& lightMat = mvMat * transCtx.lightTransMat;
+
+    glm::vec4& cameraSpaceCoords = glm::inverse(transCtx.projMat) * POSITION_IN_DEVICE_SPACE;
+    cameraSpaceCoords /= cameraSpaceCoords.w;
+    const glm::vec3& positionInModelSpace = (glm::inverse(mvMat) * cameraSpaceCoords).xyz();
+
+    const glm::mat4& mvtMat = mvMat * glm::translate(positionInModelSpace);
+    const glm::mat4& mvptMat = mvpMat * glm::translate(positionInModelSpace);
     const glm::mat4& normMat = glm::transpose(glm::inverse(mvtMat));
-    const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
 
     bindShader(
         mvtMat,                                              // mvMat
         mvptMat,                                             // mvpMat
         normMat,                                             // normMat
         lightMat,                                            // lightMat
-        lightPos,                                            // lightPos
-        shininess,                                           // shininess
-        ambientIntensity,                                    // ambientIntensity
+        lightingCtx.lightPos,                                // lightPos
+        lightingCtx.shininess,                               // shininess
+        0.4f,                                                // ambientIntensity
         glm::vec3(0.0f),                                     // ambientColor
         glm::vec3(0.0f),                                     // diffuseColor
         glm::vec3(0.0f),                                     // specularColor
         getRenderType(false, Primitive::RenderType::SHADE),  // renderType
         getWireFrameMode(),                                  // wireFrameMode
-        wireFrameColor,                                      // wireFrameColor
-        wireFrameWidth,                                      // wireFrameWidth
-        depthTextureId,                                      // depthTextureId
-        lightMvptMat,                                        // lightMvpMat
+        renderingCtx.wireFrameColor,                         // wireFrameColor
+        renderingCtx.wireFrameWidth,                         // wireFrameWidth
+        renderingCtx.depthTextureId,                         // depthTextureId
+        glm::mat4(0.0f),                                     // lightMvpMat
         false,                                               // isEnabledShadowMapping
         false,                                               // disableDepthTest
         false                                                // isEnabledNormalMap
@@ -209,12 +216,13 @@ void AxesCone::drawGL(const int& index) {
 }
 
 void AxesCone::drawAllGL(const glm::mat4& lightMvpMat) {
-  if (_isVisible && _isEnabledShadowMapping) {
-    const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
-    _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+  // Disabled
+  // if (_isVisible && _isEnabledShadowMapping) {
+  //  const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
+  //  _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
 
-    drawGL();
-  }
+  //  drawGL();
+  //}
 }
 
 }  // namespace model

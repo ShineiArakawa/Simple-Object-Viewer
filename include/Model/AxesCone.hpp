@@ -29,6 +29,8 @@ class AxesCone : public Primitive {
   inline static const float CONE_RADIUS = 0.2f;
   inline static const float CYLINDER_RADIUS = 0.1f;
 
+  inline static const glm::vec4 POSITION_IN_DEVICE_SPACE = glm::vec4(-0.8f, -0.8f, 0.99f, 1.0f);
+
  private:
   // nothing
  protected:
@@ -38,16 +40,11 @@ class AxesCone : public Primitive {
   ~AxesCone();
   void update() override{};
   void initVAO() override;
-  void paintGL(const glm::mat4& mvMat,
-               const glm::mat4& mvpMat,
-               const glm::mat4& lightMat,
-               const glm::vec3& lightPos,
-               const float& shininess,
-               const float& ambientIntensity,
-               const glm::vec3& wireFrameColor,
-               const float& wireFrameWidth,
-               const GLuint& depthTextureId,
-               const glm::mat4& lightMvpMat) override;
+  void paintGL(
+      const TransformationContext& transCtx,  // transCtx
+      const LightingContext& lightingCtx,     // lightingCtx
+      const RenderingContext& renderingCtx    // renderingCtx
+      ) override;
   void drawGL(const int& index = 0) override;
   void drawAllGL(const glm::mat4& lightMvpMat) override;
 

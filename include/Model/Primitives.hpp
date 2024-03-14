@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include <Model/AxisAlignedBoundingBox.hpp>
+#include <Model/RenderingContext.hpp>
 #include <Model/WireFrame.hpp>
 #include <OpenGL.hpp>
 #include <Shader/DefaultShaders.hpp>
@@ -331,16 +332,9 @@ class Primitive {
   virtual void update() = 0;
   virtual void initVAO() = 0;
   virtual void paintGL(
-      const glm::mat4& mvMat,           // mvMat
-      const glm::mat4& mvpMat,          // mvpMat
-      const glm::mat4& lightMat,        // lightMat
-      const glm::vec3& lightPos,        // lightPos
-      const float& shininess,           // shininess
-      const float& ambientIntensity,    // ambientIntensity
-      const glm::vec3& wireFrameColor,  // wireFrameColor
-      const float& wireFrameWidth,      // wireFrameWidth
-      const GLuint& depthTextureId,     // depthTextureId
-      const glm::mat4& lightMvpMat      // lightMvpMat
+      const TransformationContext& transCtx,  // transCtx
+      const LightingContext& lightingCtx,     // lightingCtx
+      const RenderingContext& renderingCtx    // renderingCtx
       ) = 0;
   virtual void drawGL(const int& index) = 0;
   virtual void drawAllGL(const glm::mat4& lightMvpMat) = 0;

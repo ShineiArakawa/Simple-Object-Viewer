@@ -2,10 +2,12 @@
 
 #include <Model/Model.hpp>
 #include <Model/Primitives.hpp>
+#include <Model/RenderingContext.hpp>
 #include <OpenGL.hpp>
 #include <Renderer/DepthRenderer.hpp>
 #include <Renderer/FrameBuffer.hpp>
 #include <fstream>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>

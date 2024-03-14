@@ -2,6 +2,7 @@
 
 #include <Model/Background.hpp>
 #include <Model/Primitives.hpp>
+#include <Model/RenderingContext.hpp>
 #include <OpenGL.hpp>
 #include <Shader/DefaultShaders.hpp>
 #include <Shader/ModelShader.hpp>
@@ -59,9 +60,10 @@ class Model {
  public:
   virtual ~Model();
   virtual void initVAO() = 0;
-  virtual void paintGL(const glm::mat4 &mvMat, const glm::mat4 &mvpMat,
-                       const glm::mat4 &lightMat, const glm::mat4 &lightMvpMat,
-                       const GLuint &depthMapId) = 0;
+  virtual void paintGL(
+      const TransformationContext &transCtx,  // transCtx
+      const GLuint &depthMapId                // depthMapId
+      ) = 0;
   virtual void tick(float time) = 0;
 
   void drawGL(const glm::mat4 &lightMvpMat) {

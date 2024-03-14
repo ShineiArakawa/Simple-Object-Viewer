@@ -32,28 +32,30 @@ void ViewerModel::initVAO() {
   }
 }
 
-void ViewerModel::paintGL(const glm::mat4 &mvMat,        // mvMat
-                          const glm::mat4 &mvpMat,       // mvpMat
-                          const glm::mat4 &lightMat,     // lightMat
-                          const glm::mat4 &lightMvpMat,  // lightMvpMat
-                          const GLuint &depthMapId       // depthMapId
+void ViewerModel::paintGL(
+    const TransformationContext &transCtx,  // transCtx
+    const GLuint &depthMapId                // depthMapId
 ) {
+  const glm::vec3 &lightPosition = _lightPosition.xyz();
+
+  const model::LightingContext lightingCtx(
+      lightPosition,     // lightPos
+      _shininess,        // shininess
+      _ambientIntensity  // ambientIntensity
+  );
+
+  const model::RenderingContext renderingCtx(
+      _wireFrameColor,  // wireFrameColor
+      _wireFrameWidth,  // wireFrameWidth
+      depthMapId        // depthTextureId
+  );
+
   // ================================================================================================
   // Draw static objects first
   // ================================================================================================
   if (_backgroundIDtoDraw >= 0 && _backgroundIDtoDraw < _backgrounds->size()) {
     getBackground(_backgroundIDtoDraw)->update();
-    getBackground(_backgroundIDtoDraw)->paintGL(mvMat,                 // mvMat
-                                                mvpMat,                // mvpMat
-                                                lightMat,              // lightMat
-                                                _lightPosition.xyz(),  // lightPos
-                                                _shininess,            // shininess
-                                                _ambientIntensity,     // ambientIntensity
-                                                _wireFrameColor,       // wireFrameColor
-                                                _wireFrameWidth,       // wireFrameWidth
-                                                depthMapId,            // depthTextureId
-                                                lightMvpMat            // lightMvpMat
-    );
+    getBackground(_backgroundIDtoDraw)->paintGL(transCtx, lightingCtx, renderingCtx);
   }
 
   // ================================================================================================
@@ -62,18 +64,7 @@ void ViewerModel::paintGL(const glm::mat4 &mvMat,        // mvMat
   const int &nObjects = getNumObjects();
   for (int iModel = 0; iModel < nObjects; ++iModel) {
     getObject(iModel)->update();
-    getObject(iModel)->paintGL(
-        mvMat,                 // mvMat
-        mvpMat,                // mvpMat
-        lightMat,              // lightMat
-        _lightPosition.xyz(),  // lightPos
-        _shininess,            // shininess
-        _ambientIntensity,     // ambientIntensity
-        _wireFrameColor,       // wireFrameColor
-        _wireFrameWidth,       // wireFrameWidth
-        depthMapId,            // depthTextureId
-        lightMvpMat            // lightMvpMat
-    );
+    getObject(iModel)->paintGL(transCtx, lightingCtx, renderingCtx);
   }
 }
 

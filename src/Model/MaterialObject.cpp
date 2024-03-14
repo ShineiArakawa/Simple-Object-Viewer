@@ -93,21 +93,16 @@ void MaterialObject::initVAO() {
   }
 }
 
-void MaterialObject::paintGL(const glm::mat4& mvMat,
-                             const glm::mat4& mvpMat,
-                             const glm::mat4& lightMat,
-                             const glm::vec3& lightPos,
-                             const float& shininess,
-                             const float& ambientIntensity,
-                             const glm::vec3& wireFrameColor,
-                             const float& wireFrameWidth,
-                             const GLuint& depthTextureId,
-                             const glm::mat4& lightMvpMat) {
+void MaterialObject::paintGL(
+    const TransformationContext& transCtx,  // transCtx
+    const LightingContext& lightingCtx,     // lightingCtx
+    const RenderingContext& renderingCtx    // renderingCtx
+) {
   if (_isVisible) {
-    const glm::mat4& mvtMat = mvMat * glm::translate(_position);
-    const glm::mat4& mvptMat = mvpMat * glm::translate(_position);
+    const glm::mat4& mvtMat = transCtx.mvMat * glm::translate(_position);
+    const glm::mat4& mvptMat = transCtx.mvpMat * glm::translate(_position);
     const glm::mat4& normMat = glm::transpose(glm::inverse(mvtMat));
-    const glm::mat4& lightMvptMat = lightMvpMat * glm::translate(_position);
+    const glm::mat4& lightMvptMat = transCtx.lightMvpMat * glm::translate(_position);
 
     for (int iObject = 0; iObject < (int)_materialObjectBuffers->size(); ++iObject) {
       const MaterialObjectBuffer_t& object = (*_materialObjectBuffers)[iObject];
@@ -118,18 +113,18 @@ void MaterialObject::paintGL(const glm::mat4& mvMat,
             mvtMat,                                            // mvMat
             mvptMat,                                           // mvpMat
             normMat,                                           // normMat
-            lightMat,                                          // lightMat
-            lightPos,                                          // lightPos
+            transCtx.lightMat,                                 // lightMat
+            lightingCtx.lightPos,                              // lightPos
             object->materialGroup->shininess,                  // shininess
-            ambientIntensity,                                  // ambientIntensity
+            lightingCtx.ambientIntensity,                      // ambientIntensity
             object->materialGroup->ambientColor,               // ambientColor
             object->materialGroup->diffuseColor,               // diffuseColor
             object->materialGroup->specularColor,              // specularColor
             getRenderType(),                                   // renderType
             getWireFrameMode(),                                // wireFrameMode
-            wireFrameColor,                                    // wireFrameColor
-            wireFrameWidth,                                    // wireFrameWidth
-            depthTextureId,                                    // depthTextureId
+            renderingCtx.wireFrameColor,                       // wireFrameColor
+            renderingCtx.wireFrameWidth,                       // wireFrameWidth
+            renderingCtx.depthTextureId,                       // depthTextureId
             lightMvptMat,                                      // lightMvpMat
             _isEnabledShadowMapping,                           // isEnabledShadowMapping
             false,                                             // disableDepthTest
