@@ -6,16 +6,34 @@ namespace window {
 using namespace model;
 using namespace util;
 
-ObjectAddFileDialog::ObjectAddFileDialog(ViewerModel_t model) : _model(model) {
-  _objectTypes = ""s;
-  _objectTypes += Object::KEY_MODEL_OBJECT + "\0"s;
-  _objectTypes += Box::KEY_MODEL_BOX + "\0"s;
-  _objectTypes += Terrain::KEY_MODEL_TERRAIN + "\0"s;
-  _objectTypes += Background::KEY_MODEL_BACKGROUND + "\0"s;
-  _objectTypes += Sphere::KEY_MODEL_SPHERE + "\0"s;
-  _objectTypes += PointCloudPoly::KEY_MODEL_POINT_CLOUD_POLY + "\0"s;
-  _objectTypes += PointCloud::KEY_MODEL_POINT_CLOUD + "\0"s;
-  _objectTypes += MaterialObject::KEY_MODEL_MATERIAL_OBJECT + "\0"s;
+ObjectAddFileDialog::ObjectAddFileDialog(ViewerModel_t model)
+    : _model(model),
+      _message(),
+      _errorMessage(),
+      _readableExtensions() {
+  {
+    // Update loadable primitive types
+    _objectTypes = ""s;
+    _objectTypes += Object::KEY_MODEL_OBJECT + "\0"s;
+    _objectTypes += Box::KEY_MODEL_BOX + "\0"s;
+    _objectTypes += Terrain::KEY_MODEL_TERRAIN + "\0"s;
+    _objectTypes += Background::KEY_MODEL_BACKGROUND + "\0"s;
+    _objectTypes += Sphere::KEY_MODEL_SPHERE + "\0"s;
+    _objectTypes += PointCloudPoly::KEY_MODEL_POINT_CLOUD_POLY + "\0"s;
+    _objectTypes += PointCloud::KEY_MODEL_POINT_CLOUD + "\0"s;
+    _objectTypes += MaterialObject::KEY_MODEL_MATERIAL_OBJECT + "\0"s;
+  }
+
+  {
+    // Update loadable object file extensions
+    const auto extensionList = ObjectLoader::getReadableExtensionList();
+    for (int iExtension = 0; iExtension < extensionList.size(); ++iExtension) {
+      _readableExtensions += extensionList[iExtension];
+      if (iExtension != extensionList.size() - 1) {
+        _readableExtensions += ",";
+      }
+    }
+  }
 }
 
 ObjectAddFileDialog::~ObjectAddFileDialog() {}
@@ -52,7 +70,7 @@ void ObjectAddFileDialog::paint() {
     ImGui::SameLine();
     if (ImGui::Button("Browse Obj")) {
       nfdchar_t* outPath;
-      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj,stl,fbx,msh,pch"}};
+      nfdfilteritem_t filterItem[1] = {{"Mesh", _readableExtensions.c_str()}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
 
       if (result == NFD_OKAY) {

@@ -8,6 +8,42 @@
 namespace simview {
 namespace util {
 
+std::vector<std::string> ObjectLoader::getReadableExtensionList() {
+  std::vector<std::string> extensionList;
+
+  // Native support
+  extensionList.push_back("msh");
+
+  // Native support
+  extensionList.push_back("pch");
+
+#if defined(USE_ASSIMP)
+  std::string strExtensions;
+
+  {
+    Assimp::Importer importer;
+    importer.GetExtensionList(strExtensions);
+  }
+
+  // Remove '*'
+  strExtensions = StringUtil::remove(strExtensions, '*');
+
+  // Separate by ';'
+  std::vector<std::string> &tmpExtensions = StringUtil::splitText(strExtensions, ';');
+
+  for (std::string extension : tmpExtensions) {
+    // Remove '.' at head
+    extension.erase(extension.begin());
+    extensionList.push_back(extension);
+  }
+#else
+  // Native support
+  extensionList.push_back("obj");
+#endif
+
+  return extensionList;
+}
+
 void ObjectLoader::readFromFile(const std::string &filePath,
                                 VertexArray_t vertices,
                                 IndexArray_t indices,
@@ -20,21 +56,14 @@ void ObjectLoader::readFromFile(const std::string &filePath,
 
   const auto startTime = std::chrono::system_clock::now();
 
-#if defined(USE_ASSIMP)
-  if (extension == ".obj" || extension == ".stl" || extension == ".fbx" || extension == ".3ds") {
-#else
-  if (extension == ".obj") {
-#endif
-    readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
-  } else if (extension == ".msh") {
+  if (extension == ".msh") {
     readMshFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else if (extension == ".pch") {
     readPchFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else if (extension == ".las") {
     readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else {
-    LOG_ERROR("Unsupprted file type: " + filePath);
-    return;
+    readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   }
 
   const auto endTime = std::chrono::system_clock::now();
@@ -208,7 +237,6 @@ void ObjectLoader::readMshFile(const std::string &filePath,
 
   if (ifstream) {
     std::string buffer;
-    std::vector<std::string> tokens;
 
     // =========================================================================================
     // Read elements
@@ -223,7 +251,7 @@ void ObjectLoader::readMshFile(const std::string &filePath,
 
     for (int iElement = 0; iElement < nElements; ++iElement) {
       std::getline(ifstream, buffer);
-      splitText(buffer, ' ', tokens);
+      std::vector<std::string> &tokens = StringUtil::splitText(buffer, ' ');
 
       const int offset = 10 * iElement;
 
@@ -253,7 +281,7 @@ void ObjectLoader::readMshFile(const std::string &filePath,
 
     for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
       std::getline(ifstream, buffer);
-      splitText(buffer, ' ', tokens);
+      std::vector<std::string> &tokens = StringUtil::splitText(buffer, ' ');
 
       const int offset = 3 * iVertex;
 
@@ -416,7 +444,6 @@ void ObjectLoader::readPchFile(const std::string &filePath,
 
   if (ifstream) {
     std::string buffer;
-    std::vector<std::string> tokens;
 
     // =========================================================================================
     // Read vertex coords
@@ -431,7 +458,7 @@ void ObjectLoader::readPchFile(const std::string &filePath,
 
     for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
       std::getline(ifstream, buffer);
-      splitText(buffer, ' ', tokens);
+      std::vector<std::string> &tokens = StringUtil::splitText(buffer, ' ');
 
       const int offset = 3 * iVertex;
 
@@ -454,7 +481,7 @@ void ObjectLoader::readPchFile(const std::string &filePath,
 
     for (int iElement = 0; iElement < nElements; ++iElement) {
       std::getline(ifstream, buffer);
-      splitText(buffer, ' ', tokens);
+      std::vector<std::string> &tokens = StringUtil::splitText(buffer, ' ');
 
       const int offset = 3 * iElement;
 
@@ -1159,20 +1186,6 @@ std::pair<glm::vec3, glm::vec3> ObjectLoader::getCorners(VertexArray_t vertices)
   }
 
   return {std::move(minCoords), std::move(maxCoords)};
-}
-
-void ObjectLoader::splitText(const std::string &s,
-                             const char delim,
-                             std::vector<std::string> &tokens) {
-  tokens.clear();
-  std::stringstream ss(s);
-  std::string item;
-
-  while (getline(ss, item, delim)) {
-    if (!item.empty() && item != "null") {
-      tokens.push_back(item);
-    }
-  }
 }
 
 }  // namespace util

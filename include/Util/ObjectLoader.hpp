@@ -5,6 +5,7 @@
 #include <Util/FileUtil.hpp>
 #include <Util/Geometry.hpp>
 #include <Util/Logging.hpp>
+#include <Util/StringUtil.hpp>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -31,6 +32,7 @@ class ObjectLoader {
   // Nothing
 
  public:
+  static std::vector<std::string> getReadableExtensionList();
   static void readFromFile(const std::string& filePath,
                            VertexArray_t vertices,
                            IndexArray_t indices,
@@ -88,9 +90,6 @@ class ObjectLoader {
                             VertexArray_t& distVertices,
                             IndexArray_t& distIndices);
   static std::pair<glm::vec3, glm::vec3> getCorners(VertexArray_t vertices);
-  static void splitText(const std::string& s,
-                        const char delim,
-                        std::vector<std::string>& tokens);
 };
 
 }  // namespace util

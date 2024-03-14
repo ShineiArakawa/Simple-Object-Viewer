@@ -13,6 +13,7 @@
 #include <Model/Terrain.hpp>
 #include <Model/ViewerModel.hpp>
 #include <OpenGL.hpp>
+#include <Util/ObjectLoader.hpp>
 #include <Window/ImGuiSceneView.hpp>
 #include <map>
 #include <memory>
@@ -34,6 +35,7 @@ class ObjectAddFileDialog {
   model::ViewerModel_t _model;
   std::string _message = "";
   std::string _errorMessage = "";
+  std::string _readableExtensions;
 
  public:
   ObjectAddFileDialog(model::ViewerModel_t);
