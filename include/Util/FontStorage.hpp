@@ -6459,7 +6459,7 @@ inline unsigned char* vectorToPointer(const Bitmap_t bitmap) {
   return const_cast<unsigned char*>(bitmap->data());
 }
 
-class TTFFontRegistory {
+class TTFFontRegistry {
  private:
   inline static const unsigned long ASCII_MAX_NUM_CHARS = 128;
 
@@ -6498,9 +6498,9 @@ class TTFFontRegistory {
   }
 
  public:
-  TTFFontRegistory(const unsigned int* ttfFontData,
-                   const unsigned int ttfFontDataSize,
-                   const unsigned int pixelSize = 16)
+  TTFFontRegistry(const unsigned int* ttfFontData,
+                  const unsigned int ttfFontDataSize,
+                  const unsigned int pixelSize = 16)
       : _library(),
         _face(),
         _bitmaps(),
@@ -6600,7 +6600,7 @@ class TTFFontRegistory {
     }
   }
 
-  ~TTFFontRegistory() {
+  ~TTFFontRegistry() {
     FT_Done_Face(_face);
     FT_Done_FreeType(_library);
   }

@@ -19,6 +19,7 @@ add_library(
   "AxisAlignedBoundingBox.cpp"
   "GridPlane.cpp"
   "WireFrame.cpp"
+  "TextBox.cpp"
 )
 
 # =========================================================

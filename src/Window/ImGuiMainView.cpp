@@ -128,7 +128,7 @@ void ImGuiMainView::paintSideBar() {
     // ========================================================================================
     if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
       // Render type
-      ImGui::Combo("Render Type", &_renderTypeID, RENDER_TYPE_ITEMS);
+      ImGui::Combo("Render type", &_renderTypeID, RENDER_TYPE_ITEMS);
       _sceneModel->setRenderType(static_cast<Primitive::RenderType>(_renderTypeID));
 
       // Mask mode
@@ -138,7 +138,7 @@ void ImGuiMainView::paintSideBar() {
       // Background color
       const auto& arrayBackgroundRGBA = _sceneModel->getBackgroundColor();
       float backgroundRGBA[4] = {arrayBackgroundRGBA.x, arrayBackgroundRGBA.y, arrayBackgroundRGBA.z, arrayBackgroundRGBA.w};
-      ImGui::ColorEdit4("Background Color", &backgroundRGBA[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+      ImGui::ColorEdit4("Background color", &backgroundRGBA[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
       _sceneModel->setBackgroundColor(backgroundRGBA[0], backgroundRGBA[1], backgroundRGBA[2], backgroundRGBA[3]);
 
       // Axes cone
@@ -154,22 +154,22 @@ void ImGuiMainView::paintSideBar() {
       // Wire frame mode
       static int wireFrameMode;
       static const char* wireFrameModeItems = "OFF\0ON\0Wire frame only\0";
-      ImGui::Combo("Wire Frame", &wireFrameMode, wireFrameModeItems);
+      ImGui::Combo("Wire frame", &wireFrameMode, wireFrameModeItems);
       _sceneModel->setWireFrameMode(static_cast<Primitive::WireFrameMode>(wireFrameMode));
 
       // Wire frame width
       float wireFrameWidth = _sceneModel->getWireFrameWidth();
-      ImGui::DragFloat("Wire Frame Width", &wireFrameWidth, 0.001f, 0.0f, 0.1f, FLOAT_FORMAT);
+      ImGui::DragFloat("Wire frame width", &wireFrameWidth, 0.001f, 0.0f, 0.1f, FLOAT_FORMAT);
       _sceneModel->setWireFrameWidth(wireFrameWidth);
 
       // Wire frame color
       const auto& arrayWireFrameColor = _sceneModel->getWireFrameColor();
       float wireFrameColor[3] = {arrayWireFrameColor.x, arrayWireFrameColor.y, arrayWireFrameColor.z};
-      ImGui::ColorEdit3("Wire Frame Color", &wireFrameColor[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+      ImGui::ColorEdit3("Wire frame color", &wireFrameColor[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
       _sceneModel->setWireFrameColor(wireFrameColor[0], wireFrameColor[1], wireFrameColor[2]);
 
       // Bump map
-      ImGui::Checkbox("Bunm map", &_sceneView->isEnabledNormalMap);
+      ImGui::Checkbox("Bump map", &_sceneView->isEnabledNormalMap);
       _sceneModel->setIsEnabledNormalMap(_sceneView->isEnabledNormalMap);
 
       // Shadow mapping
@@ -186,22 +186,22 @@ void ImGuiMainView::paintSideBar() {
     // ========================================================================================
     if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen)) {
       // Rotation Angle
-      ImGui::DragFloat("Rotation Angle", &_sceneView->rotateAnimationAngle, 0.1f, 0.0f, 360.0f, FLOAT_FORMAT);
+      ImGui::DragFloat("Rotation angle", &_sceneView->rotateAnimationAngle, 0.1f, 0.0f, 360.0f, FLOAT_FORMAT);
 
       // Rotation mode
-      ImGui::Checkbox("Rotate Model", &_sceneView->enabledModelRotationMode);
+      ImGui::Checkbox("Rotate model", &_sceneView->enabledModelRotationMode);
 
       // Rotation mode
-      ImGui::Checkbox("Rotate Light", &_sceneView->enabledLightRotationMode);
+      ImGui::Checkbox("Rotate light", &_sceneView->enabledLightRotationMode);
 
       // Home Camera position
-      if (ImGui::Button("Reset Camera Pose")) {
+      if (ImGui::Button("Reset camera pose")) {
         _sceneView->resetCameraPose();
       }
 
       // Home Light position
       ImGui::SameLine();
-      if (ImGui::Button("Reset Light Pose")) {
+      if (ImGui::Button("Reset light pose")) {
         _sceneView->resetLightPose();
       }
     }
@@ -231,8 +231,8 @@ void ImGuiMainView::paintSideBar() {
     // Objects section
     // ========================================================================================
     if (ImGui::CollapsingHeader("Objects", ImGuiTreeNodeFlags_DefaultOpen)) {
-      ImGui::SeparatorText("Registered Objects");
-      if (ImGui::BeginTable("##Registered Objects", 4, ImGuiTableFlags_Borders)) {
+      ImGui::SeparatorText("Registered objects");
+      if (ImGui::BeginTable("##Registered objects", 4, ImGuiTableFlags_Borders)) {
         ImGui::TableSetupColumn("Name");
         ImGui::TableSetupColumn("Type");
         ImGui::TableSetupColumn("Visible");

@@ -60,6 +60,7 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
       "Model/MaterialObject.cpp"
       "Model/WireFrame.cpp"
       "Model/GridPlane.cpp"
+      "Model/TextBox.cpp"
       "Renderer/Renderer.cpp"
       "Renderer/DepthRenderer.cpp"
       "Renderer/FrameBuffer.cpp"

@@ -11,6 +11,7 @@
 #include <Model/PointCloudPoly.hpp>
 #include <Model/Sphere.hpp>
 #include <Model/Terrain.hpp>
+#include <Model/TextBox.hpp>
 #include <Model/ViewerModel.hpp>
 #include <OpenGL.hpp>
 #include <Util/ObjectLoader.hpp>

@@ -19,6 +19,11 @@ class Texture {
   using TextureArray = std::shared_ptr<InnerTextureArray>;
 
   static void loadTexture(const std::string& filePath, GLuint& texID);
+  static void loadTexture(const unsigned char* bytes,
+                          const int& width,
+                          const int& height,
+                          const int& channels,
+                          GLuint& texID);
   static void readTexture(const std::string& filePath, Texture::TextureArray texture);
 };
 

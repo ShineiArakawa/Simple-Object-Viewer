@@ -22,6 +22,7 @@ ImGuiObjectAddPanel::ImGuiObjectAddPanel(ViewerModel_t model)
     _objectTypes += PointCloudPoly::KEY_MODEL_POINT_CLOUD_POLY + "\0"s;
     _objectTypes += PointCloud::KEY_MODEL_POINT_CLOUD + "\0"s;
     _objectTypes += MaterialObject::KEY_MODEL_MATERIAL_OBJECT + "\0"s;
+    _objectTypes += TextBox::KEY_MODEL_TEXT_BOX + "\0"s;
   }
 
   {
@@ -52,6 +53,9 @@ void ImGuiObjectAddPanel::paint() {
   static int nDivs = 100;
   static float pointSize = 0.01f;
   static bool isDoubled = true;
+  static char text[256] = "Hello, world!";
+  static int fontPixelSize = 512;
+  static int fontPadding = 16;
 
   ImGui::Text("Step 1. Select the object type");
   ImGui::Combo("Object Type", &objectTypeID, _objectTypes.c_str());
@@ -64,11 +68,11 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Object
     // ====================================================================
-    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Obj name", objName, 256);
 
     ImGui::InputText("Obj file path", objFilePath, 256);
     ImGui::SameLine();
-    if (ImGui::Button("Browse Obj")) {
+    if (ImGui::Button("Browse obj")) {
       nfdchar_t* outPath;
       nfdfilteritem_t filterItem[1] = {{"Mesh", _readableExtensions.c_str()}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
@@ -80,7 +84,7 @@ void ImGuiObjectAddPanel::paint() {
 
     ImGui::InputText("Texture file path", textureFilePath, 256);
     ImGui::SameLine();
-    if (ImGui::Button("Browse Texture")) {
+    if (ImGui::Button("Browse texture")) {
       nfdchar_t* outPath;
       nfdfilteritem_t filterItem[1] = {{"Texture", "png,jpg"}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
@@ -92,7 +96,7 @@ void ImGuiObjectAddPanel::paint() {
 
     ImGui::InputText("Normal map file path", normalMapFilePath, 256);
     ImGui::SameLine();
-    if (ImGui::Button("Browse Normal Map")) {
+    if (ImGui::Button("Browse normal map")) {
       nfdchar_t* outPath;
       nfdfilteritem_t filterItem[1] = {{"Normal map", "png,jpg"}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
@@ -109,13 +113,13 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Box
     // ====================================================================
-    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Obj name", objName, 256);
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);
 
     ImGui::InputText("Texture file path", textureFilePath, 256);
     ImGui::SameLine();
-    if (ImGui::Button("Browse Texture")) {
+    if (ImGui::Button("Browse texture")) {
       nfdchar_t* outPath;
       nfdfilteritem_t filterItem[1] = {{"Texture", "png,jpg"}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
@@ -128,10 +132,10 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Terrain
     // ====================================================================
-    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Obj name", objName, 256);
     ImGui::InputText("Height map file path", heightMapFilePath, 256);
     ImGui::SameLine();
-    if (ImGui::Button("Browse Obj")) {
+    if (ImGui::Button("Browse obj")) {
       nfdchar_t* outPath;
       nfdfilteritem_t filterItem[1] = {{"Height map", "png,jpg"}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
@@ -146,7 +150,7 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Background
     // ====================================================================
-    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Obj name", objName, 256);
     ImGui::InputText("Texture file path", textureFilePath, 256);
     ImGui::SameLine();
     if (ImGui::Button("Browse texture")) {
@@ -162,7 +166,7 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Sphere
     // ====================================================================
-    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Obj name", objName, 256);
     ImGui::InputInt("Num divisions", &nDivs);
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);
@@ -171,7 +175,7 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Point cloud with polygon
     // ====================================================================
-    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Obj name", objName, 256);
     ImGui::InputText("Point cloud file path", objFilePath, 256);
     ImGui::SameLine();
     if (ImGui::Button("Browse object file")) {
@@ -191,7 +195,7 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Point cloud
     // ====================================================================
-    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Obj name", objName, 256);
     ImGui::InputText("Point cloud file path", objFilePath, 256);
     ImGui::SameLine();
     if (ImGui::Button("Browse object file")) {
@@ -210,7 +214,7 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Materialed object
     // ====================================================================
-    ImGui::InputText("Obj Name", objName, 256);
+    ImGui::InputText("Obj name", objName, 256);
     ImGui::InputText("Obj file path", objFilePath, 256);
     ImGui::SameLine();
     if (ImGui::Button("Browse Obj")) {
@@ -225,6 +229,14 @@ void ImGuiObjectAddPanel::paint() {
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);
     ImGui::InputFloat("Scale", &scale);
+  } else if (objectTypeID == 8) {
+    // ====================================================================
+    // Text box
+    // ====================================================================
+    ImGui::InputText("Obj name", objName, 256);
+    ImGui::InputText("Text", text, 256);
+    ImGui::InputInt("Font pixel size", &fontPixelSize);
+    ImGui::InputInt("Font padding", &fontPadding);
   }
 
   // ========================================================================================================================
@@ -341,6 +353,11 @@ void ImGuiObjectAddPanel::paint() {
         newObject = std::make_shared<MaterialObject>(strObjFilePath,
                                                      glm::vec3(offsetXYZ[0], offsetXYZ[1], offsetXYZ[2]),
                                                      glm::vec3(scaleXYZ[0] * scale, scaleXYZ[1] * scale, scaleXYZ[2] * scale));
+      } else if (objectTypeID == 8) {
+        // ====================================================================
+        // Text box
+        // ====================================================================
+        newObject = std::make_shared<TextBox>(text, fontPixelSize, fontPadding);
       }
 
       if (newObject != nullptr) {

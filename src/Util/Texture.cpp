@@ -13,9 +13,32 @@ void Texture::loadTexture(const std::string& filePath, GLuint& texID) {
     return;
   }
 
+  loadTexture(bytesTexture, texWidth, texHeight, channels, texID);
+
+  stb::api_stbi_image_free(bytesTexture);
+
+  LOG_INFO("Loaded texture from " + filePath);
+}
+
+void Texture::loadTexture(const unsigned char* bytes,
+                          const int& width,
+                          const int& height,
+                          const int& channels,
+                          GLuint& texID) {
+  GLint internalFormat = -1;
+  GLenum format = -1;
+
+  if (channels == 1) {
+    internalFormat = GL_R8;
+    format = GL_RED;
+  } else {
+    internalFormat = GL_RGBA8;
+    format = GL_RGBA;
+  }
+
   glGenTextures(1, &texID);
   glBindTexture(GL_TEXTURE_2D, texID);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texWidth, texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytesTexture);
+  glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, bytes);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -24,10 +47,6 @@ void Texture::loadTexture(const std::string& filePath, GLuint& texID) {
   glGenerateMipmap(GL_TEXTURE_2D);
 
   glBindTexture(GL_TEXTURE_2D, 0);
-
-  stb::api_stbi_image_free(bytesTexture);
-
-  LOG_INFO("Loaded texture from " + filePath);
 }
 
 void Texture::readTexture(const std::string& filePath, Texture::TextureArray texture) {
