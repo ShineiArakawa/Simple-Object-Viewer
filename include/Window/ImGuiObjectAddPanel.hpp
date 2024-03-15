@@ -25,7 +25,7 @@ namespace window {
 
 using namespace std::string_literals;
 
-class ObjectAddFileDialog {
+class ImGuiObjectAddPanel {
  private:
   inline static const char* FLOAT_FORMAT = "%.6f";
 
@@ -38,13 +38,13 @@ class ObjectAddFileDialog {
   std::string _readableExtensions;
 
  public:
-  ObjectAddFileDialog(model::ViewerModel_t);
-  ~ObjectAddFileDialog();
+  ImGuiObjectAddPanel(model::ViewerModel_t);
+  ~ImGuiObjectAddPanel();
 
   void paint();
 };
 
-using ObjectAddFileDialog_t = std::shared_ptr<ObjectAddFileDialog>;
+using ObjectAddFileDialog_t = std::shared_ptr<ImGuiObjectAddPanel>;
 
 }  // namespace window
 }  // namespace simview

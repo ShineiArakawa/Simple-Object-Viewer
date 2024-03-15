@@ -76,7 +76,8 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
       "Window/Window.cpp"
       "Window/ImGuiSceneView.cpp"
       "Window/ImGuiMainView.cpp"
-      "Window/ObjectAddPopup.cpp"
+      "Window/ImGuiObjectAddPanel.cpp"
+      "Window/ImGuiFontManager.cpp"
       ${IMGUI_SOURCE_FILES}
     )
 

@@ -1,4 +1,4 @@
-#include <Window/ObjectAddPopup.hpp>
+#include <Window/ImGuiObjectAddPanel.hpp>
 
 namespace simview {
 namespace window {
@@ -6,7 +6,7 @@ namespace window {
 using namespace model;
 using namespace util;
 
-ObjectAddFileDialog::ObjectAddFileDialog(ViewerModel_t model)
+ImGuiObjectAddPanel::ImGuiObjectAddPanel(ViewerModel_t model)
     : _model(model),
       _message(),
       _errorMessage(),
@@ -36,9 +36,9 @@ ObjectAddFileDialog::ObjectAddFileDialog(ViewerModel_t model)
   }
 }
 
-ObjectAddFileDialog::~ObjectAddFileDialog() {}
+ImGuiObjectAddPanel::~ImGuiObjectAddPanel() {}
 
-void ObjectAddFileDialog::paint() {
+void ImGuiObjectAddPanel::paint() {
   static int objectTypeID = 0;
   static char objName[256];
   static char objFilePath[256];

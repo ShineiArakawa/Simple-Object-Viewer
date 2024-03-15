@@ -6,8 +6,9 @@
 #include <Model/ViewerModel.hpp>
 #include <OpenGL.hpp>
 #include <Renderer/Renderer.hpp>
+#include <Util/FontStorage.hpp>
+#include <Window/ImGuiObjectAddPanel.hpp>
 #include <Window/ImGuiSceneView.hpp>
-#include <Window/ObjectAddPopup.hpp>
 #include <iostream>
 #include <memory>
 #include <string>

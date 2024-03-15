@@ -42,7 +42,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
   // ====================================================================
   // Initialize popup
   // ====================================================================
-  _objectAddDialog = std::make_shared<ObjectAddFileDialog>(_sceneModel);
+  _objectAddDialog = std::make_shared<ImGuiObjectAddPanel>(_sceneModel);
 
   // ====================================================================
   // Initialize ImGui
@@ -55,6 +55,14 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
   _io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   _io->ConfigWindowsMoveFromTitleBarOnly = true;
   _io->IniFilename = nullptr;
+
+  {
+    // Set Roboto font
+    _io->Fonts->AddFontFromMemoryTTF((unsigned int*)util::fonts::RobotoMedium_data,
+                                     util::fonts::RobotoMedium_size,
+                                     16.0f);
+    _io->Fonts->Build();
+  }
 
   ImGui::StyleColorsDark();
 

@@ -51,9 +51,10 @@
 #include "Util/Texture.hpp"
 
 // Window
+#include "Window/ImGuiFontManager.hpp"
 #include "Window/ImGuiMainView.hpp"
+#include "Window/ImGuiObjectAddPanel.hpp"
 #include "Window/ImGuiSceneView.hpp"
-#include "Window/ObjectAddPopup.hpp"
 #include "Window/Window.hpp"
 
 namespace simview {

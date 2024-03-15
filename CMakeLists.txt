@@ -53,6 +53,9 @@ set(STB_INCLUDE_DIR ${PROJECT_LIB_DIR}/stb)
 # #### tinyobjloader
 set(TINYOBJLOADER_INCLUDE_DIR ${PROJECT_LIB_DIR}/tinyobjloader)
 
+# #### freetype
+set(FREETYPE_INCLUDE_DIR ${PROJECT_LIB_DIR}/freetype/include)
+
 # #### Dear Imgui
 set(IMGUI_INCLUDE_DIR ${PROJECT_LIB_DIR}/imgui)
 set(IMGUI_SOURCE_DIR ${PROJECT_LIB_DIR}/imgui)
@@ -68,6 +71,7 @@ set(
   ${IMGUI_SOURCE_DIR}/imgui_demo.cpp
   ${IMGUI_BACKENDS_DIR}/imgui_impl_glfw.cpp
   ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp
+  ${IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
 )
 
 # #### nativefiledialog-extended
@@ -94,6 +98,7 @@ set(
   ${NFD_INCLUDE_DIR}
   ${SPD_LOG_INCLUDE_DIR}
   ${ASSIMP_INCLUDE_DIR}
+  ${FREETYPE_INCLUDE_DIR}
 )
 
 set(
@@ -102,6 +107,7 @@ set(
   glfw
   nfd
   assimp
+  freetype
 )
 
 set(
