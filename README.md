@@ -21,11 +21,12 @@ All these libraries are registered as submodules.
 - Windows 10 with Microsoft Visual Studio Community 2019 (16.11.21)
 - Ubuntu 22.04 with gcc 11.4.0 compiler
 
-## Build
+## Clone and Build
 
 Run following commands to build source files. The executable binaries will be copied to the `bin` directory.
 
 ```bash
+git clone --recursive https://github.com/ShineiArakawa/Simple-Object-Viewer.git 
 mkdir build && cd build
 cmake ..
 make
