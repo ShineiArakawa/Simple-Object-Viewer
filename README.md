@@ -26,7 +26,11 @@ All these libraries are registered as submodules.
 Run following commands to build source files. The executable binaries will be copied to the `bin` directory.
 
 ```bash
+# Clone
 git clone --recursive https://github.com/ShineiArakawa/Simple-Object-Viewer.git 
+cd Simple-Object-Viewer
+
+# Build
 mkdir build && cd build
 cmake ..
 make
