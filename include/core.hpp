@@ -25,6 +25,7 @@
 #include "Model/Primitives.hpp"
 #include "Model/Sphere.hpp"
 #include "Model/Terrain.hpp"
+#include "Model/TextBox.hpp"
 #include "Model/ViewerModel.hpp"
 
 // Renderer
@@ -42,6 +43,7 @@
 // Utility
 #include "Util/DataStructure.hpp"
 #include "Util/FileUtil.hpp"
+#include "Util/FontStorage.hpp"
 #include "Util/Geometry.hpp"
 #include "Util/Logging.hpp"
 #include "Util/Math.hpp"
