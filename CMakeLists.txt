@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
-project(SimpleObjectViewer CXX)
+
+project(SimpleObjectViewer C CXX)
 
 # #################################################
 # #### Compile Options ############################
@@ -9,13 +10,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE on)
 
 if(MSVC)
-  # set(CMAKE_CXX_FLAGS_RELEASE "/O2")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2")
 elseif(UNIX)
-  set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall")
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -Wall")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D ENABLE_LEAK_CHECK")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D ENABLE_LEAK_CHECK")
+
+# NOTE: In some cases, failed to compile assimp with clang compiler with gcc 12 toolchain.
+# Thus, specify your path to the gcc "11" toolchain by the following option.
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11")
 
 # #################################################
 # #### Envirionment Variables #####################
@@ -110,6 +115,7 @@ set(
   freetype
 )
 
+# This variable is for the library mode
 set(
   SimpleObjectViewer_INCLUDE_DIR
   ${PROJECT_INCLUDE_DIR}
@@ -118,7 +124,6 @@ set(
   STRING
   "All include directories for Simeple Object Viewer library"
 )
-
 
 # #### Set install config
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SimView/" FILES_MATCHING PATTERN "*.hpp")
@@ -143,7 +148,8 @@ message("#    CMAKE_CXX_FLAGS_DEBUG                : ${CMAKE_CXX_FLAGS_DEBUG}")
 message("#    CMAKE_CXX_FLAGS_RELEASE              : ${CMAKE_CXX_FLAGS_RELEASE}")
 message("# ")
 message("#  [C/C++]")
-message("#    C++ Compiler                         : ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} ${CMAKE_CXX_COMPILER_WRAPPER} ${CMAKE_CXX_COMPILER}")
+message("#    C   Compiler                         : ${CMAKE_C_COMPILER_ID} | ${CMAKE_C_COMPILER_VERSION} | ${CMAKE_C_COMPILER}")
+message("#    C++ Compiler                         : ${CMAKE_CXX_COMPILER_ID} | ${CMAKE_CXX_COMPILER_VERSION} | ${CMAKE_CXX_COMPILER}")
 message("#    CXX STANDARD                         : ${CMAKE_CXX_STANDARD}")
 message("# ")
 message("#  [OpenMP]")
@@ -166,8 +172,9 @@ message("#    IMGUI_BACKENDS_DIR                   : ${IMGUI_BACKENDS_DIR}")
 message("#    NFD_INCLUDE_DIR                      : ${NFD_INCLUDE_DIR}")
 message("#    SPD_LOG_INCLUDE_DIR                  : ${SPD_LOG_INCLUDE_DIR}")
 message("#    ASSIMP_INCLUDE_DIR                   : ${ASSIMP_INCLUDE_DIR}")
+message("#    FREETYPE_INCLUDE_DIR                 : ${FREETYPE_INCLUDE_DIR}")
 message("# ")
-message("#    SimpleObjectViewer_INCLUDE_DIR       : ${SimpleObjectViewer_INCLUDE_DIR}")
+message("#    BUILD_SIMVIEW_STATIC_LIBS            : ${BUILD_SIMVIEW_STATIC_LIBS}")
 message("# =======================================================================================================")
 
 
