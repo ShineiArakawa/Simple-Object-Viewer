@@ -19,6 +19,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
       _depthSceneModel(nullptr),
       _objectAddDialog(nullptr),
       _isVisibleSideBar(true),
+      _isVisibleHelpMessage(false),
       moveOn(true) {
   // ====================================================================
   // Initialize scene window
@@ -104,7 +105,7 @@ void ImGuiMainView::paintMenuBar() {
 
     // Window menu
     if (ImGui::BeginMenu("Window")) {
-      if (ImGui::MenuItem("Side bar")) {
+      if (ImGui::MenuItem("Side bar", "Ctrl+S")) {
         _isVisibleSideBar = !_isVisibleSideBar;
       }
       ImGui::EndMenu();
@@ -113,6 +114,16 @@ void ImGuiMainView::paintMenuBar() {
     // Help menu
     if (ImGui::BeginMenu("Help")) {
       if (ImGui::MenuItem("help", "Ctrl+H")) {
+        _isVisibleHelpMessage = !_isVisibleHelpMessage;
+
+        if (_isVisibleHelpMessage) {
+          LOG_INFO("Show help message");
+          auto textBox = std::make_shared<TextBox>(HELP_TEXT, glm::vec2(0.0f, 0.0f), 4.0f, 64);
+          textBox->setName("Help message");
+          _sceneModel->addObject(textBox);
+        } else {
+          _sceneModel->removeObject("Help message");
+        }
       }
       ImGui::EndMenu();
     }

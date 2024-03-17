@@ -6,13 +6,23 @@ namespace model {
 using namespace util;
 using namespace shader;
 
-TextBox::TextBox(const char* text, const int fontPixelsize, const int padding)
-    : _text(text), _padding(padding) {
+TextBox::TextBox(const char* text,
+                 const glm::vec2 position,
+                 const float sizeMagnification,
+                 const int fontPixelsize,
+                 const int padding)
+    : _text(text),
+      _postionInScreenSpace(std::min(1.0f, std::max(-1.0f, position.x)),
+                            std::min(1.0f, std::max(-1.0f, position.y)),
+                            0.99f,
+                            1.0f),
+      _padding(padding),
+      _fontRegistry(std::make_shared<fonts::TTFFontRegistry>(fonts::RobotoMedium_data,
+                                                             fonts::RobotoMedium_size,
+                                                             fontPixelsize,
+                                                             padding)),
+      _sizeMagnification(sizeMagnification) {
   setDefaultRenderType(RenderType::TEXTURE);
-
-  _fontRegistry = std::make_shared<fonts::TTFFontRegistry>(fonts::RobotoMedium_data,
-                                                           fonts::RobotoMedium_size,
-                                                           fontPixelsize);
 }
 
 TextBox::~TextBox() {}
@@ -22,69 +32,24 @@ void TextBox::initVAO() {
   // Generate font texture
   // ============================================================================================================
   // Get bitmaps
-  std::vector<util::fonts::Bitmap_t> vecBitmaps;
-  std::vector<size_t> vecWidths;
+  int width, height;
+  const util::fonts::Bitmap_t bitmap = _fontRegistry->getBitmap(_text, width, height);
 
-  int height;
-  const size_t nChars = strlen(_text);
-  for (size_t iChar = 0; iChar < nChars; ++iChar) {
-    int width;
-    util::fonts::Bitmap_t bitmap = _fontRegistry->getHeightAdjustedBitmap(_text[iChar], width, height);
-    vecBitmaps.push_back(bitmap);
-    vecWidths.push_back(width);
-  }
+  // Copy to RGBD format data
+  unsigned char* bytes = (unsigned char*)malloc(sizeof(unsigned char) * width * height * (size_t)4);
+  const size_t nPixels = (size_t)width * height;
 
-  // Calculate width
-  size_t totalWidth = 0;
-  std::vector<size_t> vecCumsumWidths;
-
-  for (size_t iChar = 0; iChar < nChars; ++iChar) {
-    vecCumsumWidths.push_back(totalWidth);
-    totalWidth += vecWidths[iChar];
-  }
-
-  totalWidth += _padding * (nChars - 1);
-
-  // Allocate
-  unsigned char* bytes = (unsigned char*)malloc(sizeof(unsigned char) * totalWidth * (size_t)height * (size_t)4);
-  const size_t nPixels = totalWidth * (size_t)height;
   for (size_t iPixel = 0; iPixel < nPixels; ++iPixel) {
     const size_t offset = 4 * iPixel;
-    bytes[offset + 0] = 0;
-    bytes[offset + 1] = 0;
-    bytes[offset + 2] = 0;
+    bytes[offset + 0] = bitmap->data[iPixel];
+    bytes[offset + 1] = bitmap->data[iPixel];
+    bytes[offset + 2] = bitmap->data[iPixel];
     bytes[offset + 3] = 255;
   }
 
-  // Copy
-  for (size_t iChar = 0; iChar < nChars; ++iChar) {
-    size_t offsetX = vecCumsumWidths[iChar];
-    if (iChar > 0) {
-      offsetX += _padding * iChar;
-    }
-    const size_t offsetY = 0;
+  const float aspectRatio = (float)width / height;
 
-    const size_t width = vecWidths[iChar];
-
-    unsigned char* iBitmap = util::fonts::vectorToPointer(vecBitmaps[iChar]);
-
-    for (size_t y = 0; y < (size_t)height; ++y) {
-      const size_t indexOffsetY = 4 * (y + offsetY) * totalWidth;
-
-      for (size_t x = 0; x < width; ++x) {
-        const size_t offset = indexOffsetY + 4 * (x + offsetX);
-
-        bytes[offset + 0] = iBitmap[y * width + x];
-        bytes[offset + 1] = iBitmap[y * width + x];
-        bytes[offset + 2] = iBitmap[y * width + x];
-        bytes[offset + 3] = 255;
-      }
-    }
-  }
-
-  const float aspectRatio = (float)totalWidth / height;
-
-  Texture::loadTexture(bytes, totalWidth, height, 4, _textureId);
+  Texture::loadTexture(bytes, width, height, 4, _textureId);
   free(bytes);
 
   // ============================================================================================================
@@ -106,7 +71,9 @@ void TextBox::initVAO() {
     indices->push_back(idx++);
   }
 
-  ObjectLoader::scaleObject(vertices, aspectRatio, 1.0f, 1.0f);
+  ObjectLoader::scaleObject(vertices, aspectRatio * _sizeMagnification, _sizeMagnification, 1.0f);
+  ObjectLoader::rotateObject(vertices, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+  ObjectLoader::rotateObject(vertices, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
   glGenVertexArrays(1, &_vaoId);
   glBindVertexArray(_vaoId);
@@ -146,16 +113,23 @@ void TextBox::paintGL(
     const RenderingContext& renderingCtx    // renderingCtx
 ) {
   if (_isVisible) {
-    const glm::mat4& mvtMat = transCtx.mvMat * glm::translate(_position);
-    const glm::mat4& mvptMat = transCtx.mvpMat * glm::translate(_position);
+    const glm::mat4& mvMat = transCtx.viewMat;  // Indentity model marix
+    const glm::mat4& mvpMat = transCtx.projMat * mvMat;
+    const glm::mat4& lightMat = mvMat * transCtx.lightTransMat;
+
+    glm::vec4 screenSpaceCoords = glm::inverse(transCtx.projMat) * _postionInScreenSpace;
+    screenSpaceCoords /= screenSpaceCoords.w;
+    const glm::vec3& positionInModelSpace = (glm::inverse(mvMat) * screenSpaceCoords).xyz();
+
+    const glm::mat4& mvtMat = mvMat * glm::translate(positionInModelSpace);
+    const glm::mat4& mvptMat = mvpMat * glm::translate(positionInModelSpace);
     const glm::mat4& normMat = glm::transpose(glm::inverse(mvtMat));
-    const glm::mat4& lightMvptMat = transCtx.lightMvpMat * glm::translate(_position);
 
     bindShader(
         mvtMat,                                                // mvMat
         mvptMat,                                               // mvpMat
         normMat,                                               // normMat
-        transCtx.lightMat,                                     // lightMat
+        lightMat,                                              // lightMat
         lightingCtx.lightPos,                                  // lightPos
         lightingCtx.shininess,                                 // shininess
         lightingCtx.ambientIntensity,                          // ambientIntensity
@@ -167,7 +141,7 @@ void TextBox::paintGL(
         renderingCtx.wireFrameColor,                           // wireFrameColor
         renderingCtx.wireFrameWidth,                           // wireFrameWidth
         renderingCtx.depthTextureId,                           // depthTextureId
-        lightMvptMat,                                          // lightMvpMat
+        glm::mat4(0.0f),                                       // lightMvpMat
         false,                                                 // isEnabledShadowMapping
         false,                                                 // disableDepthTest
         false                                                  // isEnabledNormalMap

@@ -54,8 +54,10 @@ void ImGuiObjectAddPanel::paint() {
   static float pointSize = 0.01f;
   static bool isDoubled = true;
   static char text[256] = "Hello, world!";
-  static int fontPixelSize = 512;
+  static int fontPixelSize = 64;
   static int fontPadding = 16;
+  static float screenSpacePos[2] = {0.0f, 0.0f};
+  static float textBoxMag = 1.0f;
 
   ImGui::Text("Step 1. Select the object type");
   ImGui::Combo("Object Type", &objectTypeID, _objectTypes.c_str());
@@ -234,7 +236,9 @@ void ImGuiObjectAddPanel::paint() {
     // Text box
     // ====================================================================
     ImGui::InputText("Obj name", objName, 256);
-    ImGui::InputText("Text", text, 256);
+    ImGui::InputTextMultiline("Text", text, 256);
+    ImGui::InputFloat2("Position (-1.0 < x,y < 1.0)", screenSpacePos, FLOAT_FORMAT);
+    ImGui::DragFloat("Size mag", &textBoxMag, 0.001f, 0.0f, 4.0f, FLOAT_FORMAT);
     ImGui::InputInt("Font pixel size", &fontPixelSize);
     ImGui::InputInt("Font padding", &fontPadding);
   }
@@ -357,7 +361,11 @@ void ImGuiObjectAddPanel::paint() {
         // ====================================================================
         // Text box
         // ====================================================================
-        newObject = std::make_shared<TextBox>(text, fontPixelSize, fontPadding);
+        newObject = std::make_shared<TextBox>(text,
+                                              glm::vec2(screenSpacePos[0], screenSpacePos[1]),
+                                              textBoxMag,
+                                              fontPixelSize,
+                                              fontPadding);
       }
 
       if (newObject != nullptr) {

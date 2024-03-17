@@ -21,8 +21,33 @@ class ImGuiMainView {
   inline static const int SIDEBAR_WIDTH = 700;
   inline static const char* FLOAT_FORMAT = "%.6f";
   inline static const char* RENDER_TYPE_ITEMS = "Normal\0Color\0Texture\0Vertex Normal\0Shading\0Shading with texture\0Material\0";
+  inline static const char* HELP_TEXT =
+      "##### Simple Object Viewer #####\n"
+      "    \n"
+      "    MIT License\n"
+      "    \n"
+      "    Copyright (c) 2024 Shinei Arakawa\n"
+      "    \n"
+      "    Permission is hereby granted, free of charge, to any person obtaining a copy\n"
+      "    of this software and associated documentation files (the \"Software\"), to deal\n"
+      "    in the Software without restriction, including without limitation the rights\n"
+      "    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+      "    copies of the Software, and to permit persons to whom the Software is\n"
+      "    furnished to do so, subject to the following conditions:\n"
+      "    \n"
+      "    The above copyright notice and this permission notice shall be included in all\n"
+      "    copies or substantial portions of the Software.\n"
+      "    \n"
+      "    THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"
+      "    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+      "    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+      "    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+      "    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
+      "    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n"
+      "    SOFTWARE.";
 
   bool _isVisibleSideBar;
+  bool _isVisibleHelpMessage;
 
   float _menuBarHeight;
   bool _isForcusedOnScene;

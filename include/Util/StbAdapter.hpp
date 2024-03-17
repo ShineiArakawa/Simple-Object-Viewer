@@ -13,6 +13,7 @@
 #endif
 
 #include <Util/FileUtil.hpp>
+#include <Util/Logging.hpp>
 #include <iostream>
 #include <string>
 

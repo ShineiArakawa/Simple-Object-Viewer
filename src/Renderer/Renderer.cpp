@@ -23,8 +23,8 @@ Renderer::Renderer(const int* windowWidth,
 Renderer::~Renderer() {}
 
 void Renderer::initModelMatrices() {
-  _projMat = glm::perspective(
-      glm::radians(45.0f),                           // fovy
+  _projMat = perspective(
+      45.0f,                                         // fovy
       (float)*_windowWidth / (float)*_windowHeight,  // aspect
       0.1f,                                          // near
       1000.0f                                        // far
@@ -36,8 +36,8 @@ void Renderer::initModelMatrices() {
 
 void Renderer::initLightMatrices() {
   _lightTrasMat = glm::mat4(1.0);
-  _lightProjMat = glm::perspective(
-      glm::radians(90.0f),                                                               // fovy
+  _lightProjMat = perspective(
+      90.0f,                                                                             // fovy
       (float)_depthRenderer->DEPTH_MAP_WIDTH / (float)_depthRenderer->DEPTH_MAP_HEIGHT,  // aspect
       0.1f,                                                                              // near
       1000.0f                                                                            // far
@@ -133,8 +133,8 @@ void Renderer::resizeGL() {
   const float fWindowHeight = (float)*_windowHeight;
 
   // Update projection matrix
-  _projMat = glm::perspective(
-      glm::radians(45.0f),           // fovy
+  _projMat = perspective(
+      45.0f,                         // fovy
       fWindowWidth / fWindowHeight,  // aspect
       0.1f,                          // near
       1000.0f                        // far
@@ -206,5 +206,33 @@ glm::mat4 Renderer::getLightViewMat(const glm::mat4& modelMat) {
       glm::vec3(0.0f, 0.0f, 1.0f)                                // up
   );
 }
+
+glm::mat4 Renderer::perspective(const float& fovyInDegrees,
+                                const float& aspectRatio,
+                                const float& near,
+                                const float& rear) {
+  const float angle = M_PI * fovyInDegrees / 180.0f;
+
+  float height, width;
+
+  if (aspectRatio > 1.0f) {
+    height = 2.0f * std::tan(angle / 2.0f) * near;
+    width = height * aspectRatio;
+  } else {
+    width = 2.0f * std::tan(angle / 2.0f) * near;
+    height = width / aspectRatio;
+  }
+
+  const float depth = rear - near;
+  return {
+      // clang-format off
+        /* 0*/ 2.0f * near / width, /* 1*/                 0.0f, /* 2*/                        0.0f, /* 3*/  0.0f,
+        /* 4*/                0.0f, /* 5*/ 2.0f * near / height, /* 6*/                        0.0f, /* 7*/  0.0f,
+        /* 8*/                0.0f, /* 9*/                 0.0f, /*10*/      -(rear + near) / depth, /*11*/ -1.0f,
+        /*12*/                0.0f, /*13*/                 0.0f, /*14*/ -2.0f * rear * near / depth, /*15*/  0.0f
+      // clang-format on
+  };
+}
+
 }  // namespace renderer
 }  // namespace simview

@@ -155,9 +155,10 @@ void GridPlane::drawGL(const int& index) {
 }
 
 void GridPlane::drawAllGL(const glm::mat4& lightMvpMat) {
-  if (_isVisible) {
-    drawGL();
-  }
+  // Disabled
+  // if (_isVisible) {
+  //   drawGL();
+  // }
 }
 
 }  // namespace model

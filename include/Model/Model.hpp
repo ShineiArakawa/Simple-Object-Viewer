@@ -106,6 +106,15 @@ class Model {
     }
   }
 
+  void removeObject(const std::string name) {
+    for (int iObject = 0; iObject < (int)_objects->size(); ++iObject) {
+      if ((*_objects)[iObject]->getName() == name) {
+        _objects->erase(_objects->begin() + iObject);
+        return;  // NOTE: erase one objest at most
+      }
+    }
+  }
+
   void removeBackground(const int index) {
     if (index >= 0 && index < getNumBackgrounds()) {
       _backgrounds->erase(_backgrounds->begin() + index);
@@ -127,6 +136,18 @@ class Model {
   Objects_t getObjects() { return _objects; };
 
   Primitive_t getObject(const int index) { return (*_objects)[index]; };
+
+  std::vector<Primitive_t> getObjectByType(const std::string &type) {
+    std::vector<Primitive_t> objects;
+
+    for (const auto &item : *_objects) {
+      if (item->getObjectType() == type) {
+        objects.push_back(item);
+      }
+    }
+
+    return objects;
+  }
 
   int getNumObjects() { return (int)_objects->size(); };
 

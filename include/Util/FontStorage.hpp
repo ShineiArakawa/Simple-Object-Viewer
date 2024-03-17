@@ -4,6 +4,8 @@
 #include FT_FREETYPE_H
 
 #include <Util/Logging.hpp>
+#include <Util/StbAdapter.hpp>
+#include <codecvt>
 
 namespace simview {
 namespace util {
@@ -6446,18 +6448,28 @@ static const unsigned int OpenSansMedium_data[130976/4] =
 };
 // clang-format on
 
-using Bitmap_t = std::shared_ptr<std::vector<unsigned char>>;
-
-inline Bitmap_t genBitmap() {
-  return std::make_shared<std::vector<unsigned char>>();
-}
-
-inline unsigned char* vectorToPointer(const Bitmap_t bitmap) {
-  if (bitmap == nullptr || bitmap->empty()) {
-    return nullptr;
+struct Bitmap {
+  Bitmap(const int& width, const int& height)
+      : data(),
+        width(width),
+        height(height) {
+    data.resize(width * height);
   }
-  return const_cast<unsigned char*>(bitmap->data());
-}
+
+  std::vector<unsigned char> data;
+  int width;
+  int height;
+
+  inline unsigned char* getPointer() const {
+    if (data.empty()) {
+      return nullptr;
+    }
+
+    return const_cast<unsigned char*>(data.data());
+  }
+};
+
+using Bitmap_t = std::shared_ptr<Bitmap>;
 
 class TTFFontRegistry {
  private:
@@ -6465,162 +6477,22 @@ class TTFFontRegistry {
 
   FT_Library _library;
   FT_Face _face;
-
-  std::vector<Bitmap_t> _bitmaps;
-  std::vector<Bitmap_t> _heightAdjustedBitmaps;
-  std::vector<int> _originalWidth;
-  std::vector<int> _originalHeight;
-  int _maxHeight;
+  int _padding;
 
  private:
-  inline void _getBitmap(const unsigned long charactor,
-                         Bitmap_t bytesArray,
-                         int& width,
-                         int& height) const {
-    if (FT_Load_Char(_face, charactor, FT_LOAD_RENDER) == 0) {
-      FT_Bitmap& bitmap = _face->glyph->bitmap;
-      width = bitmap.width;                   // width
-      height = bitmap.rows;                   // height
-      int pitch = bitmap.pitch;               // num bytes per row
-      unsigned char* buffer = bitmap.buffer;  // pixel data
-
-      if (bytesArray != nullptr) {
-        bytesArray->clear();
-        bytesArray->resize(width * height);
-
-        for (int y = 0; y < height; ++y) {
-          for (int x = 0; x < width; ++x) {
-            (*bytesArray)[y * pitch + x] = buffer[y * pitch + x];
-          }
-        }
-      }  // null-check of bytesArray
-    }
-  }
+  static void drawBitmap(const FT_Bitmap& srcBitmap,
+                         const int& cursorX,
+                         const int& cursorY,
+                         Bitmap_t& distBitmap);
 
  public:
   TTFFontRegistry(const unsigned int* ttfFontData,
                   const unsigned int ttfFontDataSize,
-                  const unsigned int pixelSize = 16)
-      : _library(),
-        _face(),
-        _bitmaps(),
-        _heightAdjustedBitmaps(),
-        _originalWidth(),
-        _originalHeight(),
-        _maxHeight() {
-    bool isOK = true;
+                  const unsigned int pixelSize = 64,
+                  const unsigned int padding = 16);
+  ~TTFFontRegistry();
 
-    // =========================================================================
-    // Initialize
-    // =========================================================================
-    if (FT_Init_FreeType(&_library) != 0) {
-      isOK = false;
-    }
-
-    // =========================================================================
-    // Load from memory
-    // =========================================================================
-    if (isOK && FT_New_Memory_Face(_library,                     // FT_Library      library
-                                   (const FT_Byte*)ttfFontData,  // const FT_Byte*  file_base
-                                   ttfFontDataSize,              // FT_Long         file_size
-                                   0,                            // FT_Long         face_index
-                                   &_face                        // FT_Face*        aface
-                                   ) != 0) {
-      isOK = false;
-    }
-
-    // =========================================================================
-    // Set pixel size
-    // =========================================================================
-    if (isOK && FT_Set_Pixel_Sizes(_face,     // FT_Face  face,
-                                   0,         // FT_UInt  pixel_width       If set to 0, the font width will be resized automatically
-                                   pixelSize  // FT_UInt  pixel_height
-                                   ) != 0) {
-      isOK = false;
-    }
-
-    // =========================================================================
-    // Clac max font height
-    // =========================================================================
-    for (unsigned long iChar = 0; iChar < ASCII_MAX_NUM_CHARS; ++iChar) {
-      int width, height;
-      _getBitmap(iChar, nullptr, width, height);
-
-      if (_maxHeight < height) {
-        _maxHeight = height;
-      }
-    }
-
-    // =========================================================================
-    // Load all ascii fonts
-    // =========================================================================
-    for (unsigned long iChar = 0; iChar < ASCII_MAX_NUM_CHARS; ++iChar) {
-      int width, height;
-      Bitmap_t bitmap = genBitmap();
-
-      _getBitmap(iChar, bitmap, width, height);
-
-      _bitmaps.push_back(std::move(bitmap));
-      _originalWidth.push_back(width);
-      _originalHeight.push_back(height);
-    }
-
-    // =========================================================================
-    // Pad height
-    // =========================================================================
-    for (unsigned long iChar = 0; iChar < ASCII_MAX_NUM_CHARS; ++iChar) {
-      Bitmap_t bitmap = genBitmap();
-      bitmap->resize(_originalWidth[iChar] * _maxHeight);
-
-      const int origWidth = _originalWidth[iChar];
-      const int origHeight = _originalHeight[iChar];
-
-      for (int y = 0; y < _maxHeight; ++y) {
-        for (int x = 0; x < origWidth; ++x) {
-          const int index = y * origWidth + x;
-
-          if (y < _maxHeight - origHeight) {
-            // Pad by 0
-            // Height range: 0 <= y <= maxHeight - origHeight - 1
-            (*bitmap)[index] = 0;
-          } else {
-            // original value
-            // Height range: maxHeight - origHeight <= y <= _maxHeight - 1
-            const int height = y - _maxHeight + origHeight;
-            (*bitmap)[index] = (*_bitmaps[iChar])[height * origWidth + x];
-          }
-        }
-      }
-
-      _heightAdjustedBitmaps.push_back(bitmap);
-    }
-
-    if (!isOK) {
-      LOG_ERROR("Failed to load TTF fonts");
-    }
-  }
-
-  ~TTFFontRegistry() {
-    FT_Done_Face(_face);
-    FT_Done_FreeType(_library);
-  }
-
-  inline Bitmap_t getBitmap(const unsigned long charactor, int& width, int& height) {
-    width = _originalWidth[charactor];
-    height = _originalHeight[charactor];
-    return _bitmaps[charactor];
-  }
-
-  inline Bitmap_t getHeightAdjustedBitmap(const unsigned long charactor, int& width, int& height) {
-    width = _originalWidth[charactor];
-    height = _maxHeight;
-    return _heightAdjustedBitmaps[charactor];
-  }
-
-  inline void freeBytes(unsigned char* bytesArray) const {
-    free(bytesArray);
-    bytesArray = nullptr;
-  }
+  Bitmap_t getBitmap(const char* text, int& width, int& height) const;
 };
 
 }  // namespace fonts

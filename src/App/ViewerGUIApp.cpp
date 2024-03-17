@@ -1,5 +1,6 @@
 #include <App/ViewerGUIApp.hpp>
 
+#define DEBUG_TEXT_BOX
 namespace simview {
 namespace app {
 

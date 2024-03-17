@@ -13,15 +13,16 @@ void api_stbi_image_free(void *retval_from_stbi_load) {
 }
 
 void saveImage(const int width, const int height, const int channels, unsigned char *bytes, const std::string filePath) {
+  if (bytes == nullptr) {
+    LOG_ERROR("Bytes is nullptr!");
+    return;
+  }
+
   try {
     const std::string dirPath = FileUtil::dirPath(filePath);
     if (!FileUtil::exists(dirPath)) {
       FileUtil::mkdirs(dirPath);
     }
-
-    // if (FileUtil::exists(filePath)) {
-    //   std::remove(filePath.c_str());
-    // }
 
     const std::string extension = FileUtil::extension(filePath);
     if (extension == ".png") {
@@ -29,11 +30,11 @@ void saveImage(const int width, const int height, const int channels, unsigned c
     } else if (extension == ".jpg") {
       stbi_write_jpg(filePath.c_str(), width, height, channels, bytes, 100);
     } else {
-      fprintf(stderr, "Unsupported save image format: %s\n", extension.c_str());
+      LOG_ERROR("Unsupported save image format: " + extension);
     }
   } catch (std::exception &error) {
-    std::cerr << "[Error] See below messages." << std::endl;
-    std::cerr << error.what() << std::endl;
+    LOG_ERROR("[Error] See below messages.");
+    LOG_ERROR("error.what()");
   }
 };
 

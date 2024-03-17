@@ -10,6 +10,7 @@ add_library(
   "FileUtil.cpp"
   "StbAdapter.cpp"
   "Geometry.cpp"
+  "FontStorage.cpp"
 )
 
 # =========================================================

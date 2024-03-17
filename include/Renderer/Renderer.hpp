@@ -75,6 +75,11 @@ class Renderer {
   glm::vec4 getOriginScreenSpace();
   glm::vec3 getLightPosInWorldSpace();
   glm::mat4 getLightViewMat(const glm::mat4& modelMat);
+
+  glm::mat4 perspective(const float& fovyInDegrees,
+                        const float& aspectRatio,
+                        const float& near,
+                        const float& rear);
 };
 
 using Renderer_t = std::shared_ptr<Renderer>;
