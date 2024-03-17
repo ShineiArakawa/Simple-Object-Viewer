@@ -4,8 +4,10 @@
 
 ## Features
 
-- Load polygons from Wavefront obj file and STL file
-- Has pre-defined primitives (e.g. box, sphere, point cloud)
+- Load polygons from Wavefront obj file, STL file, and other format files
+- Has pre-defined primitives (e.g. box, sphere, point cloud, text box)
+- Save screen shots
+- Shadow mapping
 
 ## Dependency
 All these libraries are registered as submodules.
@@ -14,17 +16,21 @@ All these libraries are registered as submodules.
 - GLAD
 - Dear ImGui
 - assimp
-- CMake
+- FreeType
 
 ## Tested Environments
 
-- Windows 10 with Microsoft Visual Studio Community 2019 (16.11.21)
 - Ubuntu 22.04 with gcc 11.4.0 compiler
+- Windows 10 with Microsoft Visual Studio Community 2019 (16.11.21)
 
 ## Clone and Build
 
 Run following commands to build source files. The executable binaries will be copied to the `bin` directory.
 
+### Windows
+Please use Visual Studio with CMake.
+
+### Ubuntu
 ```bash
 # Clone
 git clone --recursive https://github.com/ShineiArakawa/Simple-Object-Viewer.git 
