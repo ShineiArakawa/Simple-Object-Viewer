@@ -115,6 +115,9 @@ set(
   freetype
 )
 
+######################################################
+# For static library usage
+######################################################
 # This variable is for the library mode
 set(
   SimpleObjectViewer_INCLUDE_DIR
@@ -125,12 +128,20 @@ set(
   "All include directories for Simeple Object Viewer library"
 )
 
-# #### Set install config
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SimView/" FILES_MATCHING PATTERN "*.hpp")
+# Set install include directory
+install(
+	DIRECTORY "${CMAKE_SOURCE_DIR}/include/" 
+	DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SimView/"
+	FILES_MATCHING PATTERN "*.hpp"
+)
 
 set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "" FORCE)
 
-# #### Add subdirectory
+# Set install lib directory is done in erc/CMakeLists.txt
+
+######################################################
+# Add subdirectory
+######################################################
 add_subdirectory(src)
 add_subdirectory(external)
 
