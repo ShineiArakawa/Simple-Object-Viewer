@@ -1,31 +1,31 @@
-[submodule "lib/glfw"]
-	path = lib/glfw
+[submodule "external/glfw"]
+	path = external/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "lib/glm"]
-	path = lib/glm
+[submodule "external/glm"]
+	path = external/glm
 	url = https://github.com/g-truc/glm.git
-[submodule "lib/picojson"]
-	path = lib/picojson
+[submodule "external/picojson"]
+	path = external/picojson
 	url = https://github.com/kazuho/picojson.git
-[submodule "lib/stb"]
-	path = lib/stb
+[submodule "external/stb"]
+	path = external/stb
 	url = https://github.com/nothings/stb.git
-[submodule "lib/tinyobjloader"]
-	path = lib/tinyobjloader
+[submodule "external/tinyobjloader"]
+	path = external/tinyobjloader
 	url = https://github.com/tinyobjloader/tinyobjloader.git
-[submodule "lib/imgui"]
-	path = lib/imgui
+[submodule "external/imgui"]
+	path = external/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
-[submodule "lib/nativefiledialog-extended"]
-	path = lib/nativefiledialog-extended
+[submodule "external/nativefiledialog-extended"]
+	path = external/nativefiledialog-extended
 	url = https://github.com/btzy/nativefiledialog-extended.git
-[submodule "lib/spdlog"]
-	path = lib/spdlog
+[submodule "external/spdlog"]
+	path = external/spdlog
 	url = https://github.com/gabime/spdlog.git
-[submodule "lib/assimp"]
-	path = lib/assimp
+[submodule "external/assimp"]
+	path = external/assimp
 	url = https://github.com/assimp/assimp.git
-[submodule "lib/freetype"]
-	path = lib/freetype
+[submodule "external/freetype"]
+	path = external/freetype
 	url = https://github.com/freetype/freetype.git

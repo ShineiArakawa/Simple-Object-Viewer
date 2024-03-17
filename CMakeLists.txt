@@ -27,7 +27,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D ENABLE_LEAK_CHECK")
 # #################################################
 # #### Set environment variables in project
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(PROJECT_LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
+set(PROJECT_LIB_DIR ${PROJECT_SOURCE_DIR}/external)
 
 # #################################################
 # #### External Libraries #########################
@@ -86,7 +86,7 @@ set(NFD_INCLUDE_DIR ${PROJECT_LIB_DIR}/nativefiledialog-extended/src/include)
 set(SPD_LOG_INCLUDE_DIR ${PROJECT_LIB_DIR}/spdlog/include)
 
 # #### assimp
-set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_DIR}/lib/assimp/include)
+set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_DIR}/external/assimp/include)
 
 ######################################################
 # External libralies
@@ -132,7 +132,7 @@ set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "" FORCE)
 
 # #### Add subdirectory
 add_subdirectory(src)
-add_subdirectory(lib)
+add_subdirectory(external)
 
 # #################################################
 # #### Message ####################################
