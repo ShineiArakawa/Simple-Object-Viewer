@@ -6,12 +6,16 @@ namespace model {
 using namespace util;
 using namespace shader;
 
-AxesCone::AxesCone(const int nDivs, const float offsetX, const float offsetY, const float offsetZ, const float scale)
+AxesCone::AxesCone(const int nDivs,
+                   const float offsetX,
+                   const float offsetY,
+                   const float offsetZ,
+                   const float scale)
     : _nDivs(nDivs),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),
-      _scale(_scale) {
+      _scale(scale) {
 }
 
 AxesCone::~AxesCone() = default;
