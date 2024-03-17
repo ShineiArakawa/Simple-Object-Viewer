@@ -25,19 +25,25 @@ All these libraries are registered as submodules.
 
 ## Clone and Build
 
-Run following commands to build source files. The executable binaries will be copied to the `bin` directory.
+1. Clone
+   ```bash
+   git clone --recursive https://github.com/ShineiArakawa/Simple-Object-Viewer.git 
+   ```
+   
+2. Build
+   Run following commands to build source files. The executable binaries will be copied to the `bin` directory.
 
-### Windows
-Please use Visual Studio with CMake.
-
-### Ubuntu
-```bash
-# Clone
-git clone --recursive https://github.com/ShineiArakawa/Simple-Object-Viewer.git 
-cd Simple-Object-Viewer
-
-# Build
-mkdir build && cd build
-cmake ..
-make
-```
+   ### Windows
+   Please use Visual Studio with CMake.
+  
+   ### Ubuntu
+   ```bash
+   # Clone
+   git clone --recursive https://github.com/ShineiArakawa/Simple-Object-Viewer.git 
+   cd Simple-Object-Viewer
+   
+   # Build
+   mkdir build && cd build
+   cmake ..
+   make
+   ```
