@@ -4,10 +4,10 @@ namespace simview {
 namespace util {
 namespace fonts {
 
-TTFFontRegistry::TTFFontRegistry(const unsigned int* ttfFontData,
-                                 const unsigned int ttfFontDataSize,
-                                 const unsigned int pixelSize,
-                                 const unsigned int padding)
+TrueTypeFontRegistry::TrueTypeFontRegistry(const unsigned int* ttfFontData,
+                                           const unsigned int ttfFontDataSize,
+                                           const unsigned int pixelSize,
+                                           const unsigned int padding)
     : _library(),
       _face(),
       _padding(padding) {
@@ -44,12 +44,12 @@ TTFFontRegistry::TTFFontRegistry(const unsigned int* ttfFontData,
   }
 }
 
-TTFFontRegistry::~TTFFontRegistry() {
+TrueTypeFontRegistry::~TrueTypeFontRegistry() {
   FT_Done_Face(_face);
   FT_Done_FreeType(_library);
 }
 
-Bitmap_t TTFFontRegistry::getBitmap(const char* text, int& width, int& height) const {
+Bitmap_t TrueTypeFontRegistry::getBitmap(const char* text, int& width, int& height) const {
   std::u32string u32str = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>().from_bytes(text);
   std::vector<int> lineHightOffsets = {0};
   std::vector<int> lineHights = {0};
@@ -141,10 +141,10 @@ Bitmap_t TTFFontRegistry::getBitmap(const char* text, int& width, int& height) c
   return distBitmap;
 }
 
-void TTFFontRegistry::drawBitmap(const FT_Bitmap& srcBitmap,
-                                 const int& cursorX,
-                                 const int& cursorY,
-                                 Bitmap_t& distBitmap) {
+void TrueTypeFontRegistry::drawBitmap(const FT_Bitmap& srcBitmap,
+                                      const int& cursorX,
+                                      const int& cursorY,
+                                      Bitmap_t& distBitmap) {
   const int maxX = cursorX + srcBitmap.width;
   const int maxY = cursorY + srcBitmap.rows;
 

@@ -6471,7 +6471,7 @@ struct Bitmap {
 
 using Bitmap_t = std::shared_ptr<Bitmap>;
 
-class TTFFontRegistry {
+class TrueTypeFontRegistry {
  private:
   inline static const unsigned long ASCII_MAX_NUM_CHARS = 128;
 
@@ -6486,11 +6486,11 @@ class TTFFontRegistry {
                          Bitmap_t& distBitmap);
 
  public:
-  TTFFontRegistry(const unsigned int* ttfFontData,
-                  const unsigned int ttfFontDataSize,
-                  const unsigned int pixelSize = 64,
-                  const unsigned int padding = 16);
-  ~TTFFontRegistry();
+  TrueTypeFontRegistry(const unsigned int* ttfFontData,
+                       const unsigned int ttfFontDataSize,
+                       const unsigned int pixelSize = 64,
+                       const unsigned int padding = 16);
+  ~TrueTypeFontRegistry();
 
   Bitmap_t getBitmap(const char* text, int& width, int& height) const;
 };

@@ -1,4 +1,4 @@
-project(ViewerGUI CXX)
+project(Simple-Object-Viewer CXX)
 
 set(
   VIEWER_GUI_SOURCES

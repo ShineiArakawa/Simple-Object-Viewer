@@ -12,15 +12,15 @@ TextBox::TextBox(const char* text,
                  const int fontPixelsize,
                  const int padding)
     : _text(text),
-      _postionInScreenSpace(std::min(1.0f, std::max(-1.0f, position.x)),
-                            std::min(1.0f, std::max(-1.0f, position.y)),
-                            0.99f,
+      _postionInScreenSpace(std::min(1.0f, std::max(-1.0f, position.x)),  // X
+                            std::min(1.0f, std::max(-1.0f, position.y)),  // Y
+                            0.99f,                                        // Far
                             1.0f),
       _padding(padding),
-      _fontRegistry(std::make_shared<fonts::TTFFontRegistry>(fonts::RobotoMedium_data,
-                                                             fonts::RobotoMedium_size,
-                                                             fontPixelsize,
-                                                             padding)),
+      _fontRegistry(std::make_shared<fonts::TrueTypeFontRegistry>(fonts::RobotoMedium_data,
+                                                                  fonts::RobotoMedium_size,
+                                                                  fontPixelsize,
+                                                                  padding)),
       _sizeMagnification(sizeMagnification) {
   setDefaultRenderType(RenderType::TEXTURE);
 }
@@ -49,6 +49,7 @@ void TextBox::initVAO() {
 
   const float aspectRatio = (float)width / height;
 
+  // Transfer to VRAM
   Texture::loadTexture(bytes, width, height, 4, _textureId);
   free(bytes);
 
@@ -72,8 +73,9 @@ void TextBox::initVAO() {
   }
 
   ObjectLoader::scaleObject(vertices, aspectRatio * _sizeMagnification, _sizeMagnification, 1.0f);
-  ObjectLoader::rotateObject(vertices, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-  ObjectLoader::rotateObject(vertices, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+  ObjectLoader::rotateObject(vertices, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // Rotate on X-axis
+  ObjectLoader::rotateObject(vertices, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));  // Rotate on Z-axis
+  // NOTE: Then, the quad is faced with screen.
 
   glGenVertexArrays(1, &_vaoId);
   glBindVertexArray(_vaoId);
@@ -113,14 +115,17 @@ void TextBox::paintGL(
     const RenderingContext& renderingCtx    // renderingCtx
 ) {
   if (_isVisible) {
-    const glm::mat4& mvMat = transCtx.viewMat;  // Indentity model marix
+    // Re-compute model-view-projection matrices
+    const glm::mat4& mvMat = transCtx.viewMat;  // Indentity model matrix
     const glm::mat4& mvpMat = transCtx.projMat * mvMat;
     const glm::mat4& lightMat = mvMat * transCtx.lightTransMat;
 
+    // Calc model space position from screen space 2D coords
     glm::vec4 screenSpaceCoords = glm::inverse(transCtx.projMat) * _postionInScreenSpace;
     screenSpaceCoords /= screenSpaceCoords.w;
     const glm::vec3& positionInModelSpace = (glm::inverse(mvMat) * screenSpaceCoords).xyz();
 
+    // Tranlation in model space
     const glm::mat4& mvtMat = mvMat * glm::translate(positionInModelSpace);
     const glm::mat4& mvptMat = mvpMat * glm::translate(positionInModelSpace);
     const glm::mat4& normMat = glm::transpose(glm::inverse(mvtMat));
@@ -136,8 +141,8 @@ void TextBox::paintGL(
         glm::vec3(0.0f),                                       // ambientColor
         glm::vec3(0.0f),                                       // diffuseColor
         glm::vec3(0.0f),                                       // specularColor
-        getRenderType(false, Primitive::RenderType::TEXTURE),  // renderType
-        getWireFrameMode(),                                    // wireFrameMode
+        getRenderType(false, Primitive::RenderType::TEXTURE),  // renderType: always TEXTURE mode
+        0.0f,                                                  // wireFrameMode: always off
         renderingCtx.wireFrameColor,                           // wireFrameColor
         renderingCtx.wireFrameWidth,                           // wireFrameWidth
         renderingCtx.depthTextureId,                           // depthTextureId
@@ -163,9 +168,10 @@ void TextBox::drawGL(const int& index) {
 }
 
 void TextBox::drawAllGL(const glm::mat4& lightMvpMat) {
-  if (_isVisible) {
-    drawGL();
-  }
+  // NOTE: Alwayes disabled for shadow mapping
+  // if (_isVisible) {
+  //   drawGL();
+  // }
 }
 
 }  // namespace model

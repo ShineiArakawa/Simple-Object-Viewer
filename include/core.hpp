@@ -51,7 +51,6 @@
 #include "Util/ObjectLoader.hpp"
 #include "Util/StbAdapter.hpp"
 #include "Util/Texture.hpp"
-#include       "Util/FontStorage.cpp"
 
 // Window
 #include "Window/ImGuiFontManager.hpp"

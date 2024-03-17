@@ -31,7 +31,7 @@ class TextBox : public Primitive {
   const char* _text;
   glm::vec4 _postionInScreenSpace = glm::vec4(0.0f);
   int _padding;
-  std::shared_ptr<util::fonts::TTFFontRegistry> _fontRegistry;
+  std::shared_ptr<util::fonts::TrueTypeFontRegistry> _fontRegistry;
   float _sizeMagnification;
 
  public:

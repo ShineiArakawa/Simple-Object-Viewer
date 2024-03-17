@@ -20,6 +20,10 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
       _objectAddDialog(nullptr),
       _isVisibleSideBar(true),
       _isVisibleHelpMessage(false),
+      _backgroundRGBABuffer(new float[4]),
+      _wireFrameColorBuffer(new float[3]),
+      _lightPositionBuffer(new float[3]),
+      _screenshotFilePathBuffer(new char[512]),
       moveOn(true) {
   // ====================================================================
   // Initialize scene window
@@ -41,7 +45,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
   _depthSceneModel->addBackground(background);
 
   // ====================================================================
-  // Initialize popup
+  // Initialize object add panel
   // ====================================================================
   _objectAddDialog = std::make_shared<ImGuiObjectAddPanel>(_sceneModel);
 
@@ -70,6 +74,9 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
   ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
   ImGui_ImplOpenGL3_Init("#version 460");
 
+  // ====================================================================
+  // Initialize native file dialog
+  // ====================================================================
   NFD_Init();
 }
 
@@ -118,7 +125,7 @@ void ImGuiMainView::paintMenuBar() {
 
         if (_isVisibleHelpMessage) {
           LOG_INFO("Show help message");
-          auto textBox = std::make_shared<TextBox>(HELP_TEXT, glm::vec2(0.0f, 0.0f), 4.0f, 64);
+          auto textBox = std::make_shared<TextBox>(HELP_TEXT, glm::vec2(0.0f, 0.0f), 4.0f, 32);
           textBox->setName("Help message");
           _sceneModel->addObject(textBox);
         } else {
@@ -147,25 +154,36 @@ void ImGuiMainView::paintSideBar() {
       _sceneModel->setMaskMode(_sceneView->isMaskMode);
 
       // Background color
-      const auto& arrayBackgroundRGBA = _sceneModel->getBackgroundColor();
-      float backgroundRGBA[4] = {arrayBackgroundRGBA.x, arrayBackgroundRGBA.y, arrayBackgroundRGBA.z, arrayBackgroundRGBA.w};
-      ImGui::ColorEdit4("Background color", &backgroundRGBA[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
-      _sceneModel->setBackgroundColor(backgroundRGBA[0], backgroundRGBA[1], backgroundRGBA[2], backgroundRGBA[3]);
+      {
+        const auto& arrayBackgroundRGBA = _sceneModel->getBackgroundColor();
+        _backgroundRGBABuffer[0] = arrayBackgroundRGBA.x;  // R
+        _backgroundRGBABuffer[1] = arrayBackgroundRGBA.y;  // G
+        _backgroundRGBABuffer[2] = arrayBackgroundRGBA.z;  // B
+        _backgroundRGBABuffer[3] = arrayBackgroundRGBA.w;  // A
+        ImGui::ColorEdit4("Background color",
+                          &_backgroundRGBABuffer[0],
+                          ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+        _sceneModel->setBackgroundColor(
+            _backgroundRGBABuffer[0],  // R
+            _backgroundRGBABuffer[1],  // G
+            _backgroundRGBABuffer[2],  // B
+            _backgroundRGBABuffer[3]   // A
+        );
+      }
 
       // Axes cone
       static bool isShownAxesCone = false;
       ImGui::Checkbox("Show axes cone", &isShownAxesCone);
       _sceneModel->setAxesConeState(isShownAxesCone);
 
-      // Axes cone
+      // XY-Grid
       static bool isShownGridPlane = false;
       ImGui::Checkbox("Show XY-grid", &isShownGridPlane);
       _sceneModel->setGridPlaneState(isShownGridPlane);
 
       // Wire frame mode
       static int wireFrameMode;
-      static const char* wireFrameModeItems = "OFF\0ON\0Wire frame only\0";
-      ImGui::Combo("Wire frame", &wireFrameMode, wireFrameModeItems);
+      ImGui::Combo("Wire frame", &wireFrameMode, WIREFRAME_TYPE_ITEMS);
       _sceneModel->setWireFrameMode(static_cast<Primitive::WireFrameMode>(wireFrameMode));
 
       // Wire frame width
@@ -174,10 +192,20 @@ void ImGuiMainView::paintSideBar() {
       _sceneModel->setWireFrameWidth(wireFrameWidth);
 
       // Wire frame color
-      const auto& arrayWireFrameColor = _sceneModel->getWireFrameColor();
-      float wireFrameColor[3] = {arrayWireFrameColor.x, arrayWireFrameColor.y, arrayWireFrameColor.z};
-      ImGui::ColorEdit3("Wire frame color", &wireFrameColor[0], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
-      _sceneModel->setWireFrameColor(wireFrameColor[0], wireFrameColor[1], wireFrameColor[2]);
+      {
+        const auto& arrayWireFrameColor = _sceneModel->getWireFrameColor();
+        _wireFrameColorBuffer[0] = arrayWireFrameColor.x;  // R
+        _wireFrameColorBuffer[1] = arrayWireFrameColor.y;  // G
+        _wireFrameColorBuffer[2] = arrayWireFrameColor.z;  // B
+        ImGui::ColorEdit3("Wire frame color",
+                          &_wireFrameColorBuffer[0],
+                          ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
+        _sceneModel->setWireFrameColor(
+            _wireFrameColorBuffer[0],  // R
+            _wireFrameColorBuffer[1],  // G
+            _wireFrameColorBuffer[2]   // B
+        );
+      }
 
       // Bump map
       ImGui::Checkbox("Bump map", &_sceneView->isEnabledNormalMap);
@@ -227,10 +255,20 @@ void ImGuiMainView::paintSideBar() {
       _sceneModel->setShiniess(shininess);
 
       // Light pos
-      const auto& arrayLightPos = _sceneModel->getLightPos();
-      float lightPos[3] = {arrayLightPos.x, arrayLightPos.y, arrayLightPos.z};
-      ImGui::InputFloat3("Light position", lightPos, FLOAT_FORMAT);
-      _sceneModel->setLightPosition(lightPos[0], lightPos[1], lightPos[2]);
+      {
+        const auto& arrayLightPos = _sceneModel->getLightPos();
+        _lightPositionBuffer[0] = arrayLightPos.x;  // X
+        _lightPositionBuffer[1] = arrayLightPos.y;  // Y
+        _lightPositionBuffer[2] = arrayLightPos.z;  // Z
+        ImGui::InputFloat3("Light position",
+                           &_lightPositionBuffer[0],
+                           FLOAT_FORMAT);
+        _sceneModel->setLightPosition(
+            _lightPositionBuffer[0],  // X
+            _lightPositionBuffer[1],  // Y
+            _lightPositionBuffer[2]   // Z
+        );
+      }
 
       // Ambient intensity
       float ambientIntensity = _sceneModel->getAmbientIntensity();
@@ -243,6 +281,7 @@ void ImGuiMainView::paintSideBar() {
     // ========================================================================================
     if (ImGui::CollapsingHeader("Objects", ImGuiTreeNodeFlags_DefaultOpen)) {
       ImGui::SeparatorText("Registered objects");
+
       if (ImGui::BeginTable("##Registered objects", 4, ImGuiTableFlags_Borders)) {
         ImGui::TableSetupColumn("Name");
         ImGui::TableSetupColumn("Type");
@@ -252,32 +291,38 @@ void ImGuiMainView::paintSideBar() {
         for (int iObject = 0; iObject < _sceneModel->getNumObjects(); iObject++) {
           ImGui::TableNextRow();
 
-          const auto object = _sceneModel->getObject(iObject);
+          const auto& object = _sceneModel->getObject(iObject);
 
+          // Object name
           ImGui::TableNextColumn();
           ImGui::PushID(iObject * 4 + 0);
           ImGui::Text("%s", object->getName().c_str());
           ImGui::PopID();
 
+          // Object type
           ImGui::TableNextColumn();
           ImGui::PushID(iObject * 4 + 1);
           ImGui::Text("%s", object->getObjectType().c_str());
           ImGui::PopID();
 
+          // is visible
           ImGui::TableNextColumn();
           ImGui::PushID(iObject * 4 + 2);
           ImGui::Checkbox("##isVisible", object->getPointerToIsVisible());
           ImGui::PopID();
 
+          // Remove button
           ImGui::TableNextColumn();
-          if (object->getObjectType() != AxesCone::KEY_MODEL_AXES_CONE && object->getObjectType() != GridPlane::KEY_MODEL_GRID_PLANE) {
+          if (object->getObjectType() != AxesCone::KEY_MODEL_AXES_CONE       // Exclude axes cone
+              && object->getObjectType() != GridPlane::KEY_MODEL_GRID_PLANE  // Exclude grid plane
+          ) {
             ImGui::PushID(iObject * 4 + 3);
             if (ImGui::Button("Remove")) {
               _sceneModel->removeObject(iObject);
             }
             ImGui::PopID();
           }
-        }
+        }  // for-loop of each row
 
         std::shared_ptr<bool[]> backgoundFlags(new bool[_sceneModel->getNumBackgrounds()]);
         if (_sceneModel->getNumBackgrounds() > 0) {
@@ -287,7 +332,7 @@ void ImGuiMainView::paintSideBar() {
         for (int iBackground = 0; iBackground < _sceneModel->getNumBackgrounds(); iBackground++) {
           ImGui::TableNextRow();
 
-          const auto background = _sceneModel->getBackground(iBackground);
+          const auto& background = _sceneModel->getBackground(iBackground);
 
           ImGui::TableNextColumn();
           ImGui::PushID((_sceneModel->getNumObjects() + iBackground) * 4 + 0);
@@ -330,8 +375,8 @@ void ImGuiMainView::paintSideBar() {
     // Screen shot section
     // ========================================================================================
     if (ImGui::CollapsingHeader("Screen shot", ImGuiTreeNodeFlags_DefaultOpen)) {
-      static char screenshotFilePath[256];
-      ImGui::InputText("##Save to", screenshotFilePath, 256);
+      ImGui::InputText("##Save to", &_screenshotFilePathBuffer[0], 512);
+
       ImGui::SameLine();
       if (ImGui::Button("Browse")) {
         nfdchar_t* outPath;
@@ -339,21 +384,23 @@ void ImGuiMainView::paintSideBar() {
         nfdresult_t result = NFD_SaveDialog(&outPath, filterItem, 1, NULL, "screenshot.png");
 
         if (result == NFD_OKAY) {
-          strcpy(screenshotFilePath, outPath);
+          strcpy(&_screenshotFilePathBuffer[0], outPath);
         }
-      }
+      }  // Browse button
+
       ImGui::SameLine();
       if (ImGui::Button("Save")) {
-        std::string strScreenshotFilePath(screenshotFilePath);
-        std::cout << "Save screen shot to " << strScreenshotFilePath << std::endl;
+        std::string strScreenshotFilePath(&_screenshotFilePathBuffer[0]);
+        LOG_INFO("Save screen shot to " + strScreenshotFilePath);
         _sceneView->saveScreenShot(strScreenshotFilePath);
-      }
+      }  // Save button
     }
 
     // ========================================================================================
     // Resource monitor section
     // ========================================================================================
     ImGui::SeparatorText("Statistics");
+
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / _io->Framerate, _io->Framerate);
 
     ImGui::End();
@@ -506,7 +553,7 @@ void ImGuiMainView::listenEvent() {
     // ============================================================================================================================================================================================================
     {
       // Mouse on Scene
-      const ImVec2 mousePos = ImGui::GetMousePos();
+      const ImVec2& mousePos = ImGui::GetMousePos();
       const bool isMouseOnScene = (_sceneAreaMin.x <= mousePos.x) && (mousePos.x <= _sceneAreaMax.x) && (_sceneAreaMin.y <= mousePos.y) && (mousePos.y <= _sceneAreaMax.y);
       const ImVec2 relMousePos(mousePos.x - _sceneAreaMin.x, mousePos.y - _sceneAreaMin.y);
 

@@ -12,7 +12,7 @@ std::string ShaderCompiler::readCodesFromFile(const std::string& filename) {
   reader.open(filename.c_str(), std::ios::in);
   if (!reader.is_open()) {
     // Finish with error message if source file could not be opened
-    fprintf(stderr, "Failed to load a shader: %s\n", filename.c_str());
+    LOG_CRITICAL("Failed to load a shader: " + filename);
     exit(1);
   }
 
@@ -55,7 +55,7 @@ GLuint ShaderCompiler::compile(const std::string& code, GLuint type) {
   glGetShaderiv(shaderId, GL_COMPILE_STATUS, &compileStatus);
   if (compileStatus == GL_FALSE) {
     // Terminate with error message if compilation failed
-    fprintf(stderr, "Failed to compile a shader!\n");
+    LOG_CRITICAL("Failed to compile a shader!");
 
     // Get length of error message
     GLint logLength;
@@ -68,8 +68,8 @@ GLuint ShaderCompiler::compile(const std::string& code, GLuint type) {
       glGetShaderInfoLog(shaderId, logLength, &length, &errMsg[0]);
 
       // Print error message and corresponding source code
-      fprintf(stderr, "[ ERROR ] %s\n", errMsg.c_str());
-      fprintf(stderr, "%s\n", code.c_str());
+      LOG_CRITICAL(errMsg);
+      LOG_CRITICAL(code);
     }
     exit(1);
   }
@@ -96,7 +96,7 @@ GLuint ShaderCompiler::buildShaderProgram(const std::string& vertexShaderCode,
   glGetProgramiv(programId, GL_LINK_STATUS, &linkState);
   if (linkState == GL_FALSE) {
     // Terminate with error message if link is failed
-    fprintf(stderr, "Failed to link shaders!\n");
+    LOG_CRITICAL("Failed to link shaders!");
 
     // Get length of error message
     GLint logLength;
@@ -109,7 +109,7 @@ GLuint ShaderCompiler::buildShaderProgram(const std::string& vertexShaderCode,
       glGetProgramInfoLog(programId, logLength, &length, &errMsg[0]);
 
       // Print error message
-      fprintf(stderr, "[ ERROR ] %s\n", errMsg.c_str());
+      LOG_CRITICAL(errMsg);
     }
     exit(1);
   }
