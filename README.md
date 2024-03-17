@@ -54,5 +54,5 @@ All these libraries are registered as submodules.
   # Replace '/path/to/your/gcc' with the path to your GCC install dir older than 12,
   # for example '/usr/lib/gcc/x86_64-linux-gnu/11'.
   
-  cmake -DCMAKE_CXX_FLAGS="--gcc-install-dir=/path/to/your/gcc"
+  cmake -DCMAKE_CXX_FLAGS="--gcc-install-dir=/path/to/your/gcc" ..
   ```
