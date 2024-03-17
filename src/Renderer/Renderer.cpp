@@ -209,27 +209,28 @@ glm::mat4 Renderer::getLightViewMat(const glm::mat4& modelMat) {
 
 glm::mat4 Renderer::perspective(const float& fovyInDegrees,
                                 const float& aspectRatio,
-                                const float& near,
-                                const float& rear) {
+                                const float& nearPlane,
+                                const float& rearPlane) {
   const float angle = M_PI * fovyInDegrees / 180.0f;
 
   float height, width;
 
   if (aspectRatio > 1.0f) {
-    height = 2.0f * std::tan(angle / 2.0f) * near;
+    height = 2.0f * std::tan(angle / 2.0f) * nearPlane;
     width = height * aspectRatio;
   } else {
-    width = 2.0f * std::tan(angle / 2.0f) * near;
+    width = 2.0f * std::tan(angle / 2.0f) * nearPlane;
     height = width / aspectRatio;
   }
 
-  const float depth = rear - near;
+  const float depth = rearPlane - nearPlane;
+
   return {
       // clang-format off
-        /* 0*/ 2.0f * near / width, /* 1*/                 0.0f, /* 2*/                        0.0f, /* 3*/  0.0f,
-        /* 4*/                0.0f, /* 5*/ 2.0f * near / height, /* 6*/                        0.0f, /* 7*/  0.0f,
-        /* 8*/                0.0f, /* 9*/                 0.0f, /*10*/      -(rear + near) / depth, /*11*/ -1.0f,
-        /*12*/                0.0f, /*13*/                 0.0f, /*14*/ -2.0f * rear * near / depth, /*15*/  0.0f
+        /* 0*/ 2.0f * nearPlane / width, /* 1*/                      0.0f, /* 2*/                                  0.0f, /* 3*/  0.0f,
+        /* 4*/                     0.0f, /* 5*/ 2.0f * nearPlane / height, /* 6*/                                  0.0f, /* 7*/  0.0f,
+        /* 8*/                     0.0f, /* 9*/                      0.0f, /*10*/      -(rearPlane + nearPlane) / depth, /*11*/ -1.0f,
+        /*12*/                     0.0f, /*13*/                      0.0f, /*14*/ -2.0f * rearPlane * nearPlane / depth, /*15*/  0.0f
       // clang-format on
   };
 }

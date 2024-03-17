@@ -78,8 +78,8 @@ class Renderer {
 
   glm::mat4 perspective(const float& fovyInDegrees,
                         const float& aspectRatio,
-                        const float& near,
-                        const float& rear);
+                        const float& nearPlane,
+                        const float& rearPlane);
 };
 
 using Renderer_t = std::shared_ptr<Renderer>;
