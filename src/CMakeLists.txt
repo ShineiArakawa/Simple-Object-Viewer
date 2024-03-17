@@ -75,6 +75,7 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
       "Util/StbAdapter.cpp"
       "Util/Geometry.cpp"
       "Util/FontStorage.cpp"
+      "Util/StreamExecutor.cpp"
       "Window/Window.cpp"
       "Window/ImGuiSceneView.cpp"
       "Window/ImGuiMainView.cpp"
@@ -107,4 +108,5 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
+
 endif(${BUILD_SIMVIEW_STATIC_LIBS})

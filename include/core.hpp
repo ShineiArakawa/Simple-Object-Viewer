@@ -51,6 +51,7 @@
 #include "Util/ObjectLoader.hpp"
 #include "Util/StbAdapter.hpp"
 #include "Util/Texture.hpp"
+#include "Util/StreamExecutor.hpp"
 
 // Window
 #include "Window/ImGuiFontManager.hpp"

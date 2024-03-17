@@ -11,6 +11,7 @@ add_library(
   "StbAdapter.cpp"
   "Geometry.cpp"
   "FontStorage.cpp"
+  "StreamExecutor.cpp"
 )
 
 # =========================================================
