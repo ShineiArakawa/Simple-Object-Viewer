@@ -10,7 +10,7 @@
     "Model": {
         "Object": {
             "Face": {
-                "ObjPath": "C:/Users/PC_Arakawa/Projects/Simple-Object-Viewer/data/bunny.obj",
+                "ObjPath": "C:/Users/PC_Arakawa/Projects/ParticlePackingC++/data/generated.obj.obj",
                 "DefaultRenderType": "NORMAL",
                 "Scale": 1.0,
                 "Offset": [

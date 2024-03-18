@@ -8,9 +8,10 @@ using namespace window;
 using namespace model;
 using namespace util;
 
-ViewerGUIApp::ViewerGUIApp() : _window(nullptr),
-                               _model(nullptr),
-                               _view(nullptr) {
+ViewerGUIApp::ViewerGUIApp()
+    : _window(nullptr),
+      _model(nullptr),
+      _view(nullptr) {
   Logging::setLevelFromEnv();
 
   // ====================================================================
@@ -39,7 +40,7 @@ ViewerGUIApp::ViewerGUIApp() : _window(nullptr),
 
   // NOTE: V-Sync
   // This option forces to use current monitor's FPS
-   glfwSwapInterval(1);
+  glfwSwapInterval(1);
 
   LOG_INFO(glfwGetVersionString());
 
@@ -94,11 +95,25 @@ void ViewerGUIApp::launch() {
   // ====================================================================
   // Start main loop
   // ====================================================================
-  while (!glfwWindowShouldClose(_window) && _view->moveOn) {
-    _view->paint();
-    _view->listenEvent();
-    glfwSwapBuffers(_window);
+  LOG_INFO("Start main loop.");
+
+  while (!glfwWindowShouldClose(_window) && _view->toMoveOn()) {
+    if (_view->shouldUpdate()) {  // NOTE: shouldUpdate() is needed for FPS control
+      // Update view #########################
+      _view->paint();
+      // #####################################
+
+      // Handle events #######################
+      _view->listenEvent();
+      // #####################################
+
+      // Swap to another buffer ##############
+      glfwSwapBuffers(_window);
+      // #####################################
+    }
   }
+
+  LOG_INFO("Broke main loop.");
 }
 
 void ViewerGUIApp::addObject(const model::Primitive_t& object, bool toInitializeVAO) {

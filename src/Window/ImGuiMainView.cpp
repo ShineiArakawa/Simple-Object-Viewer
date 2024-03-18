@@ -25,7 +25,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
       _lightPositionBuffer(new float[3]),
       _screenshotFilePathBuffer((char*)calloc(sizeof(char), CHAR_BUFFER_SIZE)),
       _fpsManager(nullptr),
-      moveOn(true) {
+      _moveOn(true) {
   // ====================================================================
   // Initialize scene window
   // ====================================================================
@@ -110,7 +110,7 @@ void ImGuiMainView::paintMenuBar() {
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("Quit")) {
         LOG_INFO("Quit the program");
-        moveOn = false;
+        _moveOn = false;
         return;
       }
       ImGui::EndMenu();
@@ -414,7 +414,7 @@ void ImGuiMainView::paintSideBar() {
     {
       // FPS limit
       float fpsLimit = _fpsManager->getFPS();
-      ImGui::DragFloat("FPS limit", &fpsLimit, 1.0f, 1.0f, 240.0f, FLOAT_FORMAT);
+      ImGui::DragFloat("FPS limit", &fpsLimit, 1.0f, 20.0f, 240.0f, FLOAT_FORMAT);
       _fpsManager->setFPS((double)fpsLimit);
     }
 
@@ -513,6 +513,7 @@ void ImGuiMainView::paintDepthSceneWindow() {
 
 void ImGuiMainView::paint() {
   glClear(GL_COLOR_BUFFER_BIT);
+
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
@@ -562,59 +563,65 @@ void ImGuiMainView::paint() {
 }
 
 void ImGuiMainView::listenEvent() {
-  if (moveOn) {
-    // ============================================================================================================================================================================================================
-    // Mouse event handling
-    // ============================================================================================================================================================================================================
-    {
-      // Mouse on Scene
-      const ImVec2& mousePos = ImGui::GetMousePos();
-      const bool isMouseOnScene = (_sceneAreaMin.x <= mousePos.x) && (mousePos.x <= _sceneAreaMax.x) && (_sceneAreaMin.y <= mousePos.y) && (mousePos.y <= _sceneAreaMax.y);
-      const ImVec2 relMousePos(mousePos.x - _sceneAreaMin.x, mousePos.y - _sceneAreaMin.y);
+  // ============================================================================================================================================================================================================
+  // Mouse event handling
+  // ============================================================================================================================================================================================================
+  {
+    // Mouse on Scene
+    const ImVec2& mousePos = ImGui::GetMousePos();
+    const bool isMouseOnScene = (_sceneAreaMin.x <= mousePos.x) && (mousePos.x <= _sceneAreaMax.x) && (_sceneAreaMin.y <= mousePos.y) && (mousePos.y <= _sceneAreaMax.y);
+    const ImVec2 relMousePos(mousePos.x - _sceneAreaMin.x, mousePos.y - _sceneAreaMin.y);
 
-      _sceneView->mouseEvent(isMouseOnScene && _isForcusedOnScene, relMousePos);
-      _sceneView->wheelEvent(isMouseOnScene && _isForcusedOnScene, _wheelOffset);
-      _sceneView->motionEvent(isMouseOnScene && _isForcusedOnScene, relMousePos);
-    }
+    _sceneView->mouseEvent(isMouseOnScene && _isForcusedOnScene, relMousePos);
+    _sceneView->wheelEvent(isMouseOnScene && _isForcusedOnScene, _wheelOffset);
+    _sceneView->motionEvent(isMouseOnScene && _isForcusedOnScene, relMousePos);
+  }
 
-    // ============================================================================================================================================================================================================
-    // Keyboard event handling
-    // ============================================================================================================================================================================================================
-    {
-      // Keyboard
-      const auto cameraDirection = glm::normalize(_sceneView->cameraLookAt - _sceneView->cameraPos);
-      if (ImGui::IsKeyPressed(ImGuiKey_W)) {
-        // Camera move forward
-        _sceneView->cameraPos += cameraDirection * _sceneView->CAMERA_MOVE_STEP;
-        _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
-      } else if (ImGui::IsKeyPressed(ImGuiKey_A)) {
-        // Camera move left
-        const glm::vec3 moveVec = glm::cross(_sceneView->cameraUp, cameraDirection) * _sceneView->CAMERA_MOVE_STEP;
-        _sceneView->cameraPos += moveVec;
-        _sceneView->cameraLookAt += moveVec;
-        _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
-      } else if (ImGui::IsKeyPressed(ImGuiKey_S)) {
-        // Camera move backward
-        _sceneView->cameraPos += -cameraDirection * _sceneView->CAMERA_MOVE_STEP;
-        _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
-      } else if (ImGui::IsKeyPressed(ImGuiKey_D)) {
-        // Camera move right
-        const glm::vec3 moveVec = glm::cross(cameraDirection, _sceneView->cameraUp) * _sceneView->CAMERA_MOVE_STEP;
-        _sceneView->cameraPos += moveVec;
-        _sceneView->cameraLookAt += moveVec;
-        _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
-      } else if (ImGui::IsKeyPressed(ImGuiKey_Q)) {
-        // Camera rotate left
-        _sceneView->getRenderer()->rotateModel(_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
-      } else if (ImGui::IsKeyPressed(ImGuiKey_E)) {
-        // Camera rotate right
-        _sceneView->getRenderer()->rotateModel(-_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
-      } else if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
-        _sceneView->resetCameraPose();
-        _sceneView->resetLightPose();
-      }
+  // ============================================================================================================================================================================================================
+  // Keyboard event handling
+  // ============================================================================================================================================================================================================
+  {
+    // Keyboard
+    const auto cameraDirection = glm::normalize(_sceneView->cameraLookAt - _sceneView->cameraPos);
+    if (ImGui::IsKeyPressed(ImGuiKey_W)) {
+      // Camera move forward
+      _sceneView->cameraPos += cameraDirection * _sceneView->CAMERA_MOVE_STEP;
+      _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
+    } else if (ImGui::IsKeyPressed(ImGuiKey_A)) {
+      // Camera move left
+      const glm::vec3 moveVec = glm::cross(_sceneView->cameraUp, cameraDirection) * _sceneView->CAMERA_MOVE_STEP;
+      _sceneView->cameraPos += moveVec;
+      _sceneView->cameraLookAt += moveVec;
+      _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
+    } else if (ImGui::IsKeyPressed(ImGuiKey_S)) {
+      // Camera move backward
+      _sceneView->cameraPos += -cameraDirection * _sceneView->CAMERA_MOVE_STEP;
+      _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
+    } else if (ImGui::IsKeyPressed(ImGuiKey_D)) {
+      // Camera move right
+      const glm::vec3 moveVec = glm::cross(cameraDirection, _sceneView->cameraUp) * _sceneView->CAMERA_MOVE_STEP;
+      _sceneView->cameraPos += moveVec;
+      _sceneView->cameraLookAt += moveVec;
+      _sceneView->getRenderer()->setViewMat(glm::lookAt(_sceneView->cameraPos, _sceneView->cameraLookAt, _sceneView->cameraUp));
+    } else if (ImGui::IsKeyPressed(ImGuiKey_Q)) {
+      // Camera rotate left
+      _sceneView->getRenderer()->rotateModel(_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
+    } else if (ImGui::IsKeyPressed(ImGuiKey_E)) {
+      // Camera rotate right
+      _sceneView->getRenderer()->rotateModel(-_sceneView->MODEL_ROTATE_STEP, _sceneView->cameraUp);
+    } else if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+      _sceneView->resetCameraPose();
+      _sceneView->resetLightPose();
     }
   }
+}
+
+bool ImGuiMainView::shouldUpdate() const {
+  return _fpsManager->update();
+}
+
+bool ImGuiMainView::toMoveOn() const {
+  return _moveOn;
 }
 
 void ImGuiMainView::setRenderType(const Primitive::RenderType& renderType) {

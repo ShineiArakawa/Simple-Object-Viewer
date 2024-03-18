@@ -84,9 +84,9 @@ class ImGuiMainView {
 
   std::shared_ptr<FPSManager> _fpsManager;
 
- public:
-  bool moveOn;
+  bool _moveOn;
 
+ public:
  private:
   void paintMenuBar();
   void paintSideBar();
@@ -102,6 +102,10 @@ class ImGuiMainView {
   void listenEvent();
 
   void destroy();
+
+  bool shouldUpdate() const;
+
+  bool toMoveOn() const;
 
   ImGuiSceneView_t getSceneView() const { return _sceneView; };
 

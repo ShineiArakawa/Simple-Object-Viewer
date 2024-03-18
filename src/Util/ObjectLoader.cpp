@@ -52,7 +52,7 @@ void ObjectLoader::readFromFile(const std::string &filePath,
                                 const float offsetZ) {
   const std::string extension = FileUtil::extension(filePath);
 
-  LOG_INFO("### Start load obj file: " + filePath);
+  LOG_INFO("### Start loading object file: " + filePath);
 
   const auto startTime = std::chrono::system_clock::now();
 
