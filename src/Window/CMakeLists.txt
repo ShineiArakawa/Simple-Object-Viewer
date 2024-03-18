@@ -6,7 +6,7 @@ add_library(
   "Window.cpp"
   "ImGuiSceneView.cpp"
   "ImGuiMainView.cpp"
-  "ImGuiFontManager.cpp"
+  "FPSManager.cpp"
   "ImGuiObjectAddPanel.cpp"
 )
 

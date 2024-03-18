@@ -36,7 +36,10 @@ ViewerGUIApp::ViewerGUIApp() : _window(nullptr),
   }
 
   glfwMakeContextCurrent(_window);
-  glfwSwapInterval(1);
+
+  // NOTE: V-Sync
+  // This option forces to use current monitor's FPS
+   glfwSwapInterval(1);
 
   LOG_INFO(glfwGetVersionString());
 

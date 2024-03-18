@@ -23,7 +23,8 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
       _backgroundRGBABuffer(new float[4]),
       _wireFrameColorBuffer(new float[3]),
       _lightPositionBuffer(new float[3]),
-      _screenshotFilePathBuffer(new char[512]),
+      _screenshotFilePathBuffer((char*)calloc(sizeof(char), CHAR_BUFFER_SIZE)),
+      _fpsManager(nullptr),
       moveOn(true) {
   // ====================================================================
   // Initialize scene window
@@ -78,6 +79,11 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
   // Initialize native file dialog
   // ====================================================================
   NFD_Init();
+
+  // ====================================================================
+  // Initialize FPS manager
+  // ====================================================================
+  _fpsManager = std::make_shared<FPSManager>();
 }
 
 ImGuiMainView::~ImGuiMainView() {}
@@ -375,7 +381,7 @@ void ImGuiMainView::paintSideBar() {
     // Screen shot section
     // ========================================================================================
     if (ImGui::CollapsingHeader("Screen shot", ImGuiTreeNodeFlags_DefaultOpen)) {
-      ImGui::InputText("##Save to", &_screenshotFilePathBuffer[0], 512);
+      ImGui::InputText("##Save to", &_screenshotFilePathBuffer[0], CHAR_BUFFER_SIZE);
 
       ImGui::SameLine();
       if (ImGui::Button("Browse")) {
@@ -386,6 +392,8 @@ void ImGuiMainView::paintSideBar() {
         if (result == NFD_OKAY) {
           strcpy(&_screenshotFilePathBuffer[0], outPath);
         }
+
+        NFD_FreePath(outPath);
       }  // Browse button
 
       ImGui::SameLine();
@@ -402,6 +410,13 @@ void ImGuiMainView::paintSideBar() {
     ImGui::SeparatorText("Statistics");
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / _io->Framerate, _io->Framerate);
+
+    {
+      // FPS limit
+      float fpsLimit = _fpsManager->getFPS();
+      ImGui::DragFloat("FPS limit", &fpsLimit, 1.0f, 1.0f, 240.0f, FLOAT_FORMAT);
+      _fpsManager->setFPS((double)fpsLimit);
+    }
 
     ImGui::End();
   }

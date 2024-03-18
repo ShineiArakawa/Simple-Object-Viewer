@@ -19,8 +19,7 @@ class Renderer {
  private:
   inline static const float TICK_VALUE = 1.0f;
 
-  // Model
-  model::Model_t _model;
+  // Matrices
   glm::mat4 _viewMat;
   glm::mat4 _projMat;
   glm::mat4 _acRotMat;
@@ -30,6 +29,9 @@ class Renderer {
   // Light
   glm::mat4 _lightTrasMat;
   glm::mat4 _lightProjMat;
+
+  // Model
+  model::Model_t _model;
 
   const int* _windowWidth = nullptr;
   const int* _windowHeight = nullptr;

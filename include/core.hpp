@@ -54,7 +54,7 @@
 #include "Util/StreamExecutor.hpp"
 
 // Window
-#include "Window/ImGuiFontManager.hpp"
+#include "Window/FPSManager.hpp"
 #include "Window/ImGuiMainView.hpp"
 #include "Window/ImGuiObjectAddPanel.hpp"
 #include "Window/ImGuiSceneView.hpp"

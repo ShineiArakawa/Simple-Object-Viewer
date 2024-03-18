@@ -28,6 +28,7 @@ using namespace std::string_literals;
 
 class ImGuiObjectAddPanel {
  private:
+  inline static const size_t CHAR_BUFFER_SIZE = 512;
   inline static const char* FLOAT_FORMAT = "%.6f";
 
   inline static const std::string TITLE = "Add Object";

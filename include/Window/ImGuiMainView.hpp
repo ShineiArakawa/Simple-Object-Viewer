@@ -7,6 +7,7 @@
 #include <OpenGL.hpp>
 #include <Renderer/Renderer.hpp>
 #include <Util/FontStorage.hpp>
+#include <Window/FPSManager.hpp>
 #include <Window/ImGuiObjectAddPanel.hpp>
 #include <Window/ImGuiSceneView.hpp>
 #include <iostream>
@@ -18,6 +19,7 @@ namespace window {
 
 class ImGuiMainView {
  private:
+  inline static const size_t CHAR_BUFFER_SIZE = 512;
   inline static const int SIDEBAR_WIDTH = 700;
   inline static const char* FLOAT_FORMAT = "%.6f";
   inline static const char* RENDER_TYPE_ITEMS = "Normal\0Color\0Texture\0Vertex Normal\0Shading\0Shading with texture\0Material\0";
@@ -79,6 +81,8 @@ class ImGuiMainView {
   model::ViewerModel_t _depthSceneModel;
 
   ObjectAddFileDialog_t _objectAddDialog;
+
+  std::shared_ptr<FPSManager> _fpsManager;
 
  public:
   bool moveOn;

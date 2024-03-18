@@ -8,12 +8,21 @@ using namespace model;
 Renderer::Renderer(const int* windowWidth,
                    const int* windowHeight,
                    Model_t model,
-                   const bool renderToFrameBuffer) {
-  _windowWidth = windowWidth;
-  _windowHeight = windowHeight;
-  _model = model;
-
+                   const bool renderToFrameBuffer)
+    : _viewMat(0.0f),
+      _projMat(0.0f),
+      _acRotMat(0.0f),
+      _acTransMat(0.0f),
+      _acScaleMat(0.0f),
+      _lightTrasMat(0.0f),
+      _lightProjMat(0.0f),
+      _model(model),
+      _windowWidth(windowWidth),
+      _windowHeight(windowHeight),
+      _frameBuffer(nullptr),
+      _depthRenderer(nullptr) {
   if (renderToFrameBuffer) {
+    // Render to framebuffer
     _frameBuffer = std::make_shared<FrameBuffer>(*_windowWidth, *_windowHeight);
   }
 
@@ -227,10 +236,10 @@ glm::mat4 Renderer::perspective(const float& fovyInDegrees,
 
   return {
       // clang-format off
-        /* 0*/ 2.0f * nearPlane / width, /* 1*/                      0.0f, /* 2*/                                  0.0f, /* 3*/  0.0f,
-        /* 4*/                     0.0f, /* 5*/ 2.0f * nearPlane / height, /* 6*/                                  0.0f, /* 7*/  0.0f,
-        /* 8*/                     0.0f, /* 9*/                      0.0f, /*10*/      -(rearPlane + nearPlane) / depth, /*11*/ -1.0f,
-        /*12*/                     0.0f, /*13*/                      0.0f, /*14*/ -2.0f * rearPlane * nearPlane / depth, /*15*/  0.0f
+      /* 0*/ 2.0f * nearPlane / width, /* 1*/                      0.0f, /* 2*/                                  0.0f, /* 3*/  0.0f,
+      /* 4*/                     0.0f, /* 5*/ 2.0f * nearPlane / height, /* 6*/                                  0.0f, /* 7*/  0.0f,
+      /* 8*/                     0.0f, /* 9*/                      0.0f, /*10*/      -(rearPlane + nearPlane) / depth, /*11*/ -1.0f,
+      /*12*/                     0.0f, /*13*/                      0.0f, /*14*/ -2.0f * rearPlane * nearPlane / depth, /*15*/  0.0f
       // clang-format on
   };
 }

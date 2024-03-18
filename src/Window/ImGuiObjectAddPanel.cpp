@@ -41,11 +41,11 @@ ImGuiObjectAddPanel::~ImGuiObjectAddPanel() {}
 
 void ImGuiObjectAddPanel::paint() {
   static int objectTypeID = 0;
-  static char objName[256];
-  static char objFilePath[256];
-  static char textureFilePath[256];
-  static char heightMapFilePath[256];
-  static char normalMapFilePath[256];
+  static char objName[CHAR_BUFFER_SIZE];
+  static char objFilePath[CHAR_BUFFER_SIZE];
+  static char textureFilePath[CHAR_BUFFER_SIZE];
+  static char heightMapFilePath[CHAR_BUFFER_SIZE];
+  static char normalMapFilePath[CHAR_BUFFER_SIZE];
   static float offsetXYZ[3] = {0.0f, 0.0f, 0.0f};
   static float scale = 1.0f;
   static float scaleXYZ[3] = {1.0f, 1.0f, 1.0f};
@@ -53,7 +53,7 @@ void ImGuiObjectAddPanel::paint() {
   static int nDivs = 100;
   static float pointSize = 0.01f;
   static bool isDoubled = true;
-  static char text[256] = "Hello, world!";
+  static char text[CHAR_BUFFER_SIZE] = "Hello, world!";
   static int fontPixelSize = 64;
   static int fontPadding = 16;
   static float screenSpacePos[2] = {0.0f, 0.0f};
@@ -70,9 +70,9 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Object
     // ====================================================================
-    ImGui::InputText("Obj name", objName, 256);
+    ImGui::InputText("Obj name", objName, CHAR_BUFFER_SIZE);
 
-    ImGui::InputText("Obj file path", objFilePath, 256);
+    ImGui::InputText("Obj file path", objFilePath, CHAR_BUFFER_SIZE);
     ImGui::SameLine();
     if (ImGui::Button("Browse obj")) {
       nfdchar_t* outPath;
@@ -82,9 +82,11 @@ void ImGuiObjectAddPanel::paint() {
       if (result == NFD_OKAY) {
         strcpy(objFilePath, outPath);
       }
+
+      NFD_FreePath(outPath);
     }
 
-    ImGui::InputText("Texture file path", textureFilePath, 256);
+    ImGui::InputText("Texture file path", textureFilePath, CHAR_BUFFER_SIZE);
     ImGui::SameLine();
     if (ImGui::Button("Browse texture")) {
       nfdchar_t* outPath;
@@ -94,9 +96,11 @@ void ImGuiObjectAddPanel::paint() {
       if (result == NFD_OKAY) {
         strcpy(textureFilePath, outPath);
       }
+
+      NFD_FreePath(outPath);
     }
 
-    ImGui::InputText("Normal map file path", normalMapFilePath, 256);
+    ImGui::InputText("Normal map file path", normalMapFilePath, CHAR_BUFFER_SIZE);
     ImGui::SameLine();
     if (ImGui::Button("Browse normal map")) {
       nfdchar_t* outPath;
@@ -106,6 +110,8 @@ void ImGuiObjectAddPanel::paint() {
       if (result == NFD_OKAY) {
         strcpy(normalMapFilePath, outPath);
       }
+
+      NFD_FreePath(outPath);
     }
 
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
@@ -115,11 +121,11 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Box
     // ====================================================================
-    ImGui::InputText("Obj name", objName, 256);
+    ImGui::InputText("Obj name", objName, CHAR_BUFFER_SIZE);
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);
 
-    ImGui::InputText("Texture file path", textureFilePath, 256);
+    ImGui::InputText("Texture file path", textureFilePath, CHAR_BUFFER_SIZE);
     ImGui::SameLine();
     if (ImGui::Button("Browse texture")) {
       nfdchar_t* outPath;
@@ -129,13 +135,15 @@ void ImGuiObjectAddPanel::paint() {
       if (result == NFD_OKAY) {
         strcpy(textureFilePath, outPath);
       }
+
+      NFD_FreePath(outPath);
     }
   } else if (objectTypeID == 2) {
     // ====================================================================
     // Terrain
     // ====================================================================
-    ImGui::InputText("Obj name", objName, 256);
-    ImGui::InputText("Height map file path", heightMapFilePath, 256);
+    ImGui::InputText("Obj name", objName, CHAR_BUFFER_SIZE);
+    ImGui::InputText("Height map file path", heightMapFilePath, CHAR_BUFFER_SIZE);
     ImGui::SameLine();
     if (ImGui::Button("Browse obj")) {
       nfdchar_t* outPath;
@@ -145,6 +153,8 @@ void ImGuiObjectAddPanel::paint() {
       if (result == NFD_OKAY) {
         strcpy(heightMapFilePath, outPath);
       }
+
+      NFD_FreePath(outPath);
     }
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat3("Scale (X, Y, H)", scaleXYZ, FLOAT_FORMAT);
@@ -152,8 +162,8 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Background
     // ====================================================================
-    ImGui::InputText("Obj name", objName, 256);
-    ImGui::InputText("Texture file path", textureFilePath, 256);
+    ImGui::InputText("Obj name", objName, CHAR_BUFFER_SIZE);
+    ImGui::InputText("Texture file path", textureFilePath, CHAR_BUFFER_SIZE);
     ImGui::SameLine();
     if (ImGui::Button("Browse texture")) {
       nfdchar_t* outPath;
@@ -163,12 +173,14 @@ void ImGuiObjectAddPanel::paint() {
       if (result == NFD_OKAY) {
         strcpy(textureFilePath, outPath);
       }
+
+      NFD_FreePath(outPath);
     }
   } else if (objectTypeID == 4) {
     // ====================================================================
     // Sphere
     // ====================================================================
-    ImGui::InputText("Obj name", objName, 256);
+    ImGui::InputText("Obj name", objName, CHAR_BUFFER_SIZE);
     ImGui::InputInt("Num divisions", &nDivs);
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);
@@ -177,8 +189,8 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Point cloud with polygon
     // ====================================================================
-    ImGui::InputText("Obj name", objName, 256);
-    ImGui::InputText("Point cloud file path", objFilePath, 256);
+    ImGui::InputText("Obj name", objName, CHAR_BUFFER_SIZE);
+    ImGui::InputText("Point cloud file path", objFilePath, CHAR_BUFFER_SIZE);
     ImGui::SameLine();
     if (ImGui::Button("Browse object file")) {
       nfdchar_t* outPath;
@@ -188,6 +200,8 @@ void ImGuiObjectAddPanel::paint() {
       if (result == NFD_OKAY) {
         strcpy(objFilePath, outPath);
       }
+
+      NFD_FreePath(outPath);
     }
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat("Scale", &scale);
@@ -197,8 +211,8 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Point cloud
     // ====================================================================
-    ImGui::InputText("Obj name", objName, 256);
-    ImGui::InputText("Point cloud file path", objFilePath, 256);
+    ImGui::InputText("Obj name", objName, CHAR_BUFFER_SIZE);
+    ImGui::InputText("Point cloud file path", objFilePath, CHAR_BUFFER_SIZE);
     ImGui::SameLine();
     if (ImGui::Button("Browse object file")) {
       nfdchar_t* outPath;
@@ -208,6 +222,8 @@ void ImGuiObjectAddPanel::paint() {
       if (result == NFD_OKAY) {
         strcpy(objFilePath, outPath);
       }
+
+      NFD_FreePath(outPath);
     }
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat("Scale", &scale);
@@ -216,8 +232,8 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Materialed object
     // ====================================================================
-    ImGui::InputText("Obj name", objName, 256);
-    ImGui::InputText("Obj file path", objFilePath, 256);
+    ImGui::InputText("Obj name", objName, CHAR_BUFFER_SIZE);
+    ImGui::InputText("Obj file path", objFilePath, CHAR_BUFFER_SIZE);
     ImGui::SameLine();
     if (ImGui::Button("Browse Obj")) {
       nfdchar_t* outPath;
@@ -227,6 +243,8 @@ void ImGuiObjectAddPanel::paint() {
       if (result == NFD_OKAY) {
         strcpy(objFilePath, outPath);
       }
+
+      NFD_FreePath(outPath);
     }
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);
@@ -235,8 +253,8 @@ void ImGuiObjectAddPanel::paint() {
     // ====================================================================
     // Text box
     // ====================================================================
-    ImGui::InputText("Obj name", objName, 256);
-    ImGui::InputTextMultiline("Text", text, 256);
+    ImGui::InputText("Obj name", objName, CHAR_BUFFER_SIZE);
+    ImGui::InputTextMultiline("Text", text, CHAR_BUFFER_SIZE);
     ImGui::InputFloat2("Position (-1.0 < x,y < 1.0)", screenSpacePos, FLOAT_FORMAT);
     ImGui::DragFloat("Size mag", &textBoxMag, 0.001f, 0.0f, 4.0f, FLOAT_FORMAT);
     ImGui::InputInt("Font pixel size", &fontPixelSize);
