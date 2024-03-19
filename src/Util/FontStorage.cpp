@@ -23,12 +23,14 @@ TrueTypeFontRegistry::TrueTypeFontRegistry(const unsigned int* ttfFontData,
   // =========================================================================
   // Load from memory
   // =========================================================================
-  if (isOK && FT_New_Memory_Face(_library,                     // FT_Library      library
-                                 (const FT_Byte*)ttfFontData,  // const FT_Byte*  file_base
-                                 ttfFontDataSize,              // FT_Long         file_size
-                                 0,                            // FT_Long         face_index
-                                 &_face                        // FT_Face*        aface
-                                 ) != 0) {
+  if (isOK &&
+      FT_New_Memory_Face(
+          _library,                     // FT_Library      library
+          (const FT_Byte*)ttfFontData,  // const FT_Byte*  file_base
+          ttfFontDataSize,              // FT_Long         file_size
+          0,                            // FT_Long         face_index
+          &_face                        // FT_Face*        a face
+          ) != 0) {
     isOK = false;
   }
 
@@ -55,14 +57,14 @@ Bitmap_t TrueTypeFontRegistry::getBitmap(const char* text, int& width, int& heig
   std::vector<int> lineHights = {0};
 
   {
-    // Calculate target bitmap size
-    int lineWidth = 0;   // Width of each line
-    int lineHeight = 0;  // Height of each line
-    int maxWidth = 0;    // Width of canvas
-    int maxHeight = 0;   // Height of canvas
-    int currentLine = 0;
+    // NOTE: In this scope, calculate target bitmap size
+    int lineWidth = 0;    // Width of each line
+    int lineHeight = 0;   // Height of each line
+    int maxWidth = 0;     // Width of canvas
+    int maxHeight = 0;    // Height of canvas
+    int currentLine = 0;  // Current processing line
 
-    for (int iChar = 0; iChar < (int)u32str.size(); iChar++) {
+    for (int iChar = 0; iChar < (int)u32str.size(); iChar++) {  // for-loop of char
       if (u32str[iChar] == '\n') {
         lineWidth = 0;   // Reset line width
         lineHeight = 0;  // Reset line height
@@ -77,10 +79,11 @@ Bitmap_t TrueTypeFontRegistry::getBitmap(const char* text, int& width, int& heig
         }
 
         FT_GlyphSlot& slot = _face->glyph;
+        FT_Size& size = _face->size;
 
         // Per charactor
-        const int ascender = _face->size->metrics.ascender >> 6;
-        const int descender = _face->size->metrics.descender >> 6;
+        const int ascender = size->metrics.ascender >> 6;
+        const int descender = size->metrics.descender >> 6;
 
         const int charWidth = slot->advance.x >> 6;
         const int charHeight = ascender - descender;
@@ -94,25 +97,26 @@ Bitmap_t TrueTypeFontRegistry::getBitmap(const char* text, int& width, int& heig
         maxWidth = std::max(maxWidth, lineWidth);
         maxHeight = std::max(maxHeight, lineHightOffsets[currentLine] + lineHeight);
       }
-    }
+    }  // for-loop of char
 
     width = maxWidth + _padding * 2;    // Add pagging
     height = maxHeight + _padding * 2;  // Add pagging
   }
 
+  // Create bitmap object
   Bitmap_t distBitmap = std::make_shared<Bitmap>(width, height);
 
   {
     // Draw
-    int penX = _padding;                  // left position
-    int penY = lineHights[0] + _padding;  // bottom position
+    int penX = _padding;                  // Left position
+    int penY = lineHights[0] + _padding;  // Bottom position
     int currentLine = 0;                  // Current drawing line
 
-    for (int iChar = 0; iChar < (int)u32str.size(); iChar++) {
+    for (int iChar = 0; iChar < (int)u32str.size(); iChar++) {  // for-loop of char
       if (u32str[iChar] == '\n') {
-        currentLine++;
-        penX = _padding;
-        penY += lineHights[currentLine];
+        currentLine++;                    // Next line
+        penX = _padding;                  // Reset horizontal drawing position
+        penY += lineHights[currentLine];  // Reset vertical drawing position
       } else {
         if (FT_Load_Char(_face, u32str[iChar], FT_LOAD_RENDER)) {
           continue;
@@ -120,15 +124,18 @@ Bitmap_t TrueTypeFontRegistry::getBitmap(const char* text, int& width, int& heig
 
         FT_GlyphSlot& slot = _face->glyph;
 
-        drawBitmap(slot->bitmap,
-                   penX + slot->bitmap_left,
-                   penY - slot->bitmap_top + (int)(_face->size->metrics.descender >> 6),
-                   distBitmap);
+        // Draw to distBitmap
+        drawBitmap(
+            slot->bitmap,                                                          // Source bitmap
+            penX + slot->bitmap_left,                                              // X coord of  top-left corner
+            penY - slot->bitmap_top + (int)(_face->size->metrics.descender >> 6),  // Y coord of  top-left corner
+            distBitmap                                                             // Draw to
+        );
 
-        penX += slot->advance.x >> 6;
+        penX += slot->advance.x >> 6;  // Next position
       }
     }
-  }
+  }  // for-loop of char
 
 #if defined(DEBUG_FONT_STORAGE_SAVE_BITMAP_IMAGE)
   {
@@ -156,6 +163,7 @@ void TrueTypeFontRegistry::drawBitmap(const FT_Bitmap& srcBitmap,
   for (int i = cursorX, p = 0; i < maxX; i++, p++) {
     for (int j = cursorY, q = 0; j < maxY; j++, q++) {
       if (i < 0 || j < 0 || i >= distBitmap->width || j >= distBitmap->height) {
+        // Out of area
         continue;
       }
 

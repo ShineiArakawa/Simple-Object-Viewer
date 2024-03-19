@@ -1,6 +1,7 @@
 #include <App/ViewerGUIApp.hpp>
 
-#define DEBUG_TEXT_BOX
+#define DEBUG_VTK
+
 namespace simview {
 namespace app {
 
@@ -82,6 +83,12 @@ ViewerGUIApp::ViewerGUIApp()
 
   _view->getSceneView()->isEnabledShadowMapping = true;
   _model->setIsEnabledShadowMapping(_view->getSceneView()->isEnabledShadowMapping);
+#endif
+
+#ifdef DEBUG_VTK
+  auto vtkObj = std::make_shared<Object>("C:/Users/araka/Projects/Simple-Object-Viewer/data/cube.vtu");
+  vtkObj->setName("VTK obj");
+  _model->addObject(vtkObj);
 #endif
 }
 

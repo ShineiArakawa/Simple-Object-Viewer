@@ -10,7 +10,7 @@ if(WIN32)
   list(APPEND VIEWER_GUI_SOURCES "main.rc")
   add_executable(
     ${PROJECT_NAME}
-    WIN32
+    # WIN32
     ${VIEWER_GUI_SOURCES}
   )
 elseif (APPLE)

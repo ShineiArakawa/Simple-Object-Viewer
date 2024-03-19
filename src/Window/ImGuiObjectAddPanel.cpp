@@ -81,9 +81,8 @@ void ImGuiObjectAddPanel::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(objFilePath, outPath);
+        NFD_FreePath(outPath);
       }
-
-      NFD_FreePath(outPath);
     }
 
     ImGui::InputText("Texture file path", textureFilePath, CHAR_BUFFER_SIZE);
@@ -95,9 +94,8 @@ void ImGuiObjectAddPanel::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(textureFilePath, outPath);
+        NFD_FreePath(outPath);
       }
-
-      NFD_FreePath(outPath);
     }
 
     ImGui::InputText("Normal map file path", normalMapFilePath, CHAR_BUFFER_SIZE);
@@ -109,9 +107,8 @@ void ImGuiObjectAddPanel::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(normalMapFilePath, outPath);
+        NFD_FreePath(outPath);
       }
-
-      NFD_FreePath(outPath);
     }
 
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
@@ -134,9 +131,8 @@ void ImGuiObjectAddPanel::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(textureFilePath, outPath);
+        NFD_FreePath(outPath);
       }
-
-      NFD_FreePath(outPath);
     }
   } else if (objectTypeID == 2) {
     // ====================================================================
@@ -152,9 +148,8 @@ void ImGuiObjectAddPanel::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(heightMapFilePath, outPath);
+        NFD_FreePath(outPath);
       }
-
-      NFD_FreePath(outPath);
     }
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat3("Scale (X, Y, H)", scaleXYZ, FLOAT_FORMAT);
@@ -172,9 +167,8 @@ void ImGuiObjectAddPanel::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(textureFilePath, outPath);
+        NFD_FreePath(outPath);
       }
-
-      NFD_FreePath(outPath);
     }
   } else if (objectTypeID == 4) {
     // ====================================================================
@@ -199,9 +193,8 @@ void ImGuiObjectAddPanel::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(objFilePath, outPath);
+        NFD_FreePath(outPath);
       }
-
-      NFD_FreePath(outPath);
     }
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat("Scale", &scale);
@@ -221,9 +214,8 @@ void ImGuiObjectAddPanel::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(objFilePath, outPath);
+        NFD_FreePath(outPath);
       }
-
-      NFD_FreePath(outPath);
     }
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat("Scale", &scale);
@@ -242,9 +234,8 @@ void ImGuiObjectAddPanel::paint() {
 
       if (result == NFD_OKAY) {
         strcpy(objFilePath, outPath);
+        NFD_FreePath(outPath);
       }
-
-      NFD_FreePath(outPath);
     }
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat3("Scale (X, Y, Z)", scaleXYZ, FLOAT_FORMAT);

@@ -22,6 +22,7 @@ TextBox::TextBox(const char* text,
                                                                   fontPixelsize,
                                                                   padding)),
       _sizeMagnification(sizeMagnification) {
+  // Set defailt render mode to texture
   setDefaultRenderType(RenderType::TEXTURE);
 }
 
@@ -33,10 +34,16 @@ void TextBox::initVAO() {
   // ============================================================================================================
   // Get bitmaps
   int width, height;
-  const util::fonts::Bitmap_t bitmap = _fontRegistry->getBitmap(_text, width, height);
+  const fonts::Bitmap_t bitmap = _fontRegistry->getBitmap(_text, width, height);
 
-  // Copy to RGBD format data
-  unsigned char* bytes = (unsigned char*)malloc(sizeof(unsigned char) * width * height * (size_t)4);
+  // Copy to RGBA format data
+  const size_t nBytes = sizeof(unsigned char) * width * height * (size_t)4;
+  
+  if ((double)nBytes / 1024.0 / 1024.0 / 1024.0 > 1.0) {
+    LOG_WARN("The size of texture is larger than 1 GB. Be careful not to overflow the memory.");
+  }
+
+  unsigned char* bytes = (unsigned char*)malloc(nBytes);
   const size_t nPixels = (size_t)width * height;
 
   for (size_t iPixel = 0; iPixel < nPixels; ++iPixel) {
@@ -47,11 +54,12 @@ void TextBox::initVAO() {
     bytes[offset + 3] = 255;
   }
 
-  const float aspectRatio = (float)width / height;
-
   // Transfer to VRAM
   Texture::loadTexture(bytes, width, height, 4, _textureId);
   free(bytes);
+
+  // Calc aspect ratio to resize quad
+  const float aspectRatio = (float)width / height;
 
   // ============================================================================================================
   // Init quad

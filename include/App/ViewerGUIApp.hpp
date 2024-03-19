@@ -13,8 +13,7 @@ class ViewerGUIApp {
  private:
   inline static int WINDOW_WIDTH = 2000;
   inline static int WINDOW_HEIGHT = 1200;
-  inline static const char* WINDOW_TITLE = "ViewerGUI";
-  inline static const std::string DEFAULT_CONFIG_PATH = "../../../../data/sample_bunny.json";
+  inline static const char* WINDOW_TITLE = "Simple-Object-Viewer";
 
   GLFWwindow* _window = nullptr;
   model::ViewerModel_t _model = nullptr;

@@ -18,6 +18,9 @@ endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D ENABLE_LEAK_CHECK")
 
+# Enable assimp
+add_definitions(-DSIMVIEW_USE_ASSIMP)
+
 # NOTE: In some cases, failed to compile assimp with clang compiler with gcc 12 toolchain.
 # Thus, specify your path to the gcc "11" toolchain by the following option.
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11")
@@ -88,6 +91,17 @@ set(SPD_LOG_INCLUDE_DIR ${PROJECT_LIB_DIR}/spdlog/include)
 # #### assimp
 set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_DIR}/external/assimp/include)
 
+# #### VTK
+find_package(VTK QUIET)
+
+if (VTK_FOUND)
+  message("# Found VTK")
+  message("# VTK_LIBRARIES : ${VTK_LIBRARIES}")
+  # Enable VTK plugin
+  set(SIMVIEW_WITH_VTK on)
+  add_definitions(-DSIMVIEW_WITH_VTK)
+endif(VTK_FOUND)
+
 ######################################################
 # External libralies
 ######################################################
@@ -113,6 +127,7 @@ set(
   nfd
   assimp
   freetype
+  ${VTK_LIBRARIES}
 )
 
 ######################################################
@@ -135,7 +150,7 @@ install(
 	FILES_MATCHING PATTERN "*.hpp"
 )
 
-set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "" FORCE)
+set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
 
 # Set install lib directory is done in erc/CMakeLists.txt
 

@@ -86,12 +86,15 @@ class ImGuiMainView {
 
   bool _moveOn;
 
+  bool _toOpenExitProgramPopup;
+
  public:
  private:
   void paintMenuBar();
   void paintSideBar();
   void paintSceneWindow();
   void paintDepthSceneWindow();
+  void paintPopupWidgets();
 
  public:
   ImGuiMainView(GLFWwindow*, model::ViewerModel_t);

@@ -25,6 +25,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
       _lightPositionBuffer(new float[3]),
       _screenshotFilePathBuffer((char*)calloc(sizeof(char), CHAR_BUFFER_SIZE)),
       _fpsManager(nullptr),
+      _toOpenExitProgramPopup(false),
       _moveOn(true) {
   // ====================================================================
   // Initialize scene window
@@ -110,8 +111,7 @@ void ImGuiMainView::paintMenuBar() {
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("Quit")) {
         LOG_INFO("Quit the program");
-        _moveOn = false;
-        return;
+        _toOpenExitProgramPopup = true;
       }
       ImGui::EndMenu();
     }
@@ -131,7 +131,12 @@ void ImGuiMainView::paintMenuBar() {
 
         if (_isVisibleHelpMessage) {
           LOG_INFO("Show help message");
-          auto textBox = std::make_shared<TextBox>(HELP_TEXT, glm::vec2(0.0f, 0.0f), 4.0f, 32);
+          auto textBox = std::make_shared<TextBox>(
+              HELP_TEXT,              // Text
+              glm::vec2(0.0f, 0.0f),  // Position in screen space
+              6.0f,                   // Maginification of texture
+              48                      // Font size
+          );
           textBox->setName("Help message");
           _sceneModel->addObject(textBox);
         } else {
@@ -391,9 +396,8 @@ void ImGuiMainView::paintSideBar() {
 
         if (result == NFD_OKAY) {
           strcpy(&_screenshotFilePathBuffer[0], outPath);
+          NFD_FreePath(outPath);
         }
-
-        NFD_FreePath(outPath);
       }  // Browse button
 
       ImGui::SameLine();
@@ -511,6 +515,34 @@ void ImGuiMainView::paintDepthSceneWindow() {
   }
 }
 
+void ImGuiMainView::paintPopupWidgets() {
+  {
+    // Exit widgets
+    if (ImGui::BeginPopup("Exit", ImGuiWindowFlags_Modal)) {
+      ImGui::Text("Quit this programs?");
+      ImGui::Spacing();
+
+      // Cancel button
+      if (ImGui::Button("Cancel")) {
+        ImGui::CloseCurrentPopup();
+      }
+
+      // OK button
+      ImGui::SameLine();
+      if (ImGui::Button("OK")) {
+        // Set _moveOn to false
+        _moveOn = false;
+      }
+      ImGui::EndPopup();
+    }
+
+    if (_toOpenExitProgramPopup) {
+      ImGui::OpenPopup("Exit");
+      _toOpenExitProgramPopup = false;
+    }
+  }
+}
+
 void ImGuiMainView::paint() {
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -535,6 +567,9 @@ void ImGuiMainView::paint() {
 
     // Depth scene window
     paintDepthSceneWindow();
+
+    // Popup widgets
+    paintPopupWidgets();
   }
 
   ImGui::Render();

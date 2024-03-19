@@ -17,7 +17,7 @@ std::vector<std::string> ObjectLoader::getReadableExtensionList() {
   // Native support
   extensionList.push_back("pch");
 
-#if defined(USE_ASSIMP)
+#if defined(SIMVIEW_USE_ASSIMP)
   std::string strExtensions;
 
   {
@@ -37,8 +37,13 @@ std::vector<std::string> ObjectLoader::getReadableExtensionList() {
     extensionList.push_back(extension);
   }
 #else
+
   // Native support
   extensionList.push_back("obj");
+#endif
+
+#if defined(SIMVIEW_WITH_VTK)
+  extensionList.push_back("vtu");
 #endif
 
   return extensionList;
@@ -62,6 +67,8 @@ void ObjectLoader::readFromFile(const std::string &filePath,
     readPchFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else if (extension == ".las") {
     readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+  } else if (extension == ".vtu") {
+    readVtkFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   } else {
     readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
   }
@@ -78,7 +85,7 @@ void ObjectLoader::readObjFile(const std::string &filePath,
                                const float offsetX,
                                const float offsetY,
                                const float offsetZ) {
-#if defined(USE_ASSIMP)
+#if defined(SIMVIEW_USE_ASSIMP)
   Assimp::Importer importer;
   unsigned int flag = 0;
   flag |= aiProcess_Triangulate;
@@ -771,6 +778,153 @@ void ObjectLoader::readLazFile(const std::string &filePath,
   // }
 }
 
+void ObjectLoader::readVtkFile(const std::string &filePath,
+                               VertexArray_t vertices,
+                               IndexArray_t indices,
+                               const float offsetX,
+                               const float offsetY,
+                               const float offsetZ) {
+#if defined(SIMVIEW_WITH_VTK)
+  vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
+  reader->SetFileName(filePath.c_str());
+  reader->Update();
+
+  vtkUnstructuredGrid *unstructuredGrid = reader->GetOutput();
+
+  if (unstructuredGrid != nullptr) {
+    // Triangrated Faces
+    {
+      vtkPoints *points = unstructuredGrid->GetPoints();
+      vtkCellArray *cells = unstructuredGrid->GetCells();
+
+      if (points != nullptr && cells != nullptr) {
+        const vtkIdType nCells = cells->GetNumberOfCells();
+        size_t vertexId = 0;
+
+        for (vtkIdType cellId = 0; cellId < nCells; ++cellId) {
+          vtkSmartPointer<vtkIdList> ptIds = vtkSmartPointer<vtkIdList>::New();
+          vtkSmartPointer<vtkPoints> pts = vtkSmartPointer<vtkPoints>::New();
+
+          vtkCell *cell = unstructuredGrid->GetCell(cellId);
+          const int cellType = cell->GetCellType();
+          vtkIdList *idList = cell->GetPointIds();
+          const int nVertices = idList->GetNumberOfIds();
+          double coordsBuffer[3] = {0.0, 0.0, 0.0};
+
+          if (cellType == VTK_TRIANGLE) {
+            for (size_t iTriangle = 0; iTriangle < VTK_TRIANGLE_IDS_TRIANGLE.size(); ++iTriangle) {
+              for (size_t iVertex = 0; iVertex < 3; ++iVertex) {
+                const vtkIdType pointId = (uint32_t)idList->GetId(VTK_TRIANGLE_IDS_TRIANGLE[iTriangle][iVertex]);
+
+                // Get vertex coords
+                points->GetPoint(pointId, coordsBuffer);
+
+                Vertex vertex(glm::vec3(coordsBuffer[0], coordsBuffer[1], coordsBuffer[2]),
+                              glm::vec3(0.0f),
+                              glm::vec3(0.0f),
+                              BARY_CENTER[iVertex],
+                              glm::vec2(0.0f),
+                              0.0f);
+
+                vertices->push_back(vertex);
+                indices->push_back(vertexId++);
+              }
+            }
+          } else if (cellType == VTK_QUAD) {
+            for (size_t iTriangle = 0; iTriangle < VTK_TRIANGLE_IDS_QUAD.size(); ++iTriangle) {
+              for (size_t iVertex = 0; iVertex < 3; ++iVertex) {
+                const vtkIdType pointId = (uint32_t)idList->GetId(VTK_TRIANGLE_IDS_QUAD[iTriangle][iVertex]);
+
+                // Get vertex coords
+                points->GetPoint(pointId, coordsBuffer);
+
+                Vertex vertex(glm::vec3(coordsBuffer[0], coordsBuffer[1], coordsBuffer[2]),
+                              glm::vec3(0.0f),
+                              glm::vec3(0.0f),
+                              BARY_CENTER[iVertex],
+                              glm::vec2(0.0f),
+                              0.0f);
+
+                vertices->push_back(vertex);
+                indices->push_back(vertexId++);
+              }
+            }
+          } else if (cellType == VTK_TETRA) {
+            for (size_t iTriangle = 0; iTriangle < VTK_TRIANGLE_IDS_TETRA.size(); ++iTriangle) {
+              for (size_t iVertex = 0; iVertex < 3; ++iVertex) {
+                const vtkIdType pointId = (uint32_t)idList->GetId(VTK_TRIANGLE_IDS_TETRA[iTriangle][iVertex]);
+
+                // Get vertex coords
+                points->GetPoint(pointId, coordsBuffer);
+
+                Vertex vertex(glm::vec3(coordsBuffer[0], coordsBuffer[1], coordsBuffer[2]),
+                              glm::vec3(0.0f),
+                              glm::vec3(0.0f),
+                              BARY_CENTER[iVertex],
+                              glm::vec2(0.0f),
+                              0.0f);
+
+                vertices->push_back(vertex);
+                indices->push_back(vertexId++);
+              }
+            }
+          } else if (cellType == VTK_HEXAHEDRON) {
+            for (size_t iTriangle = 0; iTriangle < VTK_TRIANGLE_IDS_HEXAHEDRON.size(); ++iTriangle) {
+              for (size_t iVertex = 0; iVertex < 3; ++iVertex) {
+                const vtkIdType pointId = (uint32_t)idList->GetId(VTK_TRIANGLE_IDS_HEXAHEDRON[iTriangle][iVertex]);
+
+                // Get vertex coords
+                points->GetPoint(pointId, coordsBuffer);
+
+                Vertex vertex(glm::vec3(coordsBuffer[0], coordsBuffer[1], coordsBuffer[2]),
+                              glm::vec3(0.0f),
+                              glm::vec3(0.0f),
+                              BARY_CENTER[iVertex],
+                              glm::vec2(0.0f),
+                              0.0f);
+
+                vertices->push_back(vertex);
+                indices->push_back(vertexId++);
+              }
+            }
+          } else if (cellType == VTK_WEDGE) {
+            for (size_t iTriangle = 0; iTriangle < VTK_TRIANGLE_IDS_WEDGE.size(); ++iTriangle) {
+              for (size_t iVertex = 0; iVertex < 3; ++iVertex) {
+                const vtkIdType pointId = (uint32_t)idList->GetId(VTK_TRIANGLE_IDS_WEDGE[iTriangle][iVertex]);
+
+                // Get vertex coords
+                points->GetPoint(pointId, coordsBuffer);
+
+                Vertex vertex(glm::vec3(coordsBuffer[0], coordsBuffer[1], coordsBuffer[2]),
+                              glm::vec3(0.0f),
+                              glm::vec3(0.0f),
+                              BARY_CENTER[iVertex],
+                              glm::vec2(0.0f),
+                              0.0f);
+
+                vertices->push_back(vertex);
+                indices->push_back(vertexId++);
+              }
+            }
+          } else {
+            LOG_WARN("Unsupported cell type!");
+            break;
+          }  // end of if 'cellType'
+        }    // end of for-loop 'cellid'
+      }      // end of null-check 'cells'
+    }
+  } else {
+    LOG_ERROR("Unstructured grid data is null!");
+  }
+#endif
+
+  ObjectLoader::moveToOrigin(vertices);
+  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
+
+  LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
+  LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
+}
+
 void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
                                                 MaterialGroups_t materialGroups,
                                                 const glm::vec3 offset,
@@ -779,16 +933,13 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   unsigned int nFaces = 0;
   unsigned int nVertices = 0;
 
-#if defined(USE_ASSIMP)
+#if defined(SIMVIEW_USE_ASSIMP)
   Assimp::Importer importer;
   unsigned int flag = 0;
   flag |= aiProcess_Triangulate;
-  // flag |= aiProcess_PreTransformVertices;
   flag |= aiProcess_CalcTangentSpace;
-  // flag |= aiProcess_GenSmoothNormals;
-  // flag |= aiProcess_GenUVCoords;
   flag |= aiProcess_RemoveRedundantMaterials;
-  // flag |= aiProcess_OptimizeMeshes;
+  flag |= aiProcess_GenNormals;
 
   const aiScene *scene = importer.ReadFile(filePath, flag);
 
@@ -969,8 +1120,6 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
       const int materialID = isFoundMaterials ? shape.mesh.material_ids[iFace] : 0;
 
       for (size_t iVertex = 0; iVertex < nVertices; iVertex++) {
-        nVertices++;
-
         // access to vertex
         const tinyobj::index_t index = shape.mesh.indices[indexOffset + iVertex];
 

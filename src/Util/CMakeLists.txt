@@ -23,3 +23,11 @@ target_include_directories(
   ${PROJECT_INCLUDE_DIR}
   ${EXTERNAL_INCLUDE_DIR}
 )
+
+if (SIMVIEW_WITH_VTK)
+  target_link_libraries(
+    ${PROJECT_NAME}
+    PUBLIC
+    ${VTK_LIBRARIES}
+  )
+endif(SIMVIEW_WITH_VTK)
