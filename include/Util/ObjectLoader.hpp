@@ -41,7 +41,7 @@ namespace util {
 class ObjectLoader {
  private:
 #if defined(SIMVIEW_WITH_VTK)
-  inline static const std::array<vec3i_t, 0> VTK_TRIANGLE_IDS_TRIANGLE = {{{{0, 1, 2}}}};
+  inline static const std::array<vec3i_t, 1> VTK_TRIANGLE_IDS_TRIANGLE = {{{{0, 1, 2}}}};
   inline static const std::array<vec3i_t, 2> VTK_TRIANGLE_IDS_QUAD = {{{{0, 1, 2}},
                                                                        {{2, 3, 0}}}};
   inline static const std::array<vec3i_t, 4> VTK_TRIANGLE_IDS_TETRA = {{{{0, 1, 2}},
@@ -60,14 +60,14 @@ class ObjectLoader {
                                                                               {{6, 7, 3}},
                                                                               {{1, 0, 4}},
                                                                               {{4, 5, 1}}}};
-  inline static const std::array<vec3i_t, 12> VTK_TRIANGLE_IDS_WEDGE = {{{{2, 1, 0}},
-                                                                         {{5, 3, 4}},
-                                                                         {{1, 4, 3}},
-                                                                         {{3, 0, 1}},
-                                                                         {{0, 3, 5}},
-                                                                         {{5, 2, 0}},
-                                                                         {{1, 2, 5}},
-                                                                         {{5, 4, 1}}}};
+  inline static const std::array<vec3i_t, 8> VTK_TRIANGLE_IDS_WEDGE = {{{{2, 1, 0}},
+                                                                        {{5, 3, 4}},
+                                                                        {{1, 4, 3}},
+                                                                        {{3, 0, 1}},
+                                                                        {{0, 3, 5}},
+                                                                        {{5, 2, 0}},
+                                                                        {{1, 2, 5}},
+                                                                        {{5, 4, 1}}}};
 #endif
 
  public:
