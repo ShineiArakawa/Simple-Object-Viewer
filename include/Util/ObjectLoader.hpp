@@ -1,10 +1,12 @@
 #pragma once
 
 #include <OpenGL.hpp>
+#include <Util/Colors.hpp>
 #include <Util/DataStructure.hpp>
 #include <Util/FileUtil.hpp>
 #include <Util/Geometry.hpp>
 #include <Util/Logging.hpp>
+#include <Util/Math.hpp>
 #include <Util/StringUtil.hpp>
 #include <chrono>
 #include <fstream>
@@ -68,6 +70,11 @@ class ObjectLoader {
                                                                         {{5, 2, 0}},
                                                                         {{1, 2, 5}},
                                                                         {{5, 4, 1}}}};
+  inline static const std::array<vec3i_t, 4> VTK_TRIANGLE_IDS_QUADRATIC_TRIANGLE = {{{{0, 3, 5}},
+                                                                                     {{3, 1, 4}},
+                                                                                     {{5, 3, 4}},
+                                                                                     {{4, 2, 5}}}};
+
 #endif
 
  public:
