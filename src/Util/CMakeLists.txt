@@ -12,6 +12,7 @@ add_library(
   "Geometry.cpp"
   "FontStorage.cpp"
   "StreamExecutor.cpp"
+  "Colors.cpp"
 )
 
 # =========================================================

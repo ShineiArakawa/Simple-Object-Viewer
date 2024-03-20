@@ -1,8 +1,5 @@
 #pragma once
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-
 #include <Model/AxisAlignedBoundingBox.hpp>
 #include <Model/RenderingContext.hpp>
 #include <Model/WireFrame.hpp>
@@ -14,6 +11,7 @@
 #include <Util/Logging.hpp>
 #include <Util/Math.hpp>
 #include <array>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <memory>

@@ -76,6 +76,7 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
       "Util/Geometry.cpp"
       "Util/FontStorage.cpp"
       "Util/StreamExecutor.cpp"
+      "Util/Colors.cpp"
       "Window/Window.cpp"
       "Window/ImGuiSceneView.cpp"
       "Window/ImGuiMainView.cpp"

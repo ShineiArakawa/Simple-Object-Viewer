@@ -52,6 +52,7 @@
 #include "Util/StbAdapter.hpp"
 #include "Util/Texture.hpp"
 #include "Util/StreamExecutor.hpp"
+#include "Util/Colors.cpp"
 
 // Window
 #include "Window/FPSManager.hpp"

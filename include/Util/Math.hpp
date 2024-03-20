@@ -1,7 +1,9 @@
 #pragma once
 
 #include <array>
+#include <cmath>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace simview {
@@ -72,7 +74,7 @@ inline float length(vec3f_t& vec) {
 }
 
 inline void normalize(vec3f_t& vec) {
-  const float len= length(vec);
+  const float len = length(vec);
   vec[0] = vec[0] / len;
   vec[1] = vec[1] / len;
   vec[2] = vec[2] / len;
