@@ -68,6 +68,12 @@ class Geometry {
                                         const vecf_pt &vertexCoords);
   static void calcVertexNormals(const int &nNodes,
                                 const veci_pt &triangles);
+  static void removeDuplecatedVertices(
+      const vecf_pt &srcVertices,
+      const veci_pt &srcIndices,
+      vecf_pt &distVertices,
+      veci_pt &distIndices,
+      const float &threshold);
 };
 
 }  // namespace util

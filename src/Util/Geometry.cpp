@@ -269,5 +269,61 @@ void Geometry::calcVertexNormals(const int &nNodes,
   }
 }
 
+void Geometry::removeDuplecatedVertices(
+    const vecf_pt &srcVertices,
+    const veci_pt &srcIndices,
+    vecf_pt &distVertices,
+    veci_pt &distIndices,
+    const float &threshold) {
+  distVertices->clear();
+  distIndices->clear();
+
+  const int nSrcCoords = srcVertices->size() / 3;
+
+  std::vector<int> indexMap(nSrcCoords);  // "Vertex Id" to "non-deplication id"
+
+  for (int iSrcCoord = 0; iSrcCoord < nSrcCoords; ++iSrcCoord) {
+    const int srcOffset = 3 * iSrcCoord;
+    const float srcCoordX = (*srcVertices)[srcOffset + 0];
+    const float srcCoordY = (*srcVertices)[srcOffset + 1];
+    const float srcCoordZ = (*srcVertices)[srcOffset + 2];
+
+    bool isDeplicated = false;
+    const int indexMapSize = iSrcCoord;
+    int iCoord;
+
+    for (iCoord = 0; iCoord < indexMapSize; ++iCoord) {
+      const int iOffset = 3 * iCoord;
+      const float iCoordX = (*distVertices)[iOffset + 0];
+      const float iCoordY = (*distVertices)[iOffset + 1];
+      const float iCoordZ = (*distVertices)[iOffset + 2];
+
+      if (std::abs(srcCoordX - iCoordX) < threshold &&  // X
+          std::abs(srcCoordY - iCoordY) < threshold &&  // Y
+          std::abs(srcCoordZ - iCoordZ) < threshold     // Z
+      ) {
+        isDeplicated = true;
+        break;
+      }
+    }
+
+    if (isDeplicated) {
+      indexMap[iSrcCoord] = iCoord;
+    } else {
+      indexMap[iSrcCoord] = distVertices->size() / 3;
+      distVertices->push_back(srcCoordX);
+      distVertices->push_back(srcCoordY);
+      distVertices->push_back(srcCoordZ);
+    }
+  }
+
+  const int nIndices = srcIndices->size();
+  distIndices->resize(nIndices);
+
+  for (int index = 0; index < nIndices; ++index) {
+    (*distIndices)[index] = indexMap[(*srcIndices)[index]];
+  }
+}
+
 }  // namespace util
 }  // namespace simview

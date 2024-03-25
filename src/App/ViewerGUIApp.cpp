@@ -1,7 +1,5 @@
 #include <App/ViewerGUIApp.hpp>
 
-#define DEBUG_VTK
-
 namespace simview {
 namespace app {
 
