@@ -143,14 +143,18 @@ set(
   "All include directories for Simeple Object Viewer library"
 )
 
+set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
+
+######################################################
 # Set install include directory
+######################################################
 install(
 	DIRECTORY "${CMAKE_SOURCE_DIR}/include/" 
 	DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SimView/"
 	FILES_MATCHING PATTERN "*.hpp"
 )
 
-set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
+
 
 # Set install lib directory is done in erc/CMakeLists.txt
 
