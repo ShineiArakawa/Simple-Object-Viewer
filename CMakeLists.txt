@@ -149,14 +149,12 @@ set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
 # Set install include directory
 ######################################################
 install(
-	DIRECTORY "${CMAKE_SOURCE_DIR}/include/" 
-	DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SimView/"
+	DIRECTORY "${PROJECT_INCLUDE_DIR}/SimView"
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 	FILES_MATCHING PATTERN "*.hpp"
 )
 
-
-
-# Set install lib directory is done in erc/CMakeLists.txt
+# NOTE: Installing lib directory is set in src/CMakeLists.txt
 
 ######################################################
 # Add subdirectory
