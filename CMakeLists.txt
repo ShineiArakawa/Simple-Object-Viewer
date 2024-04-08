@@ -95,8 +95,8 @@ set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_
 find_package(VTK QUIET)
 
 if (VTK_FOUND)
-  message("# Found VTK")
-  message("# VTK_LIBRARIES : ${VTK_LIBRARIES}")
+  message("### Found VTK")
+  message("### VTK_LIBRARIES : ${VTK_LIBRARIES}")
   # Enable VTK plugin
   set(SIMVIEW_WITH_VTK on)
   add_definitions(-DSIMVIEW_WITH_VTK)
@@ -144,6 +144,8 @@ set(
 )
 
 set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
+
+set(COPY_BINARY_TO_BIN_DIR TRUE CACHE BOOL "Copy built banaries to bin/ directory" FORCE)
 
 ######################################################
 # Set install include directory
@@ -204,6 +206,3 @@ message("#    FREETYPE_INCLUDE_DIR                 : ${FREETYPE_INCLUDE_DIR}")
 message("# ")
 message("#    BUILD_SIMVIEW_STATIC_LIBS            : ${BUILD_SIMVIEW_STATIC_LIBS}")
 message("# =======================================================================================================")
-
-
-

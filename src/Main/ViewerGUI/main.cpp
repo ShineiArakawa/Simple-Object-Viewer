@@ -2,13 +2,10 @@
 
 #if defined(WIN32)
 #include <Windows.h>
-
 #if defined(ENABLE_LEAK_CHECK)
-// Memory leak checker for MSVC
-#include <crtdbg.h>
-#endif  // ENABLE_LEAK_CHECK
-
-#endif  // WIN32
+#include <crtdbg.h>  // Memory leak checker for MSVC
+#endif               // ENABLE_LEAK_CHECK
+#endif               // WIN32
 
 #if defined(WIN32)
 int WINAPI WinMain(
@@ -18,13 +15,13 @@ int WINAPI WinMain(
     int nCmdShow) {
   const int argc = __argc;
   char** argv = __argv;
-#else
+#else   // WIN32
 int main(int argc, char** argv) {
-#endif
+#endif  // WIN32
 #if defined(WIN32) && defined(ENABLE_LEAK_CHECK)
   // Initialize memory leak checker for MSVC
   _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
-#endif  // ENABLE_LEAK_CHECK
+#endif  // WIN32 && ENABLE_LEAK_CHECK
 
   // Create application
   simview::app::ViewerGUIApp_t app = std::make_shared<simview::app::ViewerGUIApp>();
