@@ -150,7 +150,7 @@ set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
 ######################################################
 install(
 	DIRECTORY "${PROJECT_INCLUDE_DIR}/SimView"
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 	FILES_MATCHING PATTERN "*.hpp"
 )
 
