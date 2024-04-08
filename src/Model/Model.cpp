@@ -1,4 +1,4 @@
-#include <Model/Model.hpp>
+#include <SimView/Model/Model.hpp>
 
 namespace simview {
 namespace model {

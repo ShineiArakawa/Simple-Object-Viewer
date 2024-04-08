@@ -1,4 +1,4 @@
-#include <App/ViewerGUIApp.hpp>
+#include <SimView/App/ViewerGUIApp.hpp>
 
 namespace simview {
 namespace app {

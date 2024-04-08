@@ -1,4 +1,4 @@
-#include <Renderer/DepthRenderer.hpp>
+#include <SimView/Renderer/DepthRenderer.hpp>
 
 namespace simview {
 namespace renderer {

@@ -1,5 +1,4 @@
-#include <Model/Box.hpp>
-#include <iostream>
+#include <SimView/Model/Box.hpp>
 
 namespace simview {
 namespace model {

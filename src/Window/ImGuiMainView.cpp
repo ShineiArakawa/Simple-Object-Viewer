@@ -1,4 +1,4 @@
-#include <Window/ImGuiMainView.hpp>
+#include <SimView/Window/ImGuiMainView.hpp>
 
 namespace simview {
 namespace window {
@@ -182,6 +182,11 @@ void ImGuiMainView::paintSideBar() {
         );
       }
 
+      // Light
+      static bool isLightBall = false;
+      ImGui::Checkbox("Show light ball", &isLightBall);
+      _sceneModel->setLightBallState(isLightBall);
+
       // Axes cone
       static bool isShownAxesCone = false;
       ImGui::Checkbox("Show axes cone", &isShownAxesCone);
@@ -326,6 +331,7 @@ void ImGuiMainView::paintSideBar() {
           ImGui::TableNextColumn();
           if (object->getObjectType() != AxesCone::KEY_MODEL_AXES_CONE       // Exclude axes cone
               && object->getObjectType() != GridPlane::KEY_MODEL_GRID_PLANE  // Exclude grid plane
+              && object->getObjectType() != LightBall::KEY_MODEL_LIGHT_BALL  // Exclude light ball
           ) {
             ImGui::PushID(iObject * 4 + 3);
             if (ImGui::Button("Remove")) {

@@ -1,5 +1,4 @@
-#include <Model/Terrain.hpp>
-#include <Util/Texture.hpp>
+#include <SimView/Model/Terrain.hpp>
 
 namespace simview {
 namespace model {

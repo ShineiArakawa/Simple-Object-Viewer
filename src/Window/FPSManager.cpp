@@ -1,4 +1,4 @@
-#include <Window/FPSManager.hpp>
+#include <SimView/Window/FPSManager.hpp>
 
 namespace simview {
 namespace window {

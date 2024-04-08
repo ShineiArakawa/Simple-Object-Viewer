@@ -1,4 +1,4 @@
-#include <Model/TextBox.hpp>
+#include <SimView/Model/TextBox.hpp>
 
 namespace simview {
 namespace model {
@@ -38,7 +38,7 @@ void TextBox::initVAO() {
 
   // Copy to RGBA format data
   const size_t nBytes = sizeof(unsigned char) * width * height * (size_t)4;
-  
+
   if ((double)nBytes / 1024.0 / 1024.0 / 1024.0 > 1.0) {
     LOG_WARN("The size of texture is larger than 1 GB. Be careful not to overflow the memory.");
   }

@@ -1,4 +1,4 @@
-#include <Model/GridPlane.hpp>
+#include <SimView/Model/GridPlane.hpp>
 
 namespace simview {
 namespace model {

@@ -1,4 +1,4 @@
-#include <Model/WireFrame.hpp>
+#include <SimView/Model/WireFrame.hpp>
 
 namespace simview {
 namespace model {

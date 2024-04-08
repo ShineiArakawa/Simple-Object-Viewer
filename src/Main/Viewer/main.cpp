@@ -1,4 +1,4 @@
-#include <App/ViewerApp.hpp>
+#include <SimView/App/ViewerApp.hpp>
 
 #if defined(WIN32) && defined(ENABLE_LEAK_CHECK)
 #include <crtdbg.h>

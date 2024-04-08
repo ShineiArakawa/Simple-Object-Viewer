@@ -1,4 +1,4 @@
-#include <Model/Sphere.hpp>
+#include <SimView/Model/Sphere.hpp>
 
 namespace simview {
 namespace model {

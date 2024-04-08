@@ -1,4 +1,4 @@
-#include <Window/ImGuiSceneView.hpp>
+#include <SimView/Window/ImGuiSceneView.hpp>
 
 namespace simview {
 namespace window {
@@ -80,7 +80,7 @@ void ImGuiSceneView::resizeGL(const int& width, const int& height) {
 }
 
 glm::vec3 ImGuiSceneView::getVector(const double& x, const double& y) {
-  //const int shortSide = std::min(WIN_WIDTH, WIN_HEIGHT);
+  // const int shortSide = std::min(WIN_WIDTH, WIN_HEIGHT);
   glm::vec3 pt(2.0f * x / (float)WIN_WIDTH - 1.0f,
                -2.0f * y / (float)WIN_HEIGHT + 1.0f,
                0.0f);

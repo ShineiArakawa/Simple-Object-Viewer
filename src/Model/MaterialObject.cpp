@@ -1,4 +1,4 @@
-#include <Model/MaterialObject.hpp>
+#include <SimView/Model/MaterialObject.hpp>
 
 namespace simview {
 namespace model {

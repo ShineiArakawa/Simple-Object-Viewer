@@ -1,4 +1,4 @@
-#include <Model/PointCloudPoly.hpp>
+#include <SimView/Model/PointCloudPoly.hpp>
 
 namespace simview {
 namespace model {

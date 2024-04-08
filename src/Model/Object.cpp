@@ -1,5 +1,4 @@
-#include <Model/Object.hpp>
-#include <Util/Texture.hpp>
+#include <SimView/Model/Object.hpp>
 
 namespace simview {
 namespace model {

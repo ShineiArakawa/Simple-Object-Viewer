@@ -1,4 +1,4 @@
-#include <Model/Background.hpp>
+#include <SimView/Model/Background.hpp>
 
 namespace simview {
 namespace model {

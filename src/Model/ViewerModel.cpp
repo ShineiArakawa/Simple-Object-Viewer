@@ -1,4 +1,4 @@
-#include <Model/ViewerModel.hpp>
+#include <SimView/Model/ViewerModel.hpp>
 
 namespace simview {
 namespace model {
@@ -106,6 +106,28 @@ void ViewerModel::setGridPlaneState(const bool &isShown) {
     // Remove
     for (int iModel = 0; iModel < getNumObjects(); iModel++) {
       if (getObject(iModel)->getObjectType() == GridPlane::KEY_MODEL_GRID_PLANE) {
+        removeObject(iModel);
+      }
+    }
+  }
+}
+
+void ViewerModel::setLightBallState(const bool &isShown) {
+  if (isShown) {
+    // Add
+    for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+      if (getObject(iModel)->getObjectType() == LightBall::KEY_MODEL_LIGHT_BALL) {
+        return;
+      }
+    }
+
+    auto lightBall = std::make_shared<LightBall>();
+    lightBall->setName("Light");
+    addObject(lightBall);
+  } else {
+    // Remove
+    for (int iModel = 0; iModel < getNumObjects(); iModel++) {
+      if (getObject(iModel)->getObjectType() == LightBall::KEY_MODEL_LIGHT_BALL) {
         removeObject(iModel);
       }
     }

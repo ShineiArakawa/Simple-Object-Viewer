@@ -1,4 +1,4 @@
-#include <Shader/DepthShader.hpp>
+#include <SimView/Shader/DepthShader.hpp>
 
 namespace simview {
 namespace shader {

@@ -1,4 +1,4 @@
-#include <Model/AxisAlignedBoundingBox.hpp>
+#include <SimView/Model/AxisAlignedBoundingBox.hpp>
 
 namespace simview {
 namespace model {

@@ -1,4 +1,4 @@
-#include <Shader/Shader.hpp>
+#include <SimView/Shader/Shader.hpp>
 
 namespace simview {
 namespace shader {

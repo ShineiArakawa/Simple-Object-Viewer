@@ -20,6 +20,7 @@ add_library(
   "GridPlane.cpp"
   "WireFrame.cpp"
   "TextBox.cpp"
+  "LightBall.cpp"
 )
 
 # =========================================================
