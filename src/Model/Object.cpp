@@ -10,13 +10,15 @@ Object::Object(const std::string &filePath,  // filePath
                const float offsetX,          // offsetX
                const float offsetY,          // offsetY
                const float offsetZ,          // offsetZ
-               const float scale             // scale
+               const float scale,            // scale
+               const bool autoScale          // autoScale
                )
     : _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),
-      _scale(scale) {}
+      _scale(scale),
+      _autoScale(autoScale) {}
 
 Object::~Object() {}
 
@@ -29,7 +31,9 @@ void Object::initVAO() {
                              indices,
                              _offsetX,
                              _offsetY,
-                             _offsetZ);
+                             _offsetZ,
+                             _autoScale);
+
   ObjectLoader::scaleObject(vertices, _scale);
 
   initVAO(vertices, indices);

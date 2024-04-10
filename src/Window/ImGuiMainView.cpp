@@ -436,9 +436,10 @@ void ImGuiMainView::paintSceneWindow() {
   // ========================================================================================
   // Calculate the orign and size of scene window
   // ========================================================================================
+  const int sidebarWidth = _isVisibleSideBar ? SIDEBAR_WIDTH : 0;
   const ImVec2 viewportPos = ImGui::GetWindowViewport()->Pos;
-  ImGui::SetNextWindowPos(ImVec2(viewportPos.x + SIDEBAR_WIDTH, viewportPos.y + _menuBarHeight), ImGuiCond_Once);
-  const ImVec2 sceneWindowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - SIDEBAR_WIDTH, ImGui::GetWindowViewport()->Size.y - _menuBarHeight);
+  ImGui::SetNextWindowPos(ImVec2(viewportPos.x + sidebarWidth, viewportPos.y + _menuBarHeight), ImGuiCond_Once);
+  const ImVec2 sceneWindowSize = ImVec2(ImGui::GetWindowViewport()->Size.x - sidebarWidth, ImGui::GetWindowViewport()->Size.y - _menuBarHeight);
   ImGui::SetNextWindowSize(sceneWindowSize, ImGuiCond_Once);
 
   // ========================================================================================

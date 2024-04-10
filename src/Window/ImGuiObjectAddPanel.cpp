@@ -49,6 +49,7 @@ void ImGuiObjectAddPanel::paint() {
   static float offsetXYZ[3] = {0.0f, 0.0f, 0.0f};
   static float scale = 1.0f;
   static float scaleXYZ[3] = {1.0f, 1.0f, 1.0f};
+  static bool autoScale = false;
   static float color[3] = {1.0f, 1.0f, 1.0f};
   static int nDivs = 100;
   static float pointSize = 0.01f;
@@ -112,8 +113,8 @@ void ImGuiObjectAddPanel::paint() {
     }
 
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
-
     ImGui::InputFloat("Scale", &scale, 0.0f, 0.0f, FLOAT_FORMAT);
+    ImGui::Checkbox("Auto scale", &autoScale);
   } else if (objectTypeID == 1) {
     // ====================================================================
     // Box
@@ -285,7 +286,8 @@ void ImGuiObjectAddPanel::paint() {
                                                offsetXYZ[0],
                                                offsetXYZ[1],
                                                offsetXYZ[2],
-                                               scale);
+                                               scale,
+                                               autoScale);
         if (!strTexFilePath.empty()) {
           object->loadTexture(strTexFilePath);
         }

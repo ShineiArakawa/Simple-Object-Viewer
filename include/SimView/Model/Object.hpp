@@ -20,6 +20,7 @@ class Object : public Primitive {
   float _offsetY;
   float _offsetZ;
   float _scale;
+  bool _autoScale;
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;
@@ -46,7 +47,8 @@ class Object : public Primitive {
          const float offsetX = 0.0f,
          const float offsetY = 0.0f,
          const float offsetZ = 0.0f,
-         const float scale = 1.0f);
+         const float scale = 1.0f,
+         const bool autoScale = false);
   ~Object();
   void loadTexture(const std::string& filePath);
   void loadNormalMap(const std::string& filePath);

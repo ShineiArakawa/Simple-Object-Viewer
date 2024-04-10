@@ -54,23 +54,38 @@ void ObjectLoader::readFromFile(const std::string &filePath,
                                 IndexArray_t indices,
                                 const float offsetX,
                                 const float offsetY,
-                                const float offsetZ) {
+                                const float offsetZ,
+                                const bool autoScale) {
   const std::string extension = FileUtil::extension(filePath);
 
   LOG_INFO("### Start loading object file: " + filePath);
 
   const auto startTime = std::chrono::system_clock::now();
 
-  if (extension == ".msh") {
-    readMshFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
-  } else if (extension == ".pch") {
-    readPchFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
-  } else if (extension == ".las") {
-    readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
-  } else if (extension == ".vtu") {
-    readVtkFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
-  } else {
-    readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+  {
+    if (extension == ".msh") {
+      readMshFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+    } else if (extension == ".pch") {
+      readPchFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+    } else if (extension == ".las") {
+      readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+    } else if (extension == ".vtu") {
+      readVtkFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+    } else {
+      readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+    }
+
+    if (autoScale) {
+      // Automatically adjust model scale to [-1.0, 1.0]
+      glm::vec3 maxCoords, minCoords;
+      std::tie(minCoords, maxCoords) = ObjectLoader::getCorners(vertices);
+
+      const glm::vec3 modelScale = maxCoords - minCoords;
+      const float modelScaleMax = std::max(modelScale.x, std::max(modelScale.y, modelScale.z));
+
+      const float mag = 2.0f / modelScaleMax;
+      ObjectLoader::scaleObject(vertices, mag);
+    }
   }
 
   const auto endTime = std::chrono::system_clock::now();
@@ -223,25 +238,6 @@ void ObjectLoader::readMshFile(const std::string &filePath,
                                const float offsetZ) {
   std::ifstream ifstream = std::ifstream(filePath, std::ios::in);
 
-  static const int faces[16][3] = {
-      {0, 6, 5},
-      {6, 3, 8},
-      {8, 5, 6},
-      {5, 8, 2},
-      {0, 5, 4},
-      {5, 2, 7},
-      {7, 4, 5},
-      {4, 7, 1},
-      {0, 4, 6},
-      {4, 1, 9},
-      {9, 6, 4},
-      {6, 9, 3},
-      {1, 7, 9},
-      {7, 2, 8},
-      {8, 9, 7},
-      {9, 8, 3},
-  };
-
   if (ifstream) {
     std::string buffer;
 
@@ -254,24 +250,35 @@ void ObjectLoader::readMshFile(const std::string &filePath,
 
     // Read elements
     veci_pt elements = std::make_shared<std::vector<int>>();
-    elements->resize(10 * nElements);
+    int nNodesPerElement = -1;
+    std::vector<std::vector<int>> triangleIDs;
 
     for (int iElement = 0; iElement < nElements; ++iElement) {
       std::getline(ifstream, buffer);
       std::vector<std::string> tokens = StringUtil::splitText(buffer, ' ');
 
-      const int offset = 10 * iElement;
+      if (iElement == 0) {
+        nNodesPerElement = tokens.size();
 
-      (*elements)[offset + 0] = std::stoi(tokens[0]);
-      (*elements)[offset + 1] = std::stoi(tokens[1]);
-      (*elements)[offset + 2] = std::stoi(tokens[2]);
-      (*elements)[offset + 3] = std::stoi(tokens[3]);
-      (*elements)[offset + 4] = std::stoi(tokens[4]);
-      (*elements)[offset + 5] = std::stoi(tokens[5]);
-      (*elements)[offset + 6] = std::stoi(tokens[6]);
-      (*elements)[offset + 7] = std::stoi(tokens[7]);
-      (*elements)[offset + 8] = std::stoi(tokens[8]);
-      (*elements)[offset + 9] = std::stoi(tokens[9]);
+        const auto iter = MSH_TRIANGLE_IDS.find(nNodesPerElement);
+        if (iter != MSH_TRIANGLE_IDS.end()) {
+          // Found
+          triangleIDs = iter->second;
+        } else {
+          // Not found
+          LOG_ERROR("Unsupported msh primitive type !");
+          return;
+        }
+
+        elements->resize(nNodesPerElement * nElements);
+      }
+
+      // Calc index offset
+      const int offset = nNodesPerElement * iElement;
+
+      for (int iVertex = 0; iVertex < nNodesPerElement; ++iVertex) {
+        (*elements)[offset + iVertex] = std::stoi(tokens[iVertex]);
+      }
     }
     LOG_INFO("Reading elements done.");
 
@@ -302,18 +309,19 @@ void ObjectLoader::readMshFile(const std::string &filePath,
     // Triangulate
     // =========================================================================================
     veci_pt triangles = std::make_shared<std::vector<int>>();
-    triangles->resize(3 * 16 * nElements);
+    const int nTrianglesPerElement = triangleIDs.size();
+    triangles->resize(3 * nTrianglesPerElement * nElements);
 
     for (int iElement = 0; iElement < nElements; ++iElement) {
-      const int offsetElem = 3 * 16 * iElement;
-      const int offset = 10 * iElement;
+      const int offsetElem = 3 * nTrianglesPerElement * iElement;
+      const int offset = nNodesPerElement * iElement;
 
-      for (int iTriangle = 0; iTriangle < 16; ++iTriangle) {
+      for (int iTriangle = 0; iTriangle < nTrianglesPerElement; ++iTriangle) {
         const int offsetTriangle = offsetElem + 3 * iTriangle;
 
-        (*triangles)[offsetTriangle + 0] = (*elements)[offset + faces[iTriangle][0]];
-        (*triangles)[offsetTriangle + 1] = (*elements)[offset + faces[iTriangle][1]];
-        (*triangles)[offsetTriangle + 2] = (*elements)[offset + faces[iTriangle][2]];
+        (*triangles)[offsetTriangle + 0] = (*elements)[offset + triangleIDs[iTriangle][0]];
+        (*triangles)[offsetTriangle + 1] = (*elements)[offset + triangleIDs[iTriangle][1]];
+        (*triangles)[offsetTriangle + 2] = (*elements)[offset + triangleIDs[iTriangle][2]];
       }
     }
 
@@ -324,7 +332,7 @@ void ObjectLoader::readMshFile(const std::string &filePath,
     // =========================================================================================
     // Extract surface
     // =========================================================================================
-    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(500, triangles, vertexCoords);
+    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(300, triangles, vertexCoords);
 
     const int nSurfaceTriangles = surfaceTriangles->size() / 3;
     LOG_INFO("nSurfaceTriangles: " + std::to_string(nSurfaceTriangles));
@@ -1213,23 +1221,8 @@ void ObjectLoader::scaleObject(VertexArray_t vertices,
   const glm::vec3 range = maxCoords - minCoords;
   const glm::vec3 scale(scaleX, scaleY, scaleZ);
 
-  for (int i = 0; i < vertices->size(); i++) {
+  for (int i = 0; i < vertices->size(); ++i) {
     (*vertices)[i].position = ((*vertices)[i].position - center) * scale + center;
-  }
-
-  glm::vec3 afterMaxCoords(0.0f);
-  glm::vec3 afterMinCoords(0.0f);
-
-  for (int i = 0; i < vertices->size(); i++) {
-    const Vertex &vertex = (*vertices)[i];
-    for (int direction = 0; direction < 3; direction++) {
-      if (vertex.position[direction] > afterMaxCoords[direction]) {
-        afterMaxCoords[direction] = vertex.position[direction];
-      }
-      if (vertex.position[direction] < afterMinCoords[direction]) {
-        afterMinCoords[direction] = vertex.position[direction];
-      }
-    }
   }
 }
 
@@ -1246,21 +1239,6 @@ void ObjectLoader::moveToOrigin(VertexArray_t vertices) {
 
   for (int i = 0; i < vertices->size(); i++) {
     (*vertices)[i].position = (*vertices)[i].position - center;
-  }
-
-  glm::vec3 afterMaxCoords(0.0f);
-  glm::vec3 afterMinCoords(0.0f);
-
-  for (int i = 0; i < vertices->size(); i++) {
-    const Vertex &vertex = (*vertices)[i];
-    for (int direction = 0; direction < 3; direction++) {
-      if (vertex.position[direction] > afterMaxCoords[direction]) {
-        afterMaxCoords[direction] = vertex.position[direction];
-      }
-      if (vertex.position[direction] < afterMinCoords[direction]) {
-        afterMinCoords[direction] = vertex.position[direction];
-      }
-    }
   }
 }
 

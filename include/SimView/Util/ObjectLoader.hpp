@@ -11,6 +11,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -76,6 +77,52 @@ class ObjectLoader {
                                                                                      {{4, 2, 5}}}};
 
 #endif
+  inline static const int MSH_NUM_TRIANGLES_TETRA = 4;
+  inline static const int MSH_NUM_TRIANGLES_QUAD_TETRA = 10;
+  inline static const int MSH_NUM_TRIANGLES_HEXA = 8;
+
+  inline static const std::vector<std::vector<int>> MSH_TRIANGLE_IDS_TETRA = {
+      {0, 2, 1},
+      {0, 1, 3},
+      {0, 3, 2},
+      {1, 2, 3}};
+
+  inline static const std::vector<std::vector<int>> MSH_TRIANGLE_IDS_QUAD_TETRA = {
+      {0, 6, 5},
+      {6, 3, 8},
+      {8, 5, 6},
+      {5, 8, 2},
+      {0, 5, 4},
+      {5, 2, 7},
+      {7, 4, 5},
+      {4, 7, 1},
+      {0, 4, 6},
+      {4, 1, 9},
+      {9, 6, 4},
+      {6, 9, 3},
+      {1, 7, 9},
+      {7, 2, 8},
+      {8, 9, 7},
+      {9, 8, 3}};
+
+  inline static const std::vector<std::vector<int>> MSH_TRIANGLE_IDS_HEXA = {
+      {0, 1, 5},
+      {5, 4, 0},
+      {1, 2, 6},
+      {6, 5, 1},
+      {2, 3, 7},
+      {7, 6, 2},
+      {3, 0, 4},
+      {4, 7, 3},
+      {4, 5, 6},
+      {6, 7, 4},
+      {1, 0, 3},
+      {3, 2, 1}};
+
+  inline static const std::map<int, std::vector<std::vector<int>>> MSH_TRIANGLE_IDS = {
+      {MSH_NUM_TRIANGLES_TETRA, MSH_TRIANGLE_IDS_TETRA},
+      {MSH_NUM_TRIANGLES_QUAD_TETRA, MSH_TRIANGLE_IDS_QUAD_TETRA},
+      {MSH_NUM_TRIANGLES_HEXA, MSH_TRIANGLE_IDS_HEXA}};
 
  public:
   static std::vector<std::string> getReadableExtensionList();
@@ -84,7 +131,8 @@ class ObjectLoader {
                            IndexArray_t indices,
                            const float offsetX = 0.0f,
                            const float offsetY = 0.0f,
-                           const float offsetZ = 0.0f);
+                           const float offsetZ = 0.0f,
+                           const bool autoScale = false);
   static void readObjFile(const std::string& filePath,
                           VertexArray_t vertices,
                           IndexArray_t indices,
