@@ -70,7 +70,7 @@ class Primitive {
   bool _isVisible = true;
   bool _isEnabledNormalMap = false;
   bool _isEnabledShadowMapping = false;
-  bool _isVisibleBBOX = true;
+  bool _isVisibleBBOX = false;
   glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
   glm::vec3 _vecocity = glm::vec3(0.0f, 0.0f, 0.0f);
   AxisAlignedBoundingBox_t _bbox = nullptr;
@@ -89,6 +89,26 @@ class Primitive {
   // nothing
 
  public:
+  Primitive()
+      : _name(),
+        _shader(),
+        _depthShader(),
+        _defaultRenderType(RenderType::COLOR),
+        _renderType(_defaultRenderType),
+        _wireFrameMode(WireFrameMode::OFF),
+        _maskMode(false),
+        _isVisible(true),
+        _isEnabledNormalMap(false),
+        _isEnabledShadowMapping(false),
+        _isVisibleBBOX(false),
+        _position(0.0f),
+        _vecocity(0.0f),
+        _bbox(),
+        _wireFrame() {
+  }
+
+  virtual ~Primitive() = default;
+
   void setMaskMode(bool maskMode) {
     _maskMode = maskMode;
   };

@@ -14,13 +14,6 @@ void PoneModel::initVAO() {
   int nBackgrounds = getNumBackgrounds();
   for (int iBackground = 0; iBackground < nBackgrounds; iBackground++) {
     Background_t background = getBackground(iBackground);
-    background->initVAO();
-
-    if (iBackground % 10000 == 0 || iBackground == nBackgrounds - 1) {
-      std::cout << "Initialized " << iBackground + 1 << " backgrounds." << std::endl;
-    }
-
-    std::cout << background->getName() << std::endl;
 
     if (background->getName() == "Start") {
       _backgroundStart = background;
@@ -32,9 +25,6 @@ void PoneModel::initVAO() {
   int nModels = getNumObjects();
   for (int iModel = 0; iModel < nModels; iModel++) {
     Primitive_t model = getObject(iModel);
-    model->initVAO();
-
-    std::cout << model->getName() << std::endl;
 
     if (model->getName() == "Sphere") {
       _sphere = model;
@@ -42,10 +32,6 @@ void PoneModel::initVAO() {
       _paddle = model;
     } else {
       _walls->push_back(std::move(model));
-    }
-
-    if (iModel % 10000 == 0 || iModel == nModels - 1) {
-      std::cout << "Initialized " << iModel + 1 << " models." << std::endl;
     }
   }
 

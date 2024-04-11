@@ -182,12 +182,12 @@ void ObjectLoader::readObjFile(const std::string &filePath,
   glm::vec3 maxCoords(0.0f);
   glm::vec3 minCoords(0.0f);
 
-  for (int s = 0; s < shapes.size(); s++) {
+  for (int s = 0; s < shapes.size(); ++s) {
     const tinyobj::mesh_t &mesh = shapes[s].mesh;
 
     int nVertices = mesh.indices.size();
 
-    for (int i = 0; i < nVertices; i++) {
+    for (int i = 0; i < nVertices; ++i) {
       const tinyobj::index_t &index = mesh.indices[i];
 
       glm::vec3 position(0.0f), normal(0.0f), color(0.0f);
@@ -1121,13 +1121,13 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   for (const auto &shape : shapes) {
     size_t indexOffset = 0;  // インデントのオフセット
 
-    for (size_t iFace = 0; iFace < shape.mesh.num_face_vertices.size(); iFace++) {
+    for (size_t iFace = 0; iFace < shape.mesh.num_face_vertices.size(); ++iFace) {
       nFaces++;
 
       const int nVertices = shape.mesh.num_face_vertices[iFace];
       const int materialID = isFoundMaterials ? shape.mesh.material_ids[iFace] : 0;
 
-      for (size_t iVertex = 0; iVertex < nVertices; iVertex++) {
+      for (size_t iVertex = 0; iVertex < nVertices; ++iVertex) {
         // access to vertex
         const tinyobj::index_t index = shape.mesh.indices[indexOffset + iVertex];
 
@@ -1237,7 +1237,7 @@ void ObjectLoader::moveToOrigin(VertexArray_t vertices) {
 
   glm::vec3 center = (maxCoords + minCoords) / 2.0f;
 
-  for (int i = 0; i < vertices->size(); i++) {
+  for (int i = 0; i < vertices->size(); ++i) {
     (*vertices)[i].position = (*vertices)[i].position - center;
   }
 }
@@ -1248,7 +1248,7 @@ void ObjectLoader::translateObject(VertexArray_t vertices,
                                    const float offsetZ) {
   glm::vec3 offset(offsetX, offsetY, offsetZ);
 
-  for (int i = 0; i < vertices->size(); i++) {
+  for (int i = 0; i < vertices->size(); ++i) {
     (*vertices)[i].position = (*vertices)[i].position + offset;
   }
 }
@@ -1292,10 +1292,10 @@ std::pair<glm::vec3, glm::vec3> ObjectLoader::getCorners(VertexArray_t vertices)
   glm::vec3 maxCoords(0.0f);
   glm::vec3 minCoords(0.0f);
 
-  for (int i = 0; i < vertices->size(); i++) {
+  for (int i = 0; i < vertices->size(); ++i) {
     const Vertex &vertex = (*vertices)[i];
 
-    for (int direction = 0; direction < 3; direction++) {
+    for (int direction = 0; direction < 3; ++direction) {
       if (i == 0) {
         minCoords[direction] = vertex.position[direction];
         maxCoords[direction] = vertex.position[direction];

@@ -11,7 +11,8 @@ TextBox::TextBox(const char* text,
                  const float sizeMagnification,
                  const int fontPixelsize,
                  const int padding)
-    : _text(text),
+    : Primitive(),
+      _text(text),
       _postionInScreenSpace(std::min(1.0f, std::max(-1.0f, position.x)),  // X
                             std::min(1.0f, std::max(-1.0f, position.y)),  // Y
                             0.99f,                                        // Far

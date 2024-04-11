@@ -9,7 +9,8 @@ using namespace shader;
 MaterialObject::MaterialObject(const std::string& filePath,
                                const glm::vec3 offset,
                                const glm::vec3 scale)
-    : _filePath(filePath),
+    : Primitive(),
+      _filePath(filePath),
       _offset(offset),
       _scale(scale),
       _materialObjectBuffers(std::make_shared<std::vector<MaterialObjectBuffer_t>>()) {

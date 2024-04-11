@@ -6,7 +6,7 @@ namespace model {
 using namespace util;
 using namespace shader;
 
-LightBall::LightBall() {}
+LightBall::LightBall() : Primitive() {}
 
 LightBall::~LightBall() {}
 

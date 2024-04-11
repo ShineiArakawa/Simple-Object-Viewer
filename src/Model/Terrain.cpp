@@ -14,7 +14,8 @@ Terrain::Terrain(const std::string &filePath,  // filePath
                  const float scaleY,           // scaleY
                  const float scaleH            // scaleH
                  )
-    : _filePath(filePath),
+    : Primitive(),
+      _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),

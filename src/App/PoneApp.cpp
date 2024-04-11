@@ -105,6 +105,7 @@ PoneApp::PoneApp(const std::string& configFilePath) {
 
   model = std::make_shared<PoneModel>();
   ModelParser::parse(configFilePath, model);
+  model->initVAO();
   model->compileShaders();
   model->setMaskMode(Window::isMaskMode);
 

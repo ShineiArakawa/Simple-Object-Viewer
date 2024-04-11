@@ -58,7 +58,7 @@ class Renderer {
   void initLightMatrices();
   void initializeGL();
 
-  void paintGL(const bool& renderShadowMap = true);
+  void paintGL(const bool& renderShadowMap = false);
   void resizeGL();
 
   FrameBuffer_t getFrameBuffer();

@@ -6,7 +6,8 @@ namespace model {
 GridPlane::GridPlane(const int& nDivs,
                      const glm::vec2& minCoords,
                      const glm::vec2& maxCoords)
-    : _nDivs(nDivs),
+    : Primitive(),
+      _nDivs(nDivs),
       _minCoords(minCoords),
       _maxCoords(maxCoords) {}
 

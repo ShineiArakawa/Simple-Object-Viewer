@@ -11,13 +11,14 @@ Box::Box(const float offsetX,
          const float offsetZ,
          const float scaleX,
          const float scaleY,
-         const float scaleZ) {
-  _offsetX = offsetX;
-  _offsetY = offsetY;
-  _offsetZ = offsetZ;
-  _scaleX = scaleX;
-  _scaleY = scaleY;
-  _scaleZ = scaleZ;
+         const float scaleZ)
+    : Primitive(),
+      _offsetX(offsetX),
+      _offsetY(offsetY),
+      _offsetZ(offsetZ),
+      _scaleX(scaleX),
+      _scaleY(scaleY),
+      _scaleZ(scaleZ) {
 }
 
 Box::~Box() = default;

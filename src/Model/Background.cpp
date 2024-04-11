@@ -7,14 +7,16 @@ using namespace util;
 using namespace shader;
 
 Background::Background(const GLuint& textureId)
-    : _isLoadedTexture(true),
+    : Primitive(),
+      _isLoadedTexture(true),
       _textureId(textureId),
       _textureFilePath("") {
   setDefaultRenderType(RenderType::TEXTURE);
 }
 
 Background::Background(const std::string& filePath)
-    : _isLoadedTexture(false),
+    : Primitive(),
+      _isLoadedTexture(false),
       _textureFilePath(filePath) {
   setDefaultRenderType(RenderType::TEXTURE);
 }

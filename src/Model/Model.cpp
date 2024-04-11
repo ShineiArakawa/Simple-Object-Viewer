@@ -10,13 +10,18 @@ Model::~Model() {}
 
 void Model::compileShaders(const bool& isQuad) {
   {
+    // =============================================================================================
+    // Main shader program
+    // =============================================================================================
     std::string modelVertShaderCode;
     std::string modelFragShaderCode;
 
     if (isQuad) {
+      // Shader program for quad
       modelVertShaderCode = DefaultDepthQuadShader::VERT_SHADER;
       modelFragShaderCode = DefaultDepthQuadShader::FRAG_SHADER;
     } else {
+      // Shader program for general primitives
       if (_modelVertMShaderPath == nullptr) {
         LOG_INFO("Use default vertex model shader.");
         modelVertShaderCode = DefaultModelShader::VERT_SHADER;
@@ -36,6 +41,9 @@ void Model::compileShaders(const bool& isQuad) {
   }
 
   {
+    // =============================================================================================
+    // Depth shader program for shadow mapping
+    // =============================================================================================
     std::string depthVertShaderCode;
     std::string depthFragShaderCode;
 
@@ -55,17 +63,29 @@ void Model::compileShaders(const bool& isQuad) {
 
     _depthShader = std::make_shared<DepthShader>(depthVertShaderCode, depthFragShaderCode);
   }
+
+  // Set program to the existing objects
+  setModelShader(_shader);
+  setDepthShader(_depthShader);
 }
 
 void Model::setModelShader(ModelShader_t shader) {
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->setModelShader(shader);
   }
+
+  for (int iBackground = 0; iBackground < getNumBackgrounds(); iBackground++) {
+    getBackground(iBackground)->setModelShader(shader);
+  }
 }
 
 void Model::setDepthShader(DepthShader_t shader) {
   for (int iModel = 0; iModel < getNumObjects(); iModel++) {
     getObject(iModel)->setDepthShader(shader);
+  }
+
+  for (int iBackground = 0; iBackground < getNumBackgrounds(); iBackground++) {
+    getBackground(iBackground)->setDepthShader(shader);
   }
 }
 

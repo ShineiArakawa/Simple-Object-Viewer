@@ -13,7 +13,8 @@ Object::Object(const std::string &filePath,  // filePath
                const float scale,            // scale
                const bool autoScale          // autoScale
                )
-    : _filePath(filePath),
+    : Primitive(),
+      _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),
@@ -207,8 +208,7 @@ void Object::drawGL(const int &index) {
 void Object::drawAllGL(const glm::mat4 &lightMvpMat) {
   if (_isVisible) {
     const glm::mat4 &lightMvptMat = lightMvpMat * glm::translate(_position);
-    _depthShader->setUniformVariable(
-        DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
+    _depthShader->setUniformVariable(DefaultDepthShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvptMat);
 
     drawGL();
   }

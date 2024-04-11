@@ -14,7 +14,8 @@ PointCloudPoly::PointCloudPoly(const std::string &filePath,  // filePath
                                const float pointSize,        // pointSize
                                const bool isDoubled          // isDoubled
                                )
-    : _filePath(filePath),
+    : Primitive(),
+      _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),

@@ -15,7 +15,8 @@ Sphere::Sphere(const int nDivs,       // nDivs
                const float scaleZ,    // scaleZ
                const glm::vec3 color  // color
                )
-    : _nDivs(nDivs),
+    : Primitive(),
+      _nDivs(nDivs),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),
