@@ -39,7 +39,7 @@ ViewerGUIApp::ViewerGUIApp()
     exit(1);
   }
 
-#ifdef WIN32
+#ifdef _WIN32
   {
     // Icon
     HWND hwnd = glfwGetWin32Window(_window);
@@ -157,8 +157,13 @@ void ViewerGUIApp::setSideBarVisibility(const bool& isVisible) {
 }
 
 void ViewerGUIApp::setWindowSubTitle(const std::string& subTitle) {
-  char title[2048]; // NOTE: Unsafe!
+  char title[2048];  // NOTE: Unsafe!
+
+#ifdef _WIN32
   sprintf_s(title, sizeof(title), "%s [%s]", WINDOW_TITLE, subTitle.c_str());
+#else
+  sprintf(title, "%s [%s]", WINDOW_TITLE, subTitle.c_str());
+#endif
 
   glfwSetWindowTitle(_window, title);
 }
