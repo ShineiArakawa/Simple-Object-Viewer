@@ -157,7 +157,10 @@ void ViewerGUIApp::setSideBarVisibility(const bool& isVisible) {
 }
 
 void ViewerGUIApp::setWindowSubTitle(const std::string& subTitle) {
-  glfwSetWindowTitle(_window, subTitle.c_str());
+  char title[2048]; // NOTE: Unsafe!
+  sprintf_s(title, sizeof(title), "%s [%s]", WINDOW_TITLE, subTitle.c_str());
+
+  glfwSetWindowTitle(_window, title);
 }
 
 }  // namespace app

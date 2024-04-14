@@ -3,6 +3,8 @@
 #define IDI_ICON1 101
 
 #ifdef __cplusplus
+#include <stdio.h>
+
 #include <SimView/Model/ViewerModel.hpp>
 #include <SimView/OpenGL.hpp>
 #include <SimView/Window/ImGuiMainView.hpp>
