@@ -9,6 +9,11 @@
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 
+#ifdef WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#endif
+
 #define GLM_FORCE_SWIZZLE
 #define GLM_FORCE_RADIANS
 #define GLM_ENABLE_EXPERIMENTAL

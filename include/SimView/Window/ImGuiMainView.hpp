@@ -70,6 +70,11 @@ class ImGuiMainView {
   int _renderTypeID;
   float _wheelOffset;
 
+  bool _isLightBall;
+  bool _isShownAxesCone;
+  bool _isShownGridPlane;
+  int _wireFrameMode;
+
   ImVec2 _sceneAreaMin;
   ImVec2 _sceneAreaMax;
   ImGuiIO* _io;

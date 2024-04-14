@@ -7,7 +7,7 @@ set(
 )
 
 if(WIN32)
-  list(APPEND VIEWER_GUI_SOURCES "main.rc")
+  list(APPEND VIEWER_GUI_SOURCES ${WIN_RESOURCE_FILE})
   add_executable(
     ${PROJECT_NAME}
     WIN32

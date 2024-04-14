@@ -1,0 +1,2 @@
+#include <SimView/App/ViewerGUIApp.hpp>
+IDI_ICON1 ICON "main.ico"

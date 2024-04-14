@@ -1,5 +1,9 @@
 #include <SimView/App/ViewerGUIApp.hpp>
 
+#if defined(WIN32)
+#include <Windows.h>
+#endif  // WIN32
+
 namespace simview {
 namespace app {
 
@@ -34,6 +38,21 @@ ViewerGUIApp::ViewerGUIApp()
     LOG_CRITICAL("Window creation failed!");
     exit(1);
   }
+
+#ifdef WIN32
+  {
+    // Icon
+    HWND hwnd = glfwGetWin32Window(_window);
+    HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+
+    if (hIcon) {
+      SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+      SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+    } else {
+      LOG_WARN("Failed to load icon.");
+    }
+  }
+#endif
 
   glfwMakeContextCurrent(_window);
 
@@ -135,6 +154,10 @@ void ViewerGUIApp::setRenderType(const model::Primitive::RenderType renderType) 
 
 void ViewerGUIApp::setSideBarVisibility(const bool& isVisible) {
   _view->setSideBarVisibility(isVisible);
+}
+
+void ViewerGUIApp::setWindowSubTitle(const std::string& subTitle) {
+  glfwSetWindowTitle(_window, subTitle.c_str());
 }
 
 }  // namespace app

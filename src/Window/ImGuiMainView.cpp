@@ -26,7 +26,11 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
       _screenshotFilePathBuffer((char*)calloc(sizeof(char), CHAR_BUFFER_SIZE)),
       _fpsManager(nullptr),
       _toOpenExitProgramPopup(false),
-      _moveOn(true) {
+      _moveOn(true),
+      _isLightBall(false),
+      _isShownAxesCone(false),
+      _isShownGridPlane(false),
+      _wireFrameMode(static_cast<int>(Primitive::WireFrameMode::OFF)) {
   // ====================================================================
   // Initialize scene window
   // ====================================================================
@@ -85,6 +89,21 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
   // Initialize FPS manager
   // ====================================================================
   _fpsManager = std::make_shared<FPSManager>();
+
+  // ====================================================================
+  // Initialize scene model state
+  // ====================================================================
+  {
+    _sceneModel->setRenderType(static_cast<Primitive::RenderType>(_renderTypeID));
+    _sceneModel->setMaskMode(_sceneView->isMaskMode);
+    _sceneModel->setLightBallState(_isLightBall);
+    _sceneModel->setAxesConeState(_isShownAxesCone);
+    _sceneModel->setGridPlaneState(_isShownGridPlane);
+    _sceneModel->setWireFrameMode(static_cast<Primitive::WireFrameMode>(_wireFrameMode));
+    _sceneModel->setIsEnabledNormalMap(_sceneView->isEnabledNormalMap);
+    _sceneModel->setIsEnabledShadowMapping(_sceneView->isEnabledShadowMapping);
+    _sceneModel->setIsVisibleBBOX(_sceneView->isVisibleBBOX);
+  }
 }
 
 ImGuiMainView::~ImGuiMainView() {}
@@ -183,24 +202,20 @@ void ImGuiMainView::paintSideBar() {
       }
 
       // Light
-      static bool isLightBall = false;
-      ImGui::Checkbox("Show light ball", &isLightBall);
-      _sceneModel->setLightBallState(isLightBall);
+      ImGui::Checkbox("Show light ball", &_isLightBall);
+      _sceneModel->setLightBallState(_isLightBall);
 
       // Axes cone
-      static bool isShownAxesCone = false;
-      ImGui::Checkbox("Show axes cone", &isShownAxesCone);
-      _sceneModel->setAxesConeState(isShownAxesCone);
+      ImGui::Checkbox("Show axes cone", &_isShownAxesCone);
+      _sceneModel->setAxesConeState(_isShownAxesCone);
 
       // XY-Grid
-      static bool isShownGridPlane = false;
-      ImGui::Checkbox("Show XY-grid", &isShownGridPlane);
-      _sceneModel->setGridPlaneState(isShownGridPlane);
+      ImGui::Checkbox("Show XY-grid", &_isShownGridPlane);
+      _sceneModel->setGridPlaneState(_isShownGridPlane);
 
       // Wire frame mode
-      static int wireFrameMode;
-      ImGui::Combo("Wire frame", &wireFrameMode, WIREFRAME_TYPE_ITEMS);
-      _sceneModel->setWireFrameMode(static_cast<Primitive::WireFrameMode>(wireFrameMode));
+      ImGui::Combo("Wire frame", &_wireFrameMode, WIREFRAME_TYPE_ITEMS);
+      _sceneModel->setWireFrameMode(static_cast<Primitive::WireFrameMode>(_wireFrameMode));
 
       // Wire frame width
       float wireFrameWidth = _sceneModel->getWireFrameWidth();
@@ -304,7 +319,7 @@ void ImGuiMainView::paintSideBar() {
         ImGui::TableSetupColumn("Visible");
         ImGui::TableHeadersRow();
 
-        for (int iObject = 0; iObject < _sceneModel->getNumObjects(); iObject++) {
+        for (int iObject = 0; iObject < _sceneModel->getNumObjects(); ++iObject) {
           ImGui::TableNextRow();
 
           const auto& object = _sceneModel->getObject(iObject);
@@ -346,7 +361,7 @@ void ImGuiMainView::paintSideBar() {
           backgoundFlags[_sceneModel->getBackgroundIDtoDraw()] = true;
         }
 
-        for (int iBackground = 0; iBackground < _sceneModel->getNumBackgrounds(); iBackground++) {
+        for (int iBackground = 0; iBackground < _sceneModel->getNumBackgrounds(); ++iBackground) {
           ImGui::TableNextRow();
 
           const auto& background = _sceneModel->getBackground(iBackground);

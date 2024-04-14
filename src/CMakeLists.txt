@@ -84,6 +84,7 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
       "Window/ImGuiObjectAddPanel.cpp"
       "Window/FPSManager.cpp"
       ${IMGUI_SOURCE_FILES}
+      ${WIN_RESOURCE_FILE}
     )
 
     target_include_directories(

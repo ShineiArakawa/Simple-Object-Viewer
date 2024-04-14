@@ -29,8 +29,9 @@ add_definitions(-DSIMVIEW_USE_ASSIMP)
 # #### Envirionment Variables #####################
 # #################################################
 # #### Set environment variables in project
-set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(PROJECT_LIB_DIR ${PROJECT_SOURCE_DIR}/external)
+set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+set(PROJECT_LIB_DIR "${PROJECT_SOURCE_DIR}/external")
+set(WIN_RESOURCE_FILE "${PROJECT_SOURCE_DIR}/assets/resource.rc")
 
 # #################################################
 # #### External Libraries #########################

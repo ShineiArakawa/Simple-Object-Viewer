@@ -1,5 +1,8 @@
 #pragma once
 
+#define IDI_ICON1 101
+
+#ifdef __cplusplus
 #include <SimView/Model/ViewerModel.hpp>
 #include <SimView/OpenGL.hpp>
 #include <SimView/Window/ImGuiMainView.hpp>
@@ -28,9 +31,11 @@ class ViewerGUIApp {
   void addBackground(const model::Background_t& background);
   void setRenderType(const model::Primitive::RenderType renderType);
   void setSideBarVisibility(const bool& isVisible);
+  void setWindowSubTitle(const std::string& subTitle);
 };
 
 using ViewerGUIApp_t = std::shared_ptr<ViewerGUIApp>;
 
 }  // namespace app
 }  // namespace simview
+#endif
