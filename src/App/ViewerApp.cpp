@@ -151,6 +151,8 @@ void ViewerApp::keyboardEventViewer(GLFWwindow* window, int key, int scancode, i
       Window::resetCameraPose();
     } else if (key == GLFW_KEY_X) {
       Window::enabledModelRotationMode = !Window::enabledModelRotationMode;
+    } else if (key == GLFW_KEY_B) {
+      model->setIsVisibleBBOX(true);
     }
 
     model->setMaskMode(Window::isMaskMode);

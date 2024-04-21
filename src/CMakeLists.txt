@@ -1,34 +1,35 @@
 # =========================================================
 # Submodules ==============================================
 # =========================================================
+if (NOT ${BUILD_STATIC_LIBS_ONLY})
+    add_subdirectory(
+        Main
+    )
 
-add_subdirectory(
-    Main
-)
+    add_subdirectory(
+        App
+    )
 
-add_subdirectory(
-    App
-)
+    add_subdirectory(
+        Renderer
+    )
 
-add_subdirectory(
-    Renderer
-)
+    add_subdirectory(
+        Model
+    )
 
-add_subdirectory(
-    Model
-)
+    add_subdirectory(
+        Util
+    )
 
-add_subdirectory(
-    Util
-)
+    add_subdirectory(
+        Window
+    )
 
-add_subdirectory(
-    Window
-)
-
-add_subdirectory(
-    Shader
-)
+    add_subdirectory(
+        Shader
+    )
+endif()
 
 # =========================================================
 # Lib =====================================================
@@ -104,4 +105,4 @@ if (${BUILD_SIMVIEW_STATIC_LIBS})
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
-endif(${BUILD_SIMVIEW_STATIC_LIBS})
+endif()

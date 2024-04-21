@@ -148,6 +148,8 @@ set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
 
 set(COPY_BINARY_TO_BIN_DIR TRUE CACHE BOOL "Copy built banaries to bin/ directory" FORCE)
 
+set(BUILD_STATIC_LIBS_ONLY FALSE CACHE BOOL "Build only the static library" FORCE)
+
 ######################################################
 # Set install include directory
 ######################################################

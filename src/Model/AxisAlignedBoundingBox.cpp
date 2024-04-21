@@ -78,7 +78,15 @@ void AxisAlignedBoundingBox::initVAO() {
 
 void AxisAlignedBoundingBox::draw() const {
   glBindVertexArray(_vaoId);
+
+  glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_BLEND);
+
   glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
+
+  glDisable(GL_LINE_SMOOTH);
+  glDisable(GL_BLEND);
+
   glBindVertexArray(0);
 }
 
