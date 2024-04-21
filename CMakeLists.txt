@@ -144,11 +144,11 @@ set(
   "All include directories for Simeple Object Viewer library"
 )
 
-set(BUILD_SIMVIEW_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
+set(SIMVIEW_BUILD_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
 
-set(COPY_BINARY_TO_BIN_DIR TRUE CACHE BOOL "Copy built banaries to bin/ directory" FORCE)
+set(SIMVIEW_COPY_BINARY_TO_BIN_DIR TRUE CACHE BOOL "Copy built banaries to bin/ directory" FORCE)
 
-set(BUILD_STATIC_LIBS_ONLY FALSE CACHE BOOL "Build only the static library" FORCE)
+set(SIMVIEW_BUILD_EXECUTABLES TRUE CACHE BOOL "Build executable files" FORCE)
 
 ######################################################
 # Set install include directory
@@ -207,5 +207,7 @@ message("#    SPD_LOG_INCLUDE_DIR                  : ${SPD_LOG_INCLUDE_DIR}")
 message("#    ASSIMP_INCLUDE_DIR                   : ${ASSIMP_INCLUDE_DIR}")
 message("#    FREETYPE_INCLUDE_DIR                 : ${FREETYPE_INCLUDE_DIR}")
 message("# ")
-message("#    BUILD_SIMVIEW_STATIC_LIBS            : ${BUILD_SIMVIEW_STATIC_LIBS}")
+message("#    SIMVIEW_BUILD_EXECUTABLES            : ${SIMVIEW_BUILD_EXECUTABLES}")
+message("#    SIMVIEW_BUILD_STATIC_LIBS            : ${SIMVIEW_BUILD_STATIC_LIBS}")
+message("#    SIMVIEW_COPY_BINARY_TO_BIN_DIR       : ${SIMVIEW_COPY_BINARY_TO_BIN_DIR}")
 message("# =======================================================================================================")

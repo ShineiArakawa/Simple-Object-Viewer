@@ -1,7 +1,7 @@
 # =========================================================
 # Submodules ==============================================
 # =========================================================
-if (NOT ${BUILD_STATIC_LIBS_ONLY})
+if (${SIMVIEW_BUILD_EXECUTABLES})
     add_subdirectory(
         Main
     )
@@ -34,7 +34,7 @@ endif()
 # =========================================================
 # Lib =====================================================
 # =========================================================
-if (${BUILD_SIMVIEW_STATIC_LIBS})
+if (${SIMVIEW_BUILD_STATIC_LIBS})
     message("Add rule to build Simple Object Viewer as a static library.")
 
     # Add build rule
