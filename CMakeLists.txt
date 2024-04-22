@@ -33,8 +33,8 @@ add_definitions(-DSIMVIEW_USE_ASSIMP)
 # Thus, specify your path to the gcc "11" toolchain by the following option.
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11")
 
-set(BUILD_AS_WIN32_APP on)
-if (${BUILD_AS_WIN32_APP})
+set(SIMVIEW_BUILD_AS_WIN32_APP TRUE CACHE BOOL "Build as WIN32 apps" FORCE)
+if (${SIMVIEW_BUILD_AS_WIN32_APP})
   add_definitions(-DSIMVIEW_BUILD_AS_WIN32_APP)
 endif()
 
@@ -106,15 +106,19 @@ set(SPD_LOG_INCLUDE_DIR ${PROJECT_LIB_DIR}/spdlog/include)
 set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_DIR}/external/assimp/include)
 
 # #### VTK
-find_package(VTK QUIET)
+set(SIMVIEW_WITH_VTK TRUE CACHE BOOL "Build with VTK" FORCE)
 
-if (VTK_FOUND)
-  message("### Found VTK")
-  message("### VTK_LIBRARIES : ${VTK_LIBRARIES}")
-  # Enable VTK plugin
-  set(SIMVIEW_WITH_VTK on)
-  add_definitions(-DSIMVIEW_WITH_VTK)
-endif(VTK_FOUND)
+if (${SIMVIEW_WITH_VTK})
+  find_package(VTK QUIET)
+
+  if (${VTK_FOUND})
+    message("### Found VTK")
+    message("### VTK_LIBRARIES : ${VTK_LIBRARIES}")
+    add_definitions(-DSIMVIEW_WITH_VTK)
+  else()
+    set(SIMVIEW_WITH_VTK FALSE)
+  endif()
+endif()
 
 ############################################################################################################
 # External libralies
