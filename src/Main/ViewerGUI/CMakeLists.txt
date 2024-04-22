@@ -6,7 +6,7 @@ set(
   ${IMGUI_SOURCE_FILES}
 )
 
-if(WIN32)
+if(WIN32 AND ${BUILD_AS_WIN32_APP})
   list(APPEND VIEWER_GUI_SOURCES ${WIN_RESOURCE_FILE})
   add_executable(
     ${PROJECT_NAME}

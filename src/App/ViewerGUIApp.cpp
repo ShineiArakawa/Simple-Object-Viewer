@@ -1,8 +1,8 @@
 #include <SimView/App/ViewerGUIApp.hpp>
 
-#if defined(WIN32)
+#if defined(_WIN32) && defined(SIMVIEW_BUILD_AS_WIN32_APP)
 #include <Windows.h>
-#endif  // WIN32
+#endif  // _WIN32 && SIMVIEW_BUILD_AS_WIN32_APP
 
 namespace simview {
 namespace app {
@@ -39,7 +39,7 @@ ViewerGUIApp::ViewerGUIApp()
     exit(1);
   }
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(SIMVIEW_BUILD_AS_WIN32_APP)
   {
     // Icon
     HWND hwnd = glfwGetWin32Window(_window);
@@ -159,7 +159,7 @@ void ViewerGUIApp::setSideBarVisibility(const bool& isVisible) {
 void ViewerGUIApp::setWindowSubTitle(const std::string& subTitle) {
   char title[2048];  // NOTE: Unsafe!
 
-#ifdef _WIN32
+#if defined(_WIN32)
   sprintf_s(title, sizeof(title), "%s [%s]", WINDOW_TITLE, subTitle.c_str());
 #else
   sprintf(title, "%s [%s]", WINDOW_TITLE, subTitle.c_str());

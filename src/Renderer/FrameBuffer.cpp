@@ -72,5 +72,20 @@ void FrameBuffer::unbind() const {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void FrameBuffer::setPixelValue(const int &x,
+                                const int &y,
+                                const uint8_t &&r,
+                                const uint8_t &&g,
+                                const uint8_t &&b,
+                                const uint8_t &&a) {
+  const GLubyte pixel[4] = {r, g, b, a};
+
+  bind();
+  {
+    glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+  }
+  unbind();
+}
+
 }  // namespace renderer
 }  // namespace simview

@@ -34,7 +34,7 @@ void saveImage(const int width, const int height, const int channels, unsigned c
     }
   } catch (std::exception &error) {
     LOG_ERROR("[Error] See below messages.");
-    LOG_ERROR("error.what()");
+    LOG_ERROR(error.what());
   }
 };
 

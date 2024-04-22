@@ -1,16 +1,16 @@
 #include <SimView/App/ViewerApp.hpp>
 
-#if defined(WIN32) && defined(ENABLE_LEAK_CHECK)
+#if defined(_WIN32) && defined(SIMVIEW_ENABLE_LEAK_CHECK)
 #include <crtdbg.h>
-#endif  // ENABLE_LEAK_CHECK
+#endif  // _WIN32 && SIMVIEW_ENABLE_LEAK_CHECK
 
 using namespace simview::app;
 using namespace simview::util;
 
 int main(int argc, char** argv) {
-#if defined(WIN32) && defined(ENABLE_LEAK_CHECK)
+#if defined(_WIN32) && defined(SIMVIEW_ENABLE_LEAK_CHECK)
   _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
-#endif  // ENABLE_LEAK_CHECK
+#endif  // _WIN32 && SIMVIEW_ENABLE_LEAK_CHECK
 
   // Parse args
   int nArgs = argc - 1;

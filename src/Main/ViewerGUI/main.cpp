@@ -1,13 +1,16 @@
 #include <SimView/App/ViewerGUIApp.hpp>
 
-#if defined(WIN32)
-#include <Windows.h>
-#if defined(ENABLE_LEAK_CHECK)
-#include <crtdbg.h>  // Memory leak checker for MSVC
-#endif               // ENABLE_LEAK_CHECK
-#endif               // WIN32
+#if defined(_WIN32)
 
-#if defined(WIN32)
+#include <Windows.h>
+
+#if defined(SIMVIEW_ENABLE_LEAK_CHECK)
+#include <crtdbg.h>  // Memory leak checker for MSVC
+#endif               // SIMVIEW_ENABLE_LEAK_CHECK
+
+#endif  // _WIN32
+
+#if defined(_WIN32) && defined(SIMVIEW_BUILD_AS_WIN32_APP)
 int WINAPI WinMain(
     HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -15,13 +18,14 @@ int WINAPI WinMain(
     int nCmdShow) {
   const int argc = __argc;
   char** argv = __argv;
-#else   // WIN32
+#else   // _WIN32 && SIMVIEW_BUILD_AS_WIN32_APP
 int main(int argc, char** argv) {
-#endif  // WIN32
-#if defined(WIN32) && defined(ENABLE_LEAK_CHECK)
+#endif  // _WIN32 && SIMVIEW_BUILD_AS_WIN32_APP
+
+#if defined(_WIN32) && defined(SIMVIEW_ENABLE_LEAK_CHECK)
   // Initialize memory leak checker for MSVC
   _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
-#endif  // WIN32 && ENABLE_LEAK_CHECK
+#endif  // _WIN32 && SIMVIEW_ENABLE_LEAK_CHECK
 
   // Create application
   simview::app::ViewerGUIApp_t app = std::make_shared<simview::app::ViewerGUIApp>();

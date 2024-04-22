@@ -1,8 +1,8 @@
 #include <SimView/App/PoneApp.hpp>
 
-#if defined(WIN32) && defined(ENABLE_LEAK_CHECK)
+#if defined(_WIN32) && defined(SIMVIEW_ENABLE_LEAK_CHECK)
 #include <crtdbg.h>
-#endif  // ENABLE_LEAK_CHECK
+#endif  // _WIN32 && SIMVIEW_ENABLE_LEAK_CHECK
 
 using namespace simview::app;
 using namespace simview::util;

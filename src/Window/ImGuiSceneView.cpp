@@ -173,11 +173,19 @@ void ImGuiSceneView::motionEvent(const bool& isMouseOnScene, const ImVec2& relMo
     const float dx = newPos.x - oldPos.x;
     const float dy = newPos.y - oldPos.y;
     const float length = dx * dx + dy * dy;
-    if (length < 2.0f * 2.0f) {
-      return;
+
+    if (ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
+      // Pressed 'l-Shift' key
+      if (relMousePos.x >= 0.0f && relMousePos.x < WIN_WIDTH && relMousePos.y >= 0.0f && relMousePos.y < WIN_HEIGHT) {
+        getFrameBuffer()->setPixelValue((int)relMousePos.x, (int)relMousePos.y, 255, 255, 255, 255);
+      }
     } else {
-      updateTransform();
-      oldPos = relMousePos;
+      if (length < 2.0f * 2.0f) {
+        return;
+      } else {
+        updateTransform();
+        oldPos = relMousePos;
+      }
     }
   }
 }
@@ -185,9 +193,11 @@ void ImGuiSceneView::motionEvent(const bool& isMouseOnScene, const ImVec2& relMo
 void ImGuiSceneView::wheelEvent(const bool& isMouseOnScene, const float& offset) {
   if (isMouseOnScene) {
     acScale += (float)offset / 10.0f;
-    if (acScale < 0) {
+
+    if (acScale < 0.0f) {
       acScale = 0.0001f;
     }
+
     updateScale();
   }
 }

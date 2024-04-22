@@ -61,10 +61,10 @@ void Texture::readTexture(const std::string& filePath, Texture::TextureArray tex
     return;
   }
 
-  for (int i = 0; i < texHeight; i++) {
+  for (int i = 0; i < texHeight; ++i) {
     texture->push_back(std::make_shared<std::vector<std::shared_ptr<std::vector<int>>>>());
 
-    for (int j = 0; j < texWidth; j++) {
+    for (int j = 0; j < texWidth; ++j) {
       (*texture)[i]->push_back(std::make_shared<std::vector<int>>());
       unsigned char* texel = bytesTexture + (j + texWidth * i) * nChannels;
 

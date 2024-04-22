@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.24)
 
 project(SimpleObjectViewer C CXX)
 
-# #################################################
-# #### Compile Options ############################
-# #################################################
+############################################################################################################
+# Compile Options 
+############################################################################################################
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE on)
@@ -24,7 +24,7 @@ elseif(UNIX)
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D ENABLE_LEAK_CHECK")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D SIMVIEW_ENABLE_LEAK_CHECK")
 
 # Enable assimp
 add_definitions(-DSIMVIEW_USE_ASSIMP)
@@ -33,17 +33,22 @@ add_definitions(-DSIMVIEW_USE_ASSIMP)
 # Thus, specify your path to the gcc "11" toolchain by the following option.
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11")
 
-# #################################################
-# #### Envirionment Variables #####################
-# #################################################
+set(BUILD_AS_WIN32_APP on)
+if (${BUILD_AS_WIN32_APP})
+  add_definitions(-DSIMVIEW_BUILD_AS_WIN32_APP)
+endif()
+
+############################################################################################################
+# Envirionment Variables
+############################################################################################################
 # #### Set environment variables in project
 set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 set(PROJECT_LIB_DIR "${PROJECT_SOURCE_DIR}/external")
 set(WIN_RESOURCE_FILE "${PROJECT_SOURCE_DIR}/assets/resource.rc")
 
-# #################################################
-# #### External Libraries #########################
-# #################################################
+############################################################################################################
+# External Libraries
+############################################################################################################
 # #### OpenMP
 find_package(OpenMP REQUIRED)
 
@@ -111,9 +116,9 @@ if (VTK_FOUND)
   add_definitions(-DSIMVIEW_WITH_VTK)
 endif(VTK_FOUND)
 
-######################################################
+############################################################################################################
 # External libralies
-######################################################
+############################################################################################################
 set(
   EXTERNAL_INCLUDE_DIR
   ${GLAD_INCLUDE_DIR}
@@ -139,9 +144,9 @@ set(
   ${VTK_LIBRARIES}
 )
 
-######################################################
+############################################################################################################
 # For static library usage
-######################################################
+############################################################################################################
 # This variable is for the library mode
 set(
   SimpleObjectViewer_INCLUDE_DIR
@@ -158,9 +163,9 @@ set(SIMVIEW_COPY_BINARY_TO_BIN_DIR TRUE CACHE BOOL "Copy built banaries to bin/ 
 
 set(SIMVIEW_BUILD_EXECUTABLES TRUE CACHE BOOL "Build executable files" FORCE)
 
-######################################################
+############################################################################################################
 # Set install include directory
-######################################################
+############################################################################################################
 install(
 	DIRECTORY "${PROJECT_INCLUDE_DIR}/SimView"
 	DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
@@ -169,15 +174,15 @@ install(
 
 # NOTE: Installing lib directory is set in src/CMakeLists.txt
 
-######################################################
+############################################################################################################
 # Add subdirectory
-######################################################
+############################################################################################################
 add_subdirectory(src)
 add_subdirectory(external)
 
-# #################################################
-# #### Message ####################################
-# #################################################
+############################################################################################################
+# Message
+############################################################################################################
 message("# =======================================================================================================")
 message("#  '${PROJECT_NAME}' build configuration ")
 message("# =======================================================================================================")
