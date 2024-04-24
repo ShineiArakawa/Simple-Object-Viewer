@@ -151,7 +151,7 @@ class ObjectLoader {
                           const float offsetX = 0.0f,
                           const float offsetY = 0.0f,
                           const float offsetZ = 0.0f);
-  static void readLazFile(const std::string& filePath,
+  static void readLasFile(const std::string& filePath,
                           VertexArray_t vertices,
                           IndexArray_t indices,
                           const float offsetX = 0.0f,

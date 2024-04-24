@@ -12,7 +12,8 @@ PointCloudPoly::PointCloudPoly(const std::string &filePath,  // filePath
                                const float offsetZ,          // offsetZ
                                const float scale,            // scale
                                const float pointSize,        // pointSize
-                               const bool isDoubled          // isDoubled
+                               const bool isDoubled,         // isDoubled
+                               const bool autoScale          // autoScale
                                )
     : Primitive(),
       _filePath(filePath),
@@ -21,14 +22,15 @@ PointCloudPoly::PointCloudPoly(const std::string &filePath,  // filePath
       _offsetZ(offsetZ),
       _scale(scale),
       _pointSize(pointSize),
-      _isDoubled(isDoubled) {
+      _isDoubled(isDoubled),
+      _autoScale(autoScale) {
 }
 
 void PointCloudPoly::initVAO() {
   VertexArray_t points = std::make_shared<std::vector<Vertex>>();
   IndexArray_t pointsIndices = std::make_shared<std::vector<uint32_t>>();
 
-  ObjectLoader::readFromFile(_filePath, points, pointsIndices, _offsetX, _offsetY, _offsetZ);
+  ObjectLoader::readFromFile(_filePath, points, pointsIndices, _offsetX, _offsetY, _offsetZ, _autoScale);
   ObjectLoader::moveToOrigin(points);
   ObjectLoader::scaleObject(points, _scale);
   ObjectLoader::translateObject(points, _offsetX, _offsetY, _offsetZ);

@@ -189,7 +189,7 @@ void ImGuiObjectAddPanel::paint() {
     ImGui::SameLine();
     if (ImGui::Button("Browse object file")) {
       nfdchar_t* outPath;
-      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj"}};
+      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj,las"}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
 
       if (result == NFD_OKAY) {
@@ -201,6 +201,7 @@ void ImGuiObjectAddPanel::paint() {
     ImGui::InputFloat("Scale", &scale);
     ImGui::InputFloat("Point size", &pointSize, 0.0f, 0.0f, FLOAT_FORMAT);
     ImGui::Checkbox("Doubled mesh", &isDoubled);
+    ImGui::Checkbox("Auto scale", &autoScale);
   } else if (objectTypeID == 6) {
     // ====================================================================
     // Point cloud
@@ -210,7 +211,7 @@ void ImGuiObjectAddPanel::paint() {
     ImGui::SameLine();
     if (ImGui::Button("Browse object file")) {
       nfdchar_t* outPath;
-      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj"}};
+      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj,las"}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
 
       if (result == NFD_OKAY) {
@@ -221,6 +222,7 @@ void ImGuiObjectAddPanel::paint() {
     ImGui::InputFloat3("Offset (X, Y, Z)", offsetXYZ, FLOAT_FORMAT);
     ImGui::InputFloat("Scale", &scale);
     ImGui::InputFloat("Point size", &pointSize, 0.0f, 0.0f, FLOAT_FORMAT);
+    ImGui::Checkbox("Auto scale", &autoScale);
   } else if (objectTypeID == 7) {
     // ====================================================================
     // Materialed object
@@ -350,7 +352,8 @@ void ImGuiObjectAddPanel::paint() {
                                                      offsetXYZ[2],
                                                      scale,
                                                      pointSize,
-                                                     isDoubled);
+                                                     isDoubled,
+                                                     autoScale);
       } else if (objectTypeID == 6) {
         // ====================================================================
         // Point cloud
@@ -360,7 +363,8 @@ void ImGuiObjectAddPanel::paint() {
                                                  offsetXYZ[1],
                                                  offsetXYZ[2],
                                                  scale,
-                                                 pointSize);
+                                                 pointSize,
+                                                 autoScale);
       } else if (objectTypeID == 7) {
         // ====================================================================
         // Materialed object

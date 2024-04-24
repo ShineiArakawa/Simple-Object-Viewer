@@ -5,6 +5,8 @@
 #include <tiny_obj_loader.h>
 #endif
 
+#include <SimView/Util/llas.hpp>
+
 namespace simview {
 namespace util {
 
@@ -16,6 +18,9 @@ std::vector<std::string> ObjectLoader::getReadableExtensionList() {
 
   // Native support
   extensionList.push_back("pch");
+
+  // Native support
+  extensionList.push_back("las");
 
 #if defined(SIMVIEW_USE_ASSIMP)
   std::string strExtensions;
@@ -68,7 +73,7 @@ void ObjectLoader::readFromFile(const std::string &filePath,
     } else if (extension == ".pch") {
       readPchFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
     } else if (extension == ".las") {
-      readLazFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
+      readLasFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
     } else if (extension == ".vtu") {
       readVtkFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
     } else {
@@ -727,63 +732,45 @@ void ObjectLoader::readPchFile(const std::string &filePath,
   LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
 }
 
-void ObjectLoader::readLazFile(const std::string &filePath,
+void ObjectLoader::readLasFile(const std::string &filePath,
                                VertexArray_t vertices,
                                IndexArray_t indices,
                                const float offsetX,
                                const float offsetY,
                                const float offsetZ) {
-  // std::ifstream ifs(filePath, std::ios::in | std::ios::binary);
+  const auto pointData = llas::read(filePath, true);
 
-  // if (!ifs.good()) {
-  //   std::cerr << "Could not open file for reading: " << filePath << std::endl;
-  //   std::cerr << strerror(errno) << std::endl;
-  //   return;
-  // }
+  if (pointData != nullptr) {
+    const size_t nPoints = pointData->getNumPoints();
+    const auto &coords = pointData->getPointCoords();
+    const auto &colors = pointData->getPointColors();
 
-  // liblas::ReaderFactory f;
-  // liblas::Reader reader = f.CreateWithStream(ifs);
+    vertices->resize(nPoints);
+    indices->resize(nPoints);
 
-  // liblas::Header const &header = reader.GetHeader();
+    for (size_t iPoint = 0; iPoint < nPoints; ++iPoint) {
+      const size_t offset = 3 * iPoint;
+      const Vertex vertex(
+          glm::vec3((float)coords[offset + 0],
+                    (float)coords[offset + 1],
+                    (float)coords[offset + 2]),
+          glm::vec3((float)colors[offset + 0] / 255.0f,
+                    (float)colors[offset + 1] / 255.0f,
+                    (float)colors[offset + 2] / 255.0f),
+          glm::vec3(0.0f),
+          glm::vec3(0.0f),
+          glm::vec2(0.0f),
+          0.0f);
 
-  // std::cout << "Compressed: " << ((header.Compressed() == true) ? "true" : "false") << std::endl;
-  // std::cout << "Signature: " << header.GetFileSignature() << std::endl;
-  // std::cout << "Points count: " << header.GetPointRecordsCount() << std::endl;
+      (*vertices)[iPoint] = vertex;
+      (*indices)[iPoint] = (uint32_t)iPoint;
+    }
+  }
 
-  // glm::vec3 min(0.0f);
-  // glm::vec3 max(0.0f);
+  ObjectLoader::moveToOrigin(vertices);
+  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
 
-  // while (reader.ReadNextPoint()) {
-  //   const liblas::Point &point = reader.GetPoint();
-  //   const liblas::Color &col = point.GetColor();
-
-  //   const glm::vec3 position(point.GetX(), point.GetY(), point.GetZ());
-  //   const glm::vec3 normal(0.0f);
-  //   const glm::vec3 color(col.GetRed(), col.GetGreen(), col.GetBlue());
-  //   const glm::vec2 texcoord(0.0f);
-
-  //   // const Vertex vertex(position, color, normal, texcoord, 0.0f);
-  //   // vertices->push_back(vertex);
-
-  //   if (position.x < min.x) {
-  //     min.x = position.x;
-  //   }
-  //   if (position.y < min.y) {
-  //     min.y = position.y;
-  //   }
-  //   if (position.z < min.z) {
-  //     min.z = position.z;
-  //   }
-  //   if (position.x > max.x) {
-  //     max.x = position.x;
-  //   }
-  //   if (position.y > max.y) {
-  //     max.y = position.y;
-  //   }
-  //   if (position.z > max.z) {
-  //     max.z = position.z;
-  //   }
-  // }
+  LOG_INFO("Num of points : " + std::to_string(vertices->size()));
 }
 
 void ObjectLoader::readVtkFile(const std::string &filePath,

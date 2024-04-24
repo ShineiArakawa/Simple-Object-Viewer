@@ -19,7 +19,7 @@ target_include_directories(
   ${EXTERNAL_INCLUDE_DIR}
 )
 
-if (${SIMVIEW_WITH_VTK})
+if (SIMVIEW_WITH_VTK)
   target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC

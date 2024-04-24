@@ -11,21 +11,23 @@ PointCloud::PointCloud(const std::string &filePath,
                        const float offsetY,
                        const float offsetZ,
                        const float scale,
-                       const float pointSize)
+                       const float pointSize,
+                       const bool autoScale)
     : Primitive(),
       _filePath(filePath),
       _offsetX(offsetX),
       _offsetY(offsetY),
       _offsetZ(offsetZ),
       _scale(scale),
-      _pointSize(pointSize) {
+      _pointSize(pointSize),
+      _autoScale(autoScale) {
 }
 
 void PointCloud::initVAO() {
   VertexArray_t points = std::make_shared<std::vector<Vertex>>();
   IndexArray_t indices = std::make_shared<std::vector<uint32_t>>();
 
-  ObjectLoader::readFromFile(_filePath, points, indices, _offsetX, _offsetY, _offsetZ);
+  ObjectLoader::readFromFile(_filePath, points, indices, _offsetX, _offsetY, _offsetZ, _autoScale);
   ObjectLoader::moveToOrigin(points);
   ObjectLoader::scaleObject(points, _scale);
   ObjectLoader::translateObject(points, _offsetX, _offsetY, _offsetZ);

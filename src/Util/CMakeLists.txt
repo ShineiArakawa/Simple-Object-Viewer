@@ -31,4 +31,4 @@ if (SIMVIEW_WITH_VTK)
     PUBLIC
     ${VTK_LIBRARIES}
   )
-endif(SIMVIEW_WITH_VTK)
+endif()

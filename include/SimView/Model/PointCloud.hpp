@@ -15,6 +15,7 @@ class PointCloud : public Primitive {
   float _offsetZ;
   float _scale;
   float _pointSize;
+  bool _autoScale;
 
   int _indexBufferSize;
   GLuint _vaoId;
@@ -41,7 +42,8 @@ class PointCloud : public Primitive {
              const float offsetY = 0.0f,
              const float offsetZ = 0.0f,
              const float scale = 1.0f,
-             const float pointSize = 0.1f);
+             const float pointSize = 0.1f,
+             const bool autoScale = false);
   ~PointCloud() = default;
 
   void update() override{};

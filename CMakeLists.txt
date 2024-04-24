@@ -33,8 +33,8 @@ add_definitions(-DSIMVIEW_USE_ASSIMP)
 # Thus, specify your path to the gcc "11" toolchain by the following option.
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11")
 
-set(SIMVIEW_BUILD_AS_WIN32_APP TRUE CACHE BOOL "Build as WIN32 apps" FORCE)
-if (${SIMVIEW_BUILD_AS_WIN32_APP})
+set(SIMVIEW_BUILD_AS_WIN32_APP TRUE CACHE BOOL "Build as WIN32 apps")
+if (SIMVIEW_BUILD_AS_WIN32_APP)
   add_definitions(-DSIMVIEW_BUILD_AS_WIN32_APP)
 endif()
 
@@ -108,10 +108,10 @@ set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_
 # #### VTK
 set(SIMVIEW_WITH_VTK TRUE CACHE BOOL "Build with VTK" FORCE)
 
-if (${SIMVIEW_WITH_VTK})
+if (SIMVIEW_WITH_VTK)
   find_package(VTK QUIET)
 
-  if (${VTK_FOUND})
+  if (VTK_FOUND)
     message("### Found VTK")
     message("### VTK_LIBRARIES : ${VTK_LIBRARIES}")
     add_definitions(-DSIMVIEW_WITH_VTK)
@@ -161,11 +161,11 @@ set(
   "All include directories for Simeple Object Viewer library"
 )
 
-set(SIMVIEW_BUILD_STATIC_LIBS TRUE CACHE BOOL "Build as static library" FORCE)
+set(SIMVIEW_BUILD_STATIC_LIBS TRUE CACHE BOOL "Build as static library")
 
-set(SIMVIEW_COPY_BINARY_TO_BIN_DIR TRUE CACHE BOOL "Copy built banaries to bin/ directory" FORCE)
+set(SIMVIEW_COPY_BINARY_TO_BIN_DIR TRUE CACHE BOOL "Copy built banaries to bin/ directory")
 
-set(SIMVIEW_BUILD_EXECUTABLES TRUE CACHE BOOL "Build executable files" FORCE)
+set(SIMVIEW_BUILD_EXECUTABLES TRUE CACHE BOOL "Build executable files")
 
 ############################################################################################################
 # Set install include directory
@@ -226,5 +226,6 @@ message("#    FREETYPE_INCLUDE_DIR                 : ${FREETYPE_INCLUDE_DIR}")
 message("# ")
 message("#    SIMVIEW_BUILD_EXECUTABLES            : ${SIMVIEW_BUILD_EXECUTABLES}")
 message("#    SIMVIEW_BUILD_STATIC_LIBS            : ${SIMVIEW_BUILD_STATIC_LIBS}")
+message("#    SIMVIEW_BUILD_AS_WIN32_APP           : ${SIMVIEW_BUILD_AS_WIN32_APP}")
 message("#    SIMVIEW_COPY_BINARY_TO_BIN_DIR       : ${SIMVIEW_COPY_BINARY_TO_BIN_DIR}")
 message("# =======================================================================================================")

@@ -28,7 +28,7 @@ target_link_libraries(
   ${CMAKE_DL_LIBS}
 )
 
-if (${SIMVIEW_COPY_BINARY_TO_BIN_DIR})
+if (SIMVIEW_COPY_BINARY_TO_BIN_DIR)
   add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_SOURCE_DIR}/bin/

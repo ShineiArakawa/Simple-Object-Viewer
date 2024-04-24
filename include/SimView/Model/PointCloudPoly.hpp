@@ -18,6 +18,7 @@ class PointCloudPoly : public Primitive {
   float _scale;
   float _pointSize;
   bool _isDoubled;
+  bool _autoScale;
 
   int _indexBufferSize;
   GLuint _vaoId;
@@ -40,7 +41,14 @@ class PointCloudPoly : public Primitive {
  protected:
   // nothing
  public:
-  PointCloudPoly(const std::string&, const float, const float, const float, const float, const float, const bool);
+  PointCloudPoly(const std::string&,
+                 const float,
+                 const float,
+                 const float,
+                 const float,
+                 const float,
+                 const bool,
+                 const bool autoScale = false);
   ~PointCloudPoly() = default;
 
   void update() override{};
