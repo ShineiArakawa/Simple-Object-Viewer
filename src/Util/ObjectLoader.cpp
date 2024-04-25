@@ -48,6 +48,7 @@ std::vector<std::string> ObjectLoader::getReadableExtensionList() {
 #endif
 
 #if defined(SIMVIEW_WITH_VTK)
+  extensionList.push_back("vtk");
   extensionList.push_back("vtu");
 #endif
 
@@ -74,7 +75,7 @@ void ObjectLoader::readFromFile(const std::string &filePath,
       readPchFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
     } else if (extension == ".las") {
       readLasFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
-    } else if (extension == ".vtu") {
+    } else if (extension == ".vtk" || extension == ".vtu") {
       readVtkFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
     } else {
       readObjFile(filePath, vertices, indices, offsetX, offsetY, offsetZ);
@@ -780,11 +781,23 @@ void ObjectLoader::readVtkFile(const std::string &filePath,
                                const float offsetY,
                                const float offsetZ) {
 #if defined(SIMVIEW_WITH_VTK)
-  vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
-  reader->SetFileName(filePath.c_str());
-  reader->Update();
+  vtkUnstructuredGrid *unstructuredGrid = nullptr;
 
-  vtkUnstructuredGrid *unstructuredGrid = reader->GetOutput();
+  const std::string extension = FileUtil::extension(filePath);
+  if (extension == ".vtk") {
+    vtkSmartPointer<vtkUnstructuredGridReader> reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
+    reader->SetFileName(filePath.c_str());
+    reader->Update();
+    unstructuredGrid = reader->GetOutput();
+  } else if (extension == ".vtu") {
+    vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
+    reader->SetFileName(filePath.c_str());
+    reader->Update();
+    unstructuredGrid = reader->GetOutput();
+  } else {
+    LOG_ERROR("Unsupported VTK file extension: " + extension);
+    return;
+  }
 
   if (unstructuredGrid != nullptr) {
     // Triangrated Faces

@@ -35,6 +35,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkUnsignedCharArray.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkUnstructuredGridReader.h"
 #include "vtkXMLUnstructuredGridReader.h"
 #endif
 

@@ -106,7 +106,7 @@ set(SPD_LOG_INCLUDE_DIR ${PROJECT_LIB_DIR}/spdlog/include)
 set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_DIR}/external/assimp/include)
 
 # #### VTK
-set(SIMVIEW_WITH_VTK TRUE CACHE BOOL "Build with VTK" FORCE)
+set(SIMVIEW_WITH_VTK TRUE CACHE BOOL "Build with VTK")
 
 if (SIMVIEW_WITH_VTK)
   find_package(VTK QUIET)
@@ -228,4 +228,5 @@ message("#    SIMVIEW_BUILD_EXECUTABLES            : ${SIMVIEW_BUILD_EXECUTABLES
 message("#    SIMVIEW_BUILD_STATIC_LIBS            : ${SIMVIEW_BUILD_STATIC_LIBS}")
 message("#    SIMVIEW_BUILD_AS_WIN32_APP           : ${SIMVIEW_BUILD_AS_WIN32_APP}")
 message("#    SIMVIEW_COPY_BINARY_TO_BIN_DIR       : ${SIMVIEW_COPY_BINARY_TO_BIN_DIR}")
+message("#    SIMVIEW_WITH_VTK                     : ${SIMVIEW_WITH_VTK}")
 message("# =======================================================================================================")

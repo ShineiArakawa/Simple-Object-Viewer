@@ -49,7 +49,7 @@ void ImGuiObjectAddPanel::paint() {
   static float offsetXYZ[3] = {0.0f, 0.0f, 0.0f};
   static float scale = 1.0f;
   static float scaleXYZ[3] = {1.0f, 1.0f, 1.0f};
-  static bool autoScale = false;
+  static bool autoScale = true;
   static float color[3] = {1.0f, 1.0f, 1.0f};
   static int nDivs = 100;
   static float pointSize = 0.01f;

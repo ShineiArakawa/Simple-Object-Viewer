@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
   if (argc > 1) {
     std::string filePath(argv[1]);
     LOG_INFO("Initial object file: " + filePath);
-    auto object = std::make_shared<simview::model::Object>(filePath);
+    auto object = std::make_shared<simview::model::Object>(filePath, 0.0f, 0.0f, 0.0f, 1.0f, true);
     object->setName(simview::util::FileUtil::baseName(filePath));
     app->addObject(object);
   }
