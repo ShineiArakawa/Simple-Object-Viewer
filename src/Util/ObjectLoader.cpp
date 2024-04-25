@@ -780,24 +780,44 @@ void ObjectLoader::readVtkFile(const std::string &filePath,
                                const float offsetX,
                                const float offsetY,
                                const float offsetZ) {
+  if (!FileUtil::exists(filePath)) {
+    LOG_ERROR("File not found: " + filePath);
+    return;
+  }
+
 #if defined(SIMVIEW_WITH_VTK)
   vtkUnstructuredGrid *unstructuredGrid = nullptr;
-
   const std::string extension = FileUtil::extension(filePath);
+
   if (extension == ".vtk") {
     vtkSmartPointer<vtkUnstructuredGridReader> reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
     reader->SetFileName(filePath.c_str());
     reader->Update();
-    unstructuredGrid = reader->GetOutput();
+
+    const auto content = reader->GetOutput();
+    if (content != nullptr) {
+      unstructuredGrid = vtkUnstructuredGrid::New();
+      unstructuredGrid->ShallowCopy(content);
+    }
   } else if (extension == ".vtu") {
     vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
     reader->SetFileName(filePath.c_str());
     reader->Update();
-    unstructuredGrid = reader->GetOutput();
+
+    const auto content = reader->GetOutput();
+    if (content != nullptr) {
+      unstructuredGrid = vtkUnstructuredGrid::New();
+      unstructuredGrid->ShallowCopy(content);
+    }
   } else {
     LOG_ERROR("Unsupported VTK file extension: " + extension);
     return;
   }
+
+  // vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
+  // reader->SetFileName(filePath.c_str());
+  // reader->Update();
+  // vtkUnstructuredGrid *unstructuredGrid = reader->GetOutput();
 
   if (unstructuredGrid != nullptr) {
     // Triangrated Faces
