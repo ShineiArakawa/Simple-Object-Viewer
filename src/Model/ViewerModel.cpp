@@ -6,7 +6,8 @@ namespace model {
 using namespace util;
 using namespace shader;
 
-ViewerModel::ViewerModel() {
+ViewerModel::ViewerModel()
+    : Model() {
   setMaskMode(false);
 }
 

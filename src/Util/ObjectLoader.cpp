@@ -814,11 +814,6 @@ void ObjectLoader::readVtkFile(const std::string &filePath,
     return;
   }
 
-  // vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
-  // reader->SetFileName(filePath.c_str());
-  // reader->Update();
-  // vtkUnstructuredGrid *unstructuredGrid = reader->GetOutput();
-
   if (unstructuredGrid != nullptr) {
     // Triangrated Faces
     {

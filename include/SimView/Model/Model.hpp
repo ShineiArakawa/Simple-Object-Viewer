@@ -28,42 +28,41 @@ class Model {
   // Nothing
 
  protected:
-  Objects_t _objects = std::make_shared<std::vector<Primitive_t>>();
-  Backgrounds_t _backgrounds = std::make_shared<std::vector<Background_t>>();
-  glm::vec4 _backgroundColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+  Objects_t _objects = nullptr;
+  Backgrounds_t _backgrounds = nullptr;
+  glm::vec4 _backgroundColor;
 
   String_t _modelVertMShaderPath = nullptr;
   String_t _modelFragShaderPath = nullptr;
   String_t _depthVertMShaderPath = nullptr;
   String_t _depthFragShaderPath = nullptr;
 
-  int _backgroundIDtoDraw = 0;
-  float _time = 0.0f;
+  int _backgroundIDtoDraw;
+  float _time;
 
   shader::ModelShader_t _shader = nullptr;
   shader::DepthShader_t _depthShader = nullptr;
 
-  glm::vec4 _lightPosition = glm::vec4(5.0f, 5.0f, 5.0f, 1.0f);
-  float _shininess = 50.0f;
-  float _ambientIntensity = 0.1f;
-  glm::vec3 _wireFrameColor =
-      glm::vec3(15.0f / 255.0f, 230.0f / 255.0f, 130.0f / 255.0f);
-  float _wireFrameWidth = 0.01f;
+  glm::vec4 _lightPosition;
+  float _shininess;
+  float _ambientIntensity;
+  glm::vec3 _wireFrameColor;
+  float _wireFrameWidth;
 
  public:
   // clang-format off
-  inline static const std::string KEY_MODEL = "Model";
-  inline static const std::string KEY_BACKGROUND = "Background";
-  inline static const std::string KEY_BACKGROUND_COLOR = "Color";
+  inline static const std::string KEY_MODEL                      = "Model";
+  inline static const std::string KEY_BACKGROUND                 = "Background";
+  inline static const std::string KEY_BACKGROUND_COLOR           = "Color";
   // clang-format on
 
  public:
+  Model();
   virtual ~Model();
   virtual void initVAO() = 0;
-  virtual void paintGL(
-      const TransformationContext &transCtx,  // transCtx
-      const GLuint &depthMapId                // depthMapId
-      ) = 0;
+  virtual void paintGL(const TransformationContext &transCtx,  // transCtx
+                       const GLuint &depthMapId                // depthMapId
+                       ) = 0;
   virtual void tick(float time) = 0;
 
   void drawGL(const glm::mat4 &lightMvpMat) {
@@ -121,23 +120,23 @@ class Model {
     }
   }
 
-  Backgrounds_t getBackgrounds() { return _backgrounds; };
+  Backgrounds_t getBackgrounds() const { return _backgrounds; };
 
-  shader::ModelShader_t getModelShader() { return _shader; };
+  shader::ModelShader_t getModelShader() const { return _shader; };
 
-  shader::DepthShader_t getDepthShader() { return _depthShader; };
+  shader::DepthShader_t getDepthShader() const { return _depthShader; };
 
-  Background_t getBackground(const int index) {
+  Background_t getBackground(const int index) const {
     return (*_backgrounds)[index];
   };
 
-  int getNumBackgrounds() { return (int)_backgrounds->size(); };
+  int getNumBackgrounds() const { return (int)_backgrounds->size(); };
 
-  Objects_t getObjects() { return _objects; };
+  Objects_t getObjects() const { return _objects; };
 
-  Primitive_t getObject(const int index) { return (*_objects)[index]; };
+  Primitive_t getObject(const int index) const { return (*_objects)[index]; };
 
-  std::vector<Primitive_t> getObjectByType(const std::string &type) {
+  std::vector<Primitive_t> getObjectByType(const std::string &type) const {
     std::vector<Primitive_t> objects;
 
     for (const auto &item : *_objects) {
@@ -149,21 +148,21 @@ class Model {
     return objects;
   }
 
-  int getNumObjects() { return (int)_objects->size(); };
+  int getNumObjects() const { return (int)_objects->size(); };
 
-  int getBackgroundIDtoDraw() { return _backgroundIDtoDraw; };
+  int getBackgroundIDtoDraw() const { return _backgroundIDtoDraw; };
 
-  glm::vec4 getBackgroundColor() { return _backgroundColor; };
+  glm::vec4 getBackgroundColor() const { return _backgroundColor; };
 
-  glm::vec4 getLightPos() { return _lightPosition; };
+  glm::vec4 getLightPos() const { return _lightPosition; };
 
-  float getShininess() { return _shininess; };
+  float getShininess() const { return _shininess; };
 
-  float getAmbientIntensity() { return _ambientIntensity; };
+  float getAmbientIntensity() const { return _ambientIntensity; };
 
-  glm::vec3 getWireFrameColor() { return _wireFrameColor; };
+  glm::vec3 getWireFrameColor() const { return _wireFrameColor; };
 
-  float getWireFrameWidth() { return _wireFrameWidth; };
+  float getWireFrameWidth() const { return _wireFrameWidth; };
 
   void setModelVertShaderPath(const String_t &vertShaderPath) {
     _modelVertMShaderPath = vertShaderPath;
