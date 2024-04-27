@@ -52,6 +52,12 @@
 #include <string>
 #include <vector>
 
+#if defined(LLAS_STATIC)
+#define LLAS_FUNC_DECL_PREFIX static
+#else
+#define LLAS_FUNC_DECL_PREFIX inline
+#endif
+
 // ==========================================================================
 // Type defines
 // ==========================================================================
@@ -73,7 +79,7 @@
 #define LLAS_BUFFER_SIZE 1024
 
 // ==========================================================================
-// Simple logging function
+// Simple logging macro
 // ==========================================================================
 
 #if defined(LLAS_LOG_DEBUG)
@@ -91,6 +97,16 @@
 #define _LLAS_logError(message) (std::cerr << "[ERROR] " << __FILE__ << ":" << __LINE__ << " " << message << std::endl)
 
 namespace llas {
+// ==========================================================================
+// Utility Functions
+// ==========================================================================
+
+LLAS_FUNC_DECL_PREFIX void _readBytes(std::ifstream& ifs,
+                                      std::vector<char>& bytes,
+                                      const std::streamsize& nBytes) {
+  ifs.read(bytes.data(), nBytes);
+}
+
 // ==========================================================================
 // Math utility
 // ==========================================================================
@@ -125,13 +141,13 @@ using vecf_pt = vec_pt<float>;
 using vecd_pt = vec_pt<double>;
 using veci_pt = vec_pt<int>;
 
-inline static float innerProduct(const vec3f_t& vec0,
-                                 const vec3f_t& vec1) {
+LLAS_FUNC_DECL_PREFIX float innerProduct(const vec3f_t& vec0,
+                                         const vec3f_t& vec1) {
   return vec0[0] * vec1[0] + vec0[1] * vec1[1] + vec0[2] * vec1[2];
 }
 
-inline static vec3f_t outerProduct(const vec3f_t& vec0,
-                                   const vec3f_t& vec1) {
+LLAS_FUNC_DECL_PREFIX vec3f_t outerProduct(const vec3f_t& vec0,
+                                           const vec3f_t& vec1) {
   return {
       vec0[1] * vec1[2] - vec0[2] * vec1[1],  // vec0.y * vec1.z - vec0.z * vec1.y
       vec0[2] * vec1[0] - vec0[0] * vec1[2],  // vec0.z * vec1.x - vec0.x * vec1.z
@@ -139,28 +155,28 @@ inline static vec3f_t outerProduct(const vec3f_t& vec0,
   };
 }
 
-inline static void outerProduct(const float& x0, const float& y0, const float& z0,
-                                const float& x1, const float& y1, const float& z1,
-                                float& x, float& y, float& z) {
+LLAS_FUNC_DECL_PREFIX void outerProduct(const float& x0, const float& y0, const float& z0,
+                                        const float& x1, const float& y1, const float& z1,
+                                        float& x, float& y, float& z) {
   x = y0 * z1 - z0 * y1;
   y = z0 * x1 - x0 * z1;
   z = x0 * y1 - y0 * x1;
 }
 
-inline static float length(vec3f_t& vec) {
+LLAS_FUNC_DECL_PREFIX float length(vec3f_t& vec) {
   return std::sqrt(vec[0] * vec[0] +
                    vec[1] * vec[1] +
                    vec[2] * vec[2]);
 }
 
-inline static void normalize(vec3f_t& vec) {
+LLAS_FUNC_DECL_PREFIX void normalize(vec3f_t& vec) {
   const float len = length(vec);
   vec[0] = vec[0] / len;
   vec[1] = vec[1] / len;
   vec[2] = vec[2] / len;
 }
 
-inline static void normalize(float& x, float& y, float& z) {
+LLAS_FUNC_DECL_PREFIX void normalize(float& x, float& y, float& z) {
   const float length = std::sqrt(x * x +
                                  y * y +
                                  z * z);
@@ -674,10 +690,356 @@ struct PublicHeader {
   LLAS_ULLONG    numOfPointRecords;
   LLAS_ULLONG    numOfPointsByReturn[NUM_BYTES_NUM_OF_POINTS_BY_RETURN / sizeof(LLAS_ULLONG)];
   // clang-format on
+
+  static PublicHeader readPublicHeader(std::ifstream& file) {
+    PublicHeader publicHeader;
+    std::vector<char> buffer(LLAS_BUFFER_SIZE);
+
+    {
+      // File signature
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_FILE_SIGNATURE;
+      _readBytes(file, buffer, nBytes);
+      std::copy(buffer.begin(), buffer.begin() + nBytes, publicHeader.fileSignature);
+    }
+
+    {
+      // File source ID
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_FILE_SOURCE_ID;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.fileSourceID, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Global encoding
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_GLOBAL_ENCODING;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.globalEncoding, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Project ID-GUID Data 1
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_PROJECT_ID_1;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.projectID1, buffer.data(), sizeof(LLAS_ULONG));
+    }
+
+    {
+      // Project ID-GUID Data 2
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_PROJECT_ID_2;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.projectID2, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Project ID-GUID Data 3
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_PROJECT_ID_3;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.projectID3, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Project ID-GUID Data 4
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_PROJECT_ID_4;
+      _readBytes(file, buffer, nBytes);
+      std::copy(buffer.begin(), buffer.begin() + nBytes, publicHeader.projectID4);
+    }
+
+    {
+      // Version major
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_VERSION_MAJOR;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.versionMajor, buffer.data(), sizeof(LLAS_UCHAR));
+    }
+
+    {
+      // Version minor
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_VERSION_MINOR;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.versionMinor, buffer.data(), sizeof(LLAS_UCHAR));
+    }
+
+    {
+      // System Identifier
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_SYSTEM_IDENTIFIER;
+      _readBytes(file, buffer, nBytes);
+      std::copy(buffer.begin(), buffer.begin() + nBytes, publicHeader.systemIdentifier);
+    }
+
+    {
+      // Generating Software
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_GENERATING_SOFTWARE;
+      _readBytes(file, buffer, nBytes);
+      std::copy(buffer.begin(), buffer.begin() + nBytes, publicHeader.generatingSoftware);
+    }
+
+    {
+      // File Creation Day of Year
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_FILE_CREATION_DAY_OF_YEAR;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.fileCreationDayOfYear, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // File Creation Year
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_FILE_CREATION_YEAR;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.fileCreationYear, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Header size
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_HEADER_SIZE;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.headerSize, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Offset to point data
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_OFFSET_TO_POINT_DATA;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.offsetToPointData, buffer.data(), sizeof(LLAS_ULONG));
+    }
+
+    {
+      // Number of Variable Length Records
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_NUM_OF_VARIABLE_LENGTH_RECORDS;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.numOfVariableLengthRecords, buffer.data(), sizeof(LLAS_ULONG));
+    }
+
+    {
+      // Point Data Record Format
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_POINT_DATA_RECORD_FORMAT;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.pointDataRecordFormat, buffer.data(), sizeof(LLAS_UCHAR));
+    }
+
+    {
+      // Point Data Record Length
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_POINT_DATA_RECORD_LENGTH;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.pointDataRecordLength, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Legacy Number of Point Records
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_LEGACY_NUM_OF_POINT_RECORDS;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.legacyNumOfPointRecords, buffer.data(), sizeof(LLAS_ULONG));
+    }
+
+    {
+      // Legacy Number of Point by Return
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_LEGACY_NUM_OF_POINT_BY_RETURN;
+      _readBytes(file, buffer, nBytes);
+      for (std::streamsize i = 0; i < nBytes / (std::streamsize)sizeof(LLAS_ULONG); ++i) {
+        std::memcpy(&publicHeader.legacyNumOfPointByReturn[i],
+                    buffer.data() + i * sizeof(LLAS_ULONG),
+                    sizeof(LLAS_ULONG));
+      }
+    }
+
+    {
+      // X Scale Factor
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_X_SCALE_FACTOR;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.xScaleFactor, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Y Scale Factor
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_Y_SCALE_FACTOR;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.yScaleFactor, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Z Scale Factor
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_Z_SCALE_FACTOR;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.zScaleFactor, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // X Offset
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_X_OFFSET;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.xOffset, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Y Offset
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_Y_OFFSET;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.yOffset, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Z Offset
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_Z_OFFSET;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.zOffset, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Max X
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_MAX_X;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.maxX, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Min X
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_MIN_X;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.minX, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Max Y
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_MAX_Y;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.maxY, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Min Y
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_MIN_Y;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.minY, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Max Z
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_MAX_Z;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.maxZ, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Min Z
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_MIN_Z;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.minZ, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    {
+      // Start of Waveform Data Packet Record
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_START_OF_WAVEFORM_DATA_PACKET_RECORD;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.startOfWaveformDataPacketRecord, buffer.data(), sizeof(LLAS_ULLONG));
+    }
+
+    {
+      // Start of First Extended Variable Length Record
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_START_OF_FIRST_EXTENDED_VARIABLE_LENGTH_RECORD;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.startOfFirstExtendedVariableLengthRecord, buffer.data(), sizeof(LLAS_ULLONG));
+    }
+
+    {
+      // Number of Extended Variable Length Records
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_NUM_OF_EXTENDED_VARIABLE_LENGTH_RECORDS;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.numOfExtendedVariableLengthRecords, buffer.data(), sizeof(LLAS_ULONG));
+    }
+
+    {
+      // Number of Point Records
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_NUM_OF_POINT_RECORDS;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&publicHeader.numOfPointRecords, buffer.data(), sizeof(LLAS_ULLONG));
+    }
+
+    {
+      // Number of Points by Return
+      const std::streamsize nBytes = PublicHeader::NUM_BYTES_NUM_OF_POINTS_BY_RETURN;
+      _readBytes(file, buffer, nBytes);
+      for (std::streamsize i = 0; i < nBytes / (std::streamsize)sizeof(LLAS_ULLONG); ++i) {
+        std::memcpy(&publicHeader.numOfPointsByReturn[i],
+                    buffer.data() + i * sizeof(LLAS_ULLONG),
+                    sizeof(LLAS_ULLONG));
+      }
+    }
+
+    return publicHeader;
+  };
 };
 
 struct VariableLengthRecord {
-  VariableLengthRecord() {}
+  // clang-format off
+  inline static const std::streamsize NUM_BYTES_RESERVED                                            = 2;
+  inline static const std::streamsize NUM_BYTES_USER_ID                                             = 16;
+  inline static const std::streamsize NUM_BYTES_RECORD_ID                                           = 2;
+  inline static const std::streamsize NUM_BYTES_RECORD_LENGTH_AFTER_HEADER                          = 2;
+  inline static const std::streamsize NUM_BYTES_DESCPIPTION                                         = 32;
+  // clang-format on
+
+  VariableLengthRecord()
+      : reserved(),
+        userID(),
+        recordID(),
+        recordLengthAfterHeader(),
+        description(),
+        record() {}
+
+  // clang-format off
+  LLAS_UCHAR        reserved;
+  LLAS_CHAR         userID[NUM_BYTES_USER_ID + 1];          // plus null-termination
+  LLAS_USHORT       recordID;
+  LLAS_USHORT       recordLengthAfterHeader;
+  LLAS_CHAR         description[NUM_BYTES_DESCPIPTION + 1]; // plus null-termination
+  std::vector<char> record;
+  // clang-format on
+
+  static VariableLengthRecord readVariableLengthRecord(std::ifstream& file,
+                                                       std::vector<char>& buffer) {
+    VariableLengthRecord vlr;
+
+    {
+      // Reserved
+      const std::streamsize nBytes = VariableLengthRecord::NUM_BYTES_RESERVED;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&vlr.reserved, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // User ID
+      const std::streamsize nBytes = VariableLengthRecord::NUM_BYTES_USER_ID;
+      _readBytes(file, buffer, nBytes);
+      std::copy(buffer.begin(), buffer.begin() + nBytes, vlr.userID);
+    }
+
+    {
+      // Record ID
+      const std::streamsize nBytes = VariableLengthRecord::NUM_BYTES_RECORD_ID;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&vlr.recordID, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Record Length After Header
+      const std::streamsize nBytes = VariableLengthRecord::NUM_BYTES_RECORD_LENGTH_AFTER_HEADER;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&vlr.recordLengthAfterHeader, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Description
+      const std::streamsize nBytes = VariableLengthRecord::NUM_BYTES_DESCPIPTION;
+      _readBytes(file, buffer, nBytes);
+      std::copy(buffer.begin(), buffer.begin() + nBytes, vlr.description);
+    }
+
+    {
+      // Record
+      const std::streamsize nBytes = (std::streamsize)vlr.recordLengthAfterHeader;
+      vlr.record.resize(nBytes);
+      _readBytes(file, vlr.record, nBytes);  // Read directly
+    }
+
+    return vlr;
+  }
 };
 
 struct PointDataRecord {
@@ -726,20 +1088,218 @@ struct PointDataRecord {
   LLAS_USHORT    green;
   LLAS_USHORT    blue;
   // clang-format on
+
+  static PointDataRecord _readPointDataRecordFotmat0to4(std::ifstream& file,
+                                                        std::vector<char>& buffer,
+                                                        const LLAS_UCHAR format) {
+    PointDataRecord pointDataRecord;
+
+    {
+      // X
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_X;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&pointDataRecord.x, buffer.data(), sizeof(LLAS_LONG));
+    }
+
+    {
+      // Y
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_Y;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&pointDataRecord.y, buffer.data(), sizeof(LLAS_LONG));
+    }
+
+    {
+      // Z
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_Z;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&pointDataRecord.z, buffer.data(), sizeof(LLAS_LONG));
+    }
+
+    {
+      // Intensity
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_INTENSITY;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&pointDataRecord.intensity, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Sensor Data
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_SENSOR_DATA;
+      _readBytes(file, buffer, nBytes);
+
+      // TODO: set variables
+    }
+
+    {
+      // Classification
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_CLASSIFICATION;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&pointDataRecord.classification, buffer.data(), sizeof(LLAS_UCHAR));
+    }
+
+    {
+      // Scan Angle Rank
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_SCAN_ANGLE_RANK;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&pointDataRecord.scanAngleRank, buffer.data(), sizeof(LLAS_SCHAR));
+    }
+
+    {
+      // User Data
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_USER_DATA;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&pointDataRecord.userData, buffer.data(), sizeof(LLAS_UCHAR));
+    }
+
+    {
+      // Point Soruce ID
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_POINT_SOURCE_ID;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&pointDataRecord.pointSourceID, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    if (format == 1 || format == 3 || format == 4) {
+      // GPS Time
+      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_GPS_TIME;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&pointDataRecord.GPSTime, buffer.data(), sizeof(LLAS_DOUBLE));
+    }
+
+    if (format == 2 || format == 3) {
+      {
+        // Red
+        const std::streamsize nBytes = PointDataRecord::NUM_BYTES_RED;
+        _readBytes(file, buffer, nBytes);
+        std::memcpy(&pointDataRecord.red, buffer.data(), sizeof(LLAS_USHORT));
+      }
+
+      {
+        // Green
+        const std::streamsize nBytes = PointDataRecord::NUM_BYTES_GREEN;
+        _readBytes(file, buffer, nBytes);
+        std::memcpy(&pointDataRecord.green, buffer.data(), sizeof(LLAS_USHORT));
+      }
+
+      {
+        // Blue
+        const std::streamsize nBytes = PointDataRecord::NUM_BYTES_BLUE;
+        _readBytes(file, buffer, nBytes);
+        std::memcpy(&pointDataRecord.blue, buffer.data(), sizeof(LLAS_USHORT));
+      }
+    }
+
+    return pointDataRecord;
+  }
+
+  static PointDataRecord _readPointDataRecordFotmat5to15(std::ifstream& file,
+                                                         std::vector<char>& buffer,
+                                                         const LLAS_UCHAR format) {
+    _LLAS_logError("Unsupported point data record format: " + std::to_string((int)format));
+    PointDataRecord pointDataRecord;
+    return pointDataRecord;
+  }
+
+  static PointDataRecord readPointDataRecord(std::ifstream& file,
+                                             std::vector<char>& buffer,
+                                             const LLAS_UCHAR format) {
+    PointDataRecord pointDataRecord;
+
+    if (0 <= (int)format && (int)format < 5) {
+      pointDataRecord = _readPointDataRecordFotmat0to4(file, buffer, format);
+    } else if (5 <= (int)format && (int)format < 16) {
+      pointDataRecord = _readPointDataRecordFotmat5to15(file, buffer, format);
+    } else {
+      _LLAS_logError("Unsupported point data record format: " + std::to_string((int)format));
+    }
+
+    return pointDataRecord;
+  }
 };
 
 struct ExtendedVariableLengthRecord {
-  ExtendedVariableLengthRecord() {}
+  // clang-format off
+  inline static const std::streamsize NUM_BYTES_RESERVED                                            = 2;
+  inline static const std::streamsize NUM_BYTES_USER_ID                                             = 16;
+  inline static const std::streamsize NUM_BYTES_RECORD_ID                                           = 2;
+  inline static const std::streamsize NUM_BYTES_RECORD_LENGTH_AFTER_HEADER                          = 16;
+  inline static const std::streamsize NUM_BYTES_DESCPIPTION                                         = 32;
+  // clang-format on
+
+  ExtendedVariableLengthRecord()
+      : reserved(),
+        userID(),
+        recordID(),
+        recordLengthAfterHeader(),
+        description(),
+        record() {}
+
+  // clang-format off
+  LLAS_UCHAR        reserved;
+  LLAS_CHAR         userID[NUM_BYTES_USER_ID + 1];          // plus null-termination
+  LLAS_USHORT       recordID;
+  LLAS_ULLONG       recordLengthAfterHeader;
+  LLAS_CHAR         description[NUM_BYTES_DESCPIPTION + 1]; // plus null-termination
+  std::vector<char> record;
+  // clang-format on
+
+  static ExtendedVariableLengthRecord readExtendedVariableLengthRecord(std::ifstream& file,
+                                                                       std::vector<char>& buffer) {
+    ExtendedVariableLengthRecord evlr;
+
+    {
+      // Reserved
+      const std::streamsize nBytes = ExtendedVariableLengthRecord::NUM_BYTES_RESERVED;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&evlr.reserved, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // User ID
+      const std::streamsize nBytes = ExtendedVariableLengthRecord::NUM_BYTES_USER_ID;
+      _readBytes(file, buffer, nBytes);
+      std::copy(buffer.begin(), buffer.begin() + nBytes, evlr.userID);
+    }
+
+    {
+      // Record ID
+      const std::streamsize nBytes = ExtendedVariableLengthRecord::NUM_BYTES_RECORD_ID;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&evlr.recordID, buffer.data(), sizeof(LLAS_USHORT));
+    }
+
+    {
+      // Record Length After Header
+      const std::streamsize nBytes = ExtendedVariableLengthRecord::NUM_BYTES_RECORD_LENGTH_AFTER_HEADER;
+      _readBytes(file, buffer, nBytes);
+      std::memcpy(&evlr.recordLengthAfterHeader, buffer.data(), sizeof(LLAS_ULLONG));
+    }
+
+    {
+      // Description
+      const std::streamsize nBytes = ExtendedVariableLengthRecord::NUM_BYTES_DESCPIPTION;
+      _readBytes(file, buffer, nBytes);
+      std::copy(buffer.begin(), buffer.begin() + nBytes, evlr.description);
+    }
+
+    {
+      // Record
+      const std::streamsize nBytes = (std::streamsize)evlr.recordLengthAfterHeader;
+      evlr.record.resize(nBytes);
+      _readBytes(file, evlr.record, nBytes);  // Read directly
+    }
+
+    return evlr;
+  }
 };
 
 struct LasData {
   LasData()
-      : publicHeader(),
+      : header(),
         variableLengthRecords(),
         pointDataRecords(),
         extendedVariableLengthRecord() {}
 
-  PublicHeader publicHeader;
+  PublicHeader header;
   std::vector<VariableLengthRecord> variableLengthRecords;
   std::vector<PointDataRecord> pointDataRecords;
   std::vector<ExtendedVariableLengthRecord> extendedVariableLengthRecord;
@@ -765,9 +1325,9 @@ struct LasData {
       double z = (double)pointDataRecords[i].z;
 
       if (rescale) {
-        x = x * publicHeader.xScaleFactor + publicHeader.xOffset;
-        y = y * publicHeader.yScaleFactor + publicHeader.yOffset;
-        z = z * publicHeader.zScaleFactor + publicHeader.zOffset;
+        x = x * header.xScaleFactor + header.xOffset;
+        y = y * header.yScaleFactor + header.yOffset;
+        z = z * header.zScaleFactor + header.zOffset;
       }
 
       const size_t offset = 3 * i;
@@ -854,7 +1414,7 @@ struct LasData {
     _LLAS_logDebug(logMessage);
 
     std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
-    sprintf_s(logMessage, "publicHeader.min = (%.5lf, %.5lf, %.5lf)", publicHeader.minX, publicHeader.minY, publicHeader.minZ);
+    sprintf_s(logMessage, "publicHeader.min = (%.5lf, %.5lf, %.5lf)", header.minX, header.minY, header.minZ);
     _LLAS_logDebug(logMessage);
 
     std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
@@ -862,464 +1422,45 @@ struct LasData {
     _LLAS_logDebug(logMessage);
 
     std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
-    sprintf_s(logMessage, "publicHeader.max = (%.5lf, %.5lf, %.5lf)", publicHeader.maxX, publicHeader.maxY, publicHeader.maxZ);
+    sprintf_s(logMessage, "publicHeader.max = (%.5lf, %.5lf, %.5lf)", header.maxX, header.maxY, header.maxZ);
     _LLAS_logDebug(logMessage);
 #else
     std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
     sprintf(logMessage, "minCoords        = (%.5lf, %.5lf, %.5lf)", minCoords[0], minCoords[1], minCoords[2]);
-    _logDebug(logMessage);
+    _LLAS_logDebug(logMessage);
 
     std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
-    sprintf(logMessage, "publicHeader.min = (%.5lf, %.5lf, %.5lf)", publicHeader.minX, publicHeader.minY, publicHeader.minZ);
-    _logDebug(logMessage);
+    sprintf(logMessage, "publicHeader.min = (%.5lf, %.5lf, %.5lf)", header.minX, header.minY, header.minZ);
+    _LLAS_logDebug(logMessage);
 
     std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
     sprintf(logMessage, "maxCoords        = (%.5lf, %.5lf, %.5lf)", maxCoords[0], maxCoords[1], maxCoords[2]);
-    _logDebug(logMessage);
+    _LLAS_logDebug(logMessage);
 
     std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
-    sprintf(logMessage, "publicHeader.max = (%.5lf, %.5lf, %.5lf)", publicHeader.maxX, publicHeader.maxY, publicHeader.maxZ);
-    _logDebug(logMessage);
+    sprintf(logMessage, "publicHeader.max = (%.5lf, %.5lf, %.5lf)", header.maxX, header.maxY, header.maxZ);
+    _LLAS_logDebug(logMessage);
 #endif
 
     return true;
   }
 };
 
-using LasData_t = std::shared_ptr<LasData>;
-
-// ==========================================================================
-// Utility Functions
-// ==========================================================================
-inline static void _readBytes(std::ifstream& ifs,
-                              std::vector<char>& bytes,
-                              const std::streamsize& nBytes) {
-  ifs.read(bytes.data(), nBytes);
-}
+using LasData_ptr = std::shared_ptr<LasData>;
 
 // ==========================================================================
 // Functions
 // ==========================================================================
 
-PublicHeader _readPublicHeader(std::ifstream& file) {
-  PublicHeader publicHeader;
-  std::vector<char> buffer(LLAS_BUFFER_SIZE);
-
-  {
-    // File signature
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_FILE_SIGNATURE;
-    _readBytes(file, buffer, nBytes);
-    std::copy(buffer.begin(), buffer.begin() + nBytes, publicHeader.fileSignature);
-  }
-
-  {
-    // File source ID
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_FILE_SOURCE_ID;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.fileSourceID, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  {
-    // Global encoding
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_GLOBAL_ENCODING;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.globalEncoding, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  {
-    // Project ID-GUID Data 1
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_PROJECT_ID_1;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.projectID1, buffer.data(), sizeof(LLAS_ULONG));
-  }
-
-  {
-    // Project ID-GUID Data 2
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_PROJECT_ID_2;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.projectID2, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  {
-    // Project ID-GUID Data 3
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_PROJECT_ID_3;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.projectID3, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  {
-    // Project ID-GUID Data 4
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_PROJECT_ID_4;
-    _readBytes(file, buffer, nBytes);
-    std::copy(buffer.begin(), buffer.begin() + nBytes, publicHeader.projectID4);
-  }
-
-  {
-    // Version major
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_VERSION_MAJOR;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.versionMajor, buffer.data(), sizeof(LLAS_UCHAR));
-  }
-
-  {
-    // Version minor
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_VERSION_MINOR;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.versionMinor, buffer.data(), sizeof(LLAS_UCHAR));
-  }
-
-  {
-    // System Identifier
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_SYSTEM_IDENTIFIER;
-    _readBytes(file, buffer, nBytes);
-    std::copy(buffer.begin(), buffer.begin() + nBytes, publicHeader.systemIdentifier);
-  }
-
-  {
-    // Generating Software
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_GENERATING_SOFTWARE;
-    _readBytes(file, buffer, nBytes);
-    std::copy(buffer.begin(), buffer.begin() + nBytes, publicHeader.generatingSoftware);
-  }
-
-  {
-    // File Creation Day of Year
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_FILE_CREATION_DAY_OF_YEAR;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.fileCreationDayOfYear, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  {
-    // File Creation Year
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_FILE_CREATION_YEAR;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.fileCreationYear, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  {
-    // Header size
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_HEADER_SIZE;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.headerSize, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  {
-    // Offset to point data
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_OFFSET_TO_POINT_DATA;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.offsetToPointData, buffer.data(), sizeof(LLAS_ULONG));
-  }
-
-  {
-    // Number of Variable Length Records
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_NUM_OF_VARIABLE_LENGTH_RECORDS;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.numOfVariableLengthRecords, buffer.data(), sizeof(LLAS_ULONG));
-  }
-
-  {
-    // Point Data Record Format
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_POINT_DATA_RECORD_FORMAT;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.pointDataRecordFormat, buffer.data(), sizeof(LLAS_UCHAR));
-  }
-
-  {
-    // Point Data Record Length
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_POINT_DATA_RECORD_LENGTH;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.pointDataRecordLength, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  {
-    // Legacy Number of Point Records
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_LEGACY_NUM_OF_POINT_RECORDS;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.legacyNumOfPointRecords, buffer.data(), sizeof(LLAS_ULONG));
-  }
-
-  {
-    // Legacy Number of Point by Return
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_LEGACY_NUM_OF_POINT_BY_RETURN;
-    _readBytes(file, buffer, nBytes);
-    for (std::streamsize i = 0; i < nBytes / sizeof(LLAS_ULONG); ++i) {
-      std::memcpy(&publicHeader.legacyNumOfPointByReturn[i],
-                  buffer.data() + i * sizeof(LLAS_ULONG),
-                  sizeof(LLAS_ULONG));
-    }
-  }
-
-  {
-    // X Scale Factor
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_X_SCALE_FACTOR;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.xScaleFactor, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Y Scale Factor
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_Y_SCALE_FACTOR;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.yScaleFactor, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Z Scale Factor
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_Z_SCALE_FACTOR;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.zScaleFactor, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // X Offset
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_X_OFFSET;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.xOffset, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Y Offset
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_Y_OFFSET;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.yOffset, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Z Offset
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_Z_OFFSET;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.zOffset, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Max X
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_MAX_X;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.maxX, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Min X
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_MIN_X;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.minX, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Max Y
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_MAX_Y;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.maxY, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Min Y
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_MIN_Y;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.minY, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Max Z
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_MAX_Z;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.maxZ, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Min Z
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_MIN_Z;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.minZ, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  {
-    // Start of Waveform Data Packet Record
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_START_OF_WAVEFORM_DATA_PACKET_RECORD;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.startOfWaveformDataPacketRecord, buffer.data(), sizeof(LLAS_ULLONG));
-  }
-
-  {
-    // Start of First Extended Variable Length Record
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_START_OF_FIRST_EXTENDED_VARIABLE_LENGTH_RECORD;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.startOfFirstExtendedVariableLengthRecord, buffer.data(), sizeof(LLAS_ULLONG));
-  }
-
-  {
-    // Number of Extended Variable Length Records
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_NUM_OF_EXTENDED_VARIABLE_LENGTH_RECORDS;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.numOfExtendedVariableLengthRecords, buffer.data(), sizeof(LLAS_ULONG));
-  }
-
-  {
-    // Number of Point Records
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_NUM_OF_POINT_RECORDS;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&publicHeader.numOfPointRecords, buffer.data(), sizeof(LLAS_ULLONG));
-  }
-
-  {
-    // Number of Points by Return
-    const std::streamsize nBytes = PublicHeader::NUM_BYTES_NUM_OF_POINTS_BY_RETURN;
-    _readBytes(file, buffer, nBytes);
-    for (std::streamsize i = 0; i < nBytes / sizeof(LLAS_ULLONG); ++i) {
-      std::memcpy(&publicHeader.numOfPointsByReturn[i],
-                  buffer.data() + i * sizeof(LLAS_ULLONG),
-                  sizeof(LLAS_ULLONG));
-    }
-  }
-
-  return publicHeader;
-};
-
-VariableLengthRecord _readVariableLengthRecord(std::ifstream& file) {
-  VariableLengthRecord variableLengthRecord;
-  return variableLengthRecord;
-}
-
-PointDataRecord _readPointDataRecordFotmat0to4(std::ifstream& file,
-                                               std::vector<char>& buffer,
-                                               const LLAS_UCHAR format) {
-  PointDataRecord pointDataRecord;
-
-  {
-    // X
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_X;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&pointDataRecord.x, buffer.data(), sizeof(LLAS_LONG));
-  }
-
-  {
-    // Y
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_Y;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&pointDataRecord.y, buffer.data(), sizeof(LLAS_LONG));
-  }
-
-  {
-    // Z
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_Z;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&pointDataRecord.z, buffer.data(), sizeof(LLAS_LONG));
-  }
-
-  {
-    // Intensity
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_INTENSITY;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&pointDataRecord.intensity, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  {
-    // Sensor Data
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_SENSOR_DATA;
-    _readBytes(file, buffer, nBytes);
-
-    // TODO: set variables
-  }
-
-  {
-    // Classification
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_CLASSIFICATION;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&pointDataRecord.classification, buffer.data(), sizeof(LLAS_UCHAR));
-  }
-
-  {
-    // Scan Angle Rank
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_SCAN_ANGLE_RANK;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&pointDataRecord.scanAngleRank, buffer.data(), sizeof(LLAS_SCHAR));
-  }
-
-  {
-    // User Data
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_USER_DATA;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&pointDataRecord.userData, buffer.data(), sizeof(LLAS_UCHAR));
-  }
-
-  {
-    // Point Soruce ID
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_POINT_SOURCE_ID;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&pointDataRecord.pointSourceID, buffer.data(), sizeof(LLAS_USHORT));
-  }
-
-  if (format == 1 || format == 3 || format == 4) {
-    // GPS Time
-    const std::streamsize nBytes = PointDataRecord::NUM_BYTES_GPS_TIME;
-    _readBytes(file, buffer, nBytes);
-    std::memcpy(&pointDataRecord.GPSTime, buffer.data(), sizeof(LLAS_DOUBLE));
-  }
-
-  if (format == 2 || format == 3) {
-    {
-      // Red
-      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_RED;
-      _readBytes(file, buffer, nBytes);
-      std::memcpy(&pointDataRecord.red, buffer.data(), sizeof(LLAS_USHORT));
-    }
-
-    {
-      // Green
-      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_GREEN;
-      _readBytes(file, buffer, nBytes);
-      std::memcpy(&pointDataRecord.green, buffer.data(), sizeof(LLAS_USHORT));
-    }
-
-    {
-      // Blue
-      const std::streamsize nBytes = PointDataRecord::NUM_BYTES_BLUE;
-      _readBytes(file, buffer, nBytes);
-      std::memcpy(&pointDataRecord.blue, buffer.data(), sizeof(LLAS_USHORT));
-    }
-  }
-
-  return pointDataRecord;
-}
-
-PointDataRecord _readPointDataRecordFotmat5to15(std::ifstream& file,
-                                                std::vector<char>& buffer,
-                                                const LLAS_UCHAR format) {
-  _LLAS_logError("Unsupported point data record format: " + std::to_string((int)format));
-  PointDataRecord pointDataRecord;
-  return pointDataRecord;
-}
-
-PointDataRecord _readPointDataRecord(std::ifstream& file,
-                                     std::vector<char>& buffer,
-                                     const LLAS_UCHAR format) {
-  PointDataRecord pointDataRecord;
-
-  if (0 <= (int)format && (int)format < 5) {
-    pointDataRecord = _readPointDataRecordFotmat0to4(file, buffer, format);
-  } else if (5 <= (int)format && (int)format < 16) {
-    pointDataRecord = _readPointDataRecordFotmat5to15(file, buffer, format);
-  } else {
-    _LLAS_logError("Unsupported point data record format: " + std::to_string((int)format));
-  }
-
-  return pointDataRecord;
-}
-
-ExtendedVariableLengthRecord _readExtendedVariableLengthRecord(std::ifstream& file) {
-  ExtendedVariableLengthRecord extendedVariableLengthRecord;
-  return extendedVariableLengthRecord;
-}
-
-LasData_t read(const std::string& filePath,
-               const bool pointDataOnly = true);
+LLAS_FUNC_DECL_PREFIX LasData_ptr read(const std::string& filePath,
+                                       const bool pointDataOnly = true);
 
 /// @brief Read '.las' format file
 /// @param filePath Path to the las file
 /// @param pointDataOnly Read only "PointDataRecords"
-/// @return `Las data` (`LasData_t`): Las content
-LasData_t read(const std::string& filePath,
-               const bool pointDataOnly) {
+/// @return `Las data` (`LasData_ptr`): Las content
+LLAS_FUNC_DECL_PREFIX LasData_ptr read(const std::string& filePath,
+                                       const bool pointDataOnly) {
   const auto startTime = std::chrono::system_clock::now();
 
 #if defined(LLAS_PRINT_BYTES)
@@ -1337,6 +1478,53 @@ LasData_t read(const std::string& filePath,
   _LLAS_logDebug("LLAS_STRING = " + std::to_string(sizeof(LLAS_STRING)));
 #endif
 
+#if defined(LLAS_CHECK_BYTE_SIZE)
+  if (sizeof(LLAS_CHAR) != 1) {
+    _LLAS_logError("Byte size check failed: LLAS_CHAR");
+    return nullptr;
+  }
+  if (sizeof(LLAS_SCHAR) != 1) {
+    _LLAS_logError("Byte size check failed: LLAS_SCHAR");
+    return nullptr;
+  }
+  if (sizeof(LLAS_UCHAR) != 1) {
+    _LLAS_logError("Byte size check failed: LLAS_UCHAR");
+    return nullptr;
+  }
+  if (sizeof(LLAS_SHORT) != 2) {
+    _LLAS_logError("Byte size check failed: LLAS_SHORT");
+    return nullptr;
+  }
+  if (sizeof(LLAS_USHORT) != 2) {
+    _LLAS_logError("Byte size check failed: LLAS_USHORT");
+    return nullptr;
+  }
+  if (sizeof(LLAS_LONG) != 4) {
+    _LLAS_logError("Byte size check failed: LLAS_LONG");
+    return nullptr;
+  }
+  if (sizeof(LLAS_ULONG) != 4) {
+    _LLAS_logError("Byte size check failed: LLAS_ULONG");
+    return nullptr;
+  }
+  if (sizeof(LLAS_LLONG) != 8) {
+    _LLAS_logError("Byte size check failed: LLAS_LLONG");
+    return nullptr;
+  }
+  if (sizeof(LLAS_ULLONG) != 8) {
+    _LLAS_logError("Byte size check failed: LLAS_ULLONG");
+    return nullptr;
+  }
+  if (sizeof(LLAS_FLOAT) != 4) {
+    _LLAS_logError("Byte size check failed: LLAS_FLOAT");
+    return nullptr;
+  }
+  if (sizeof(LLAS_DOUBLE) != 8) {
+    _LLAS_logError("Byte size check failed: LLAS_DOUBLE");
+    return nullptr;
+  }
+#endif
+
   bool isOK = true;
 
   // ======================================================================================================================
@@ -1351,7 +1539,7 @@ LasData_t read(const std::string& filePath,
   // ======================================================================================================================
   // Read 'Public Header'
   // ======================================================================================================================
-  const PublicHeader publicHeader = _readPublicHeader(file);
+  const PublicHeader publicHeader = PublicHeader::readPublicHeader(file);
 
   const LLAS_UCHAR format = publicHeader.pointDataRecordFormat;
   _LLAS_logInfo("format: " + std::to_string(format));
@@ -1370,15 +1558,25 @@ LasData_t read(const std::string& filePath,
   const LLAS_ULONG nVariableLengthRecords = publicHeader.numOfVariableLengthRecords;
 
   std::vector<VariableLengthRecord> variableLengthRecords;
+  {
+    if (!pointDataOnly) {
+      _LLAS_logInfo("nVariableLengthRecords: " + std::to_string(nVariableLengthRecords));
 
-  if (!pointDataOnly) {
-    _LLAS_logInfo("nVariableLengthRecords: " + std::to_string(nVariableLengthRecords));
+      variableLengthRecords.resize(nVariableLengthRecords);  // allocate
+      std::vector<char> buffer(LLAS_BUFFER_SIZE);
 
-    variableLengthRecords.resize(nVariableLengthRecords);
+      for (LLAS_ULONG iRecord = 0; iRecord < nVariableLengthRecords; ++iRecord) {
+        const std::streampos newPos = file.tellg();
 
-    for (LLAS_ULONG iRecord = 0; iRecord < nVariableLengthRecords; ++iRecord) {
-      VariableLengthRecord variableLengthRecord = _readVariableLengthRecord(file);
-      variableLengthRecords[iRecord] = variableLengthRecord;
+        if ((LLAS_ULONG)newPos >= publicHeader.offsetToPointData) {
+          isOK = false;
+          _LLAS_logError("The total size of VLRs exceeds the start of Point Data records!");
+          break;
+        }
+
+        VariableLengthRecord variableLengthRecord = VariableLengthRecord::readVariableLengthRecord(file, buffer);
+        variableLengthRecords[iRecord] = variableLengthRecord;
+      }
     }
   }
 
@@ -1386,21 +1584,23 @@ LasData_t read(const std::string& filePath,
   // Read 'Point Data Records'
   // ======================================================================================================================
   const LLAS_ULLONG nPointRecords = isLegacyFormat ? publicHeader.legacyNumOfPointRecords : publicHeader.numOfPointRecords;
-  _LLAS_logInfo("nPointRecords: " + std::to_string(nPointRecords));
 
   std::vector<PointDataRecord> pointDataRecords;
-  pointDataRecords.resize(nPointRecords);
+  {
+    _LLAS_logInfo("nPointRecords: " + std::to_string(nPointRecords));
 
-  std::vector<char> buffer(LLAS_BUFFER_SIZE);
+    pointDataRecords.resize(nPointRecords);  // allocate
+    std::vector<char> buffer(LLAS_BUFFER_SIZE);
 
-  for (LLAS_ULLONG iRecord = 0; iRecord < nPointRecords; ++iRecord) {
-    // Move to the starting point of Point Data Record
-    const std::streamsize byteOffset = publicHeader.offsetToPointData + iRecord * publicHeader.pointDataRecordLength;
+    for (LLAS_ULLONG iRecord = 0; iRecord < nPointRecords; ++iRecord) {
+      // Move to the starting point of Point Data Record
+      const std::streamsize byteOffset = publicHeader.offsetToPointData + iRecord * publicHeader.pointDataRecordLength;
 
-    file.seekg(byteOffset, std::ios::beg);
+      file.seekg(byteOffset, std::ios::beg);
 
-    const PointDataRecord pointDataRecord = _readPointDataRecord(file, buffer, format);
-    pointDataRecords[iRecord] = pointDataRecord;
+      const PointDataRecord pointDataRecord = PointDataRecord::readPointDataRecord(file, buffer, format);
+      pointDataRecords[iRecord] = pointDataRecord;
+    }
   }
 
   // ======================================================================================================================
@@ -1409,15 +1609,17 @@ LasData_t read(const std::string& filePath,
   const LLAS_ULONG nExtendedVariableLengthRecords = publicHeader.numOfExtendedVariableLengthRecords;
 
   std::vector<ExtendedVariableLengthRecord> extendedVariableLengthRecords;
+  {
+    if (!pointDataOnly) {
+      _LLAS_logInfo("nExtendedVariableLengthRecords: " + std::to_string(nExtendedVariableLengthRecords));
 
-  if (!pointDataOnly) {
-    _LLAS_logInfo("nExtendedVariableLengthRecords: " + std::to_string(nExtendedVariableLengthRecords));
+      extendedVariableLengthRecords.resize(nExtendedVariableLengthRecords);  // allocate
+      std::vector<char> buffer(LLAS_BUFFER_SIZE);
 
-    extendedVariableLengthRecords.resize(nExtendedVariableLengthRecords);
-
-    for (LLAS_ULONG iRecord = 0; iRecord < nExtendedVariableLengthRecords; ++iRecord) {
-      const ExtendedVariableLengthRecord extendedVariableLengthRecord = _readExtendedVariableLengthRecord(file);
-      extendedVariableLengthRecords[iRecord] = extendedVariableLengthRecord;
+      for (LLAS_ULONG iRecord = 0; iRecord < nExtendedVariableLengthRecords; ++iRecord) {
+        const ExtendedVariableLengthRecord extendedVariableLengthRecord = ExtendedVariableLengthRecord::readExtendedVariableLengthRecord(file, buffer);
+        extendedVariableLengthRecords[iRecord] = extendedVariableLengthRecord;
+      }
     }
   }
 
@@ -1426,12 +1628,12 @@ LasData_t read(const std::string& filePath,
   // ======================================================================================================================
   // Create output object
   // ======================================================================================================================
-  LasData_t lasData = nullptr;
+  LasData_ptr lasData = nullptr;
 
   if (isOK) {
     lasData = std::make_shared<LasData>();
 
-    lasData->publicHeader = publicHeader;
+    lasData->header = publicHeader;
     lasData->variableLengthRecords = variableLengthRecords;
     lasData->pointDataRecords = pointDataRecords;
     lasData->extendedVariableLengthRecord = extendedVariableLengthRecords;
