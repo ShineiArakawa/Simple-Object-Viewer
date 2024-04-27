@@ -6,7 +6,9 @@ namespace model {
 using namespace util;
 using namespace shader;
 
-PoneModel::PoneModel(/* args */) {}
+PoneModel::PoneModel(/* args */)
+    : Model() {
+}
 
 PoneModel::~PoneModel() {}
 

@@ -6,6 +6,25 @@ namespace model {
 using namespace util;
 using namespace shader;
 
+Model::Model()
+    : _objects(std::make_shared<std::vector<Primitive_t>>()),
+      _backgrounds(std::make_shared<std::vector<Background_t>>()),
+      _backgroundColor(0.0f, 0.0f, 0.0f, 1.0f),
+      _modelVertMShaderPath(),
+      _modelFragShaderPath(),
+      _depthVertMShaderPath(),
+      _depthFragShaderPath(),
+      _backgroundIDtoDraw(),
+      _time(),
+      _shader(),
+      _depthShader(),
+      _lightPosition(5.0f, 5.0f, 5.0f, 1.0f),
+      _shininess(50.0f),
+      _ambientIntensity(0.1f),
+      _wireFrameColor(15.0f / 255.0f, 230.0f / 255.0f, 130.0f / 255.0f),
+      _wireFrameWidth(0.1f) {
+}
+
 Model::~Model() {}
 
 void Model::compileShaders(const bool& isQuad) {
