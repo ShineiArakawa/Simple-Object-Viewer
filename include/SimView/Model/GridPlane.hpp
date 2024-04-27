@@ -13,7 +13,6 @@ class GridPlane : public Primitive {
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;
-  int _indexBufferSize;
 
  protected:
   // nothing

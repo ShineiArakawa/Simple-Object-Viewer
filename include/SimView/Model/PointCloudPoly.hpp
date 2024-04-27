@@ -20,7 +20,6 @@ class PointCloudPoly : public Primitive {
   bool _isDoubled;
   bool _autoScale;
 
-  int _indexBufferSize;
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;

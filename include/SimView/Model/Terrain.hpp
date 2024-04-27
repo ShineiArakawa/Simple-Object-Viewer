@@ -15,7 +15,6 @@ namespace model {
 class Terrain : public Primitive {
  private:
   std::string _filePath;
-  int _indexBufferSize;
   float _offsetX;
   float _offsetY;
   float _offsetZ;

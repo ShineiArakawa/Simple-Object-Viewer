@@ -17,7 +17,6 @@ class PointCloud : public Primitive {
   float _pointSize;
   bool _autoScale;
 
-  int _indexBufferSize;
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;

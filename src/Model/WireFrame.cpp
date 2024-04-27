@@ -5,7 +5,11 @@ namespace model {
 
 using namespace util;
 
-WireFrame::WireFrame(const VertexArray_t& vertices) {
+WireFrame::WireFrame(const VertexArray_t& vertices)
+    : _vaoId(),
+      _vertexBufferId(),
+      _indexBufferId(),
+      _indexBufferSize() {
   initVAO(vertices);
 }
 
@@ -63,7 +67,7 @@ void WireFrame::initVAO(const VertexArray_t& vertices) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * lineIndices->size(), lineIndices->data(), GL_STATIC_DRAW);
 
-  _indexBufferSize = lineIndices->size();
+  _indexBufferSize = (int)lineIndices->size();
 
   // Temporarily disable VAO
   glBindVertexArray(0);

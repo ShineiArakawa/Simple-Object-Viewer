@@ -40,6 +40,7 @@
 #ifndef __LLAS_HPP__
 #define __LLAS_HPP__
 
+#include <algorithm>
 #include <array>
 #include <chrono>
 #include <cmath>
@@ -54,21 +55,42 @@
 // ==========================================================================
 // Type defines
 // ==========================================================================
-#define LLAS_CHAR char
-#define LLAS_SCHAR signed char
-#define LLAS_UCHAR unsigned char
-#define LLAS_SHORT short
-#define LLAS_USHORT unsigned short
-#define LLAS_LONG int32_t
-#define LLAS_ULONG uint32_t
-#define LLAS_LLONG int64_t
-#define LLAS_ULLONG uint64_t
-#define LLAS_FLOAT float
-#define LLAS_DOUBLE double
-#define LLAS_STRING char*
+// clang-format off
+#define LLAS_CHAR             char         // 1
+#define LLAS_SCHAR            int8_t       // 1
+#define LLAS_UCHAR            uint8_t      // 1
+#define LLAS_SHORT            int16_t      // 2
+#define LLAS_USHORT           uint16_t     // 2
+#define LLAS_LONG             int32_t      // 4
+#define LLAS_ULONG            uint32_t     // 4
+#define LLAS_LLONG            int64_t      // 8
+#define LLAS_ULLONG           uint64_t     // 8
+#define LLAS_FLOAT            float        // 4
+#define LLAS_DOUBLE           double       // 8
+#define LLAS_STRING           char*        // -
+// clang-format on
+
+#define LLAS_BUFFER_SIZE 1024
+
+// ==========================================================================
+// Simple logging function
+// ==========================================================================
+
+#if defined(LLAS_LOG_DEBUG)
+#define _LLAS_logDebug(message) (std::cout << "[DEBUG] " << __FILE__ << ":" << __LINE__ << " " << message << std::endl)
+#else
+#define _LLAS_logDebug(message)
+#endif
+
+#if defined(LLAS_LOG_DEBUG) || defined(LLAS_LOG_INFO)
+#define _LLAS_logInfo(message) (std::cout << "[INFO] " << __FILE__ << ":" << __LINE__ << " " << message << std::endl)
+#else
+#define _LLAS_logInfo(message)
+#endif
+
+#define _LLAS_logError(message) (std::cerr << "[ERROR] " << __FILE__ << ":" << __LINE__ << " " << message << std::endl)
 
 namespace llas {
-
 // ==========================================================================
 // Math utility
 // ==========================================================================
@@ -614,17 +636,17 @@ struct PublicHeader {
   }
 
   // clang-format off
-  LLAS_CHAR      fileSignature[NUM_BYTES_FILE_SIGNATURE + 1];
+  LLAS_CHAR      fileSignature[NUM_BYTES_FILE_SIGNATURE + 1];           // plus null-termination
   LLAS_USHORT    fileSourceID;
   LLAS_USHORT    globalEncoding;
   LLAS_ULONG     projectID1;
   LLAS_USHORT    projectID2;
   LLAS_USHORT    projectID3;
-  LLAS_CHAR      projectID4[NUM_BYTES_PROJECT_ID_4 + 1];
+  LLAS_CHAR      projectID4[NUM_BYTES_PROJECT_ID_4 + 1];                // plus null-termination
   LLAS_UCHAR     versionMajor;
   LLAS_UCHAR     versionMinor;
-  LLAS_CHAR      systemIdentifier[NUM_BYTES_SYSTEM_IDENTIFIER + 1];
-  LLAS_CHAR      generatingSoftware[NUM_BYTES_GENERATING_SOFTWARE + 1];
+  LLAS_CHAR      systemIdentifier[NUM_BYTES_SYSTEM_IDENTIFIER + 1];     // plus null-termination
+  LLAS_CHAR      generatingSoftware[NUM_BYTES_GENERATING_SOFTWARE + 1]; // plus null-termination
   LLAS_USHORT    fileCreationDayOfYear;
   LLAS_USHORT    fileCreationYear;
   LLAS_USHORT    headerSize;
@@ -824,10 +846,41 @@ struct LasData {
       }
     }
 
-    printf("minCoords        = (%.5lf, %.5lf, %.5lf)\n", minCoords[0], minCoords[1], minCoords[2]);
-    printf("publicHeader.min = (%.5lf, %.5lf, %.5lf)\n", publicHeader.minX, publicHeader.minY, publicHeader.minZ);
-    printf("maxCoords        = (%.5lf, %.5lf, %.5lf)\n", maxCoords[0], maxCoords[1], maxCoords[2]);
-    printf("publicHeader.max = (%.5lf, %.5lf, %.5lf)\n", publicHeader.maxX, publicHeader.maxY, publicHeader.maxZ);
+    char logMessage[LLAS_BUFFER_SIZE];
+
+#if defined(_WIN64)
+    std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
+    sprintf_s(logMessage, "minCoords        = (%.5lf, %.5lf, %.5lf)", minCoords[0], minCoords[1], minCoords[2]);
+    _LLAS_logDebug(logMessage);
+
+    std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
+    sprintf_s(logMessage, "publicHeader.min = (%.5lf, %.5lf, %.5lf)", publicHeader.minX, publicHeader.minY, publicHeader.minZ);
+    _LLAS_logDebug(logMessage);
+
+    std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
+    sprintf_s(logMessage, "maxCoords        = (%.5lf, %.5lf, %.5lf)", maxCoords[0], maxCoords[1], maxCoords[2]);
+    _LLAS_logDebug(logMessage);
+
+    std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
+    sprintf_s(logMessage, "publicHeader.max = (%.5lf, %.5lf, %.5lf)", publicHeader.maxX, publicHeader.maxY, publicHeader.maxZ);
+    _LLAS_logDebug(logMessage);
+#else
+    std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
+    sprintf(logMessage, "minCoords        = (%.5lf, %.5lf, %.5lf)", minCoords[0], minCoords[1], minCoords[2]);
+    _logDebug(logMessage);
+
+    std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
+    sprintf(logMessage, "publicHeader.min = (%.5lf, %.5lf, %.5lf)", publicHeader.minX, publicHeader.minY, publicHeader.minZ);
+    _logDebug(logMessage);
+
+    std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
+    sprintf(logMessage, "maxCoords        = (%.5lf, %.5lf, %.5lf)", maxCoords[0], maxCoords[1], maxCoords[2]);
+    _logDebug(logMessage);
+
+    std::fill_n(logMessage, LLAS_BUFFER_SIZE, '\0');
+    sprintf(logMessage, "publicHeader.max = (%.5lf, %.5lf, %.5lf)", publicHeader.maxX, publicHeader.maxY, publicHeader.maxZ);
+    _logDebug(logMessage);
+#endif
 
     return true;
   }
@@ -838,16 +891,6 @@ using LasData_t = std::shared_ptr<LasData>;
 // ==========================================================================
 // Utility Functions
 // ==========================================================================
-inline static void _logInfo(const std::string& message) {
-#if defined(LLAS_FULL_VERBOSITY)
-  std::cout << message << std::endl;
-#endif
-}
-
-inline static void _logError(const std::string& message) {
-  std::cerr << message << std::endl;
-}
-
 inline static void _readBytes(std::ifstream& ifs,
                               std::vector<char>& bytes,
                               const std::streamsize& nBytes) {
@@ -860,7 +903,7 @@ inline static void _readBytes(std::ifstream& ifs,
 
 PublicHeader _readPublicHeader(std::ifstream& file) {
   PublicHeader publicHeader;
-  std::vector<char> buffer(1024);
+  std::vector<char> buffer(LLAS_BUFFER_SIZE);
 
   {
     // File signature
@@ -1242,7 +1285,7 @@ PointDataRecord _readPointDataRecordFotmat0to4(std::ifstream& file,
 PointDataRecord _readPointDataRecordFotmat5to15(std::ifstream& file,
                                                 std::vector<char>& buffer,
                                                 const LLAS_UCHAR format) {
-  _logError("Unsupported point data record format: " + std::to_string((int)format));
+  _LLAS_logError("Unsupported point data record format: " + std::to_string((int)format));
   PointDataRecord pointDataRecord;
   return pointDataRecord;
 }
@@ -1257,7 +1300,7 @@ PointDataRecord _readPointDataRecord(std::ifstream& file,
   } else if (5 <= (int)format && (int)format < 16) {
     pointDataRecord = _readPointDataRecordFotmat5to15(file, buffer, format);
   } else {
-    _logError("Unsupported point data record format: " + std::to_string((int)format));
+    _LLAS_logError("Unsupported point data record format: " + std::to_string((int)format));
   }
 
   return pointDataRecord;
@@ -1280,18 +1323,18 @@ LasData_t read(const std::string& filePath,
   const auto startTime = std::chrono::system_clock::now();
 
 #if defined(LLAS_PRINT_BYTES)
-  std::cout << "LLAS_CHAR   = " << sizeof(LLAS_CHAR) << std::endl;
-  std::cout << "LLAS_SCHAR  = " << sizeof(LLAS_SCHAR) << std::endl;
-  std::cout << "LLAS_UCHAR  = " << sizeof(LLAS_UCHAR) << std::endl;
-  std::cout << "LLAS_SHORT  = " << sizeof(LLAS_SHORT) << std::endl;
-  std::cout << "LLAS_USHORT = " << sizeof(LLAS_USHORT) << std::endl;
-  std::cout << "LLAS_LONG   = " << sizeof(LLAS_LONG) << std::endl;
-  std::cout << "LLAS_ULONG  = " << sizeof(LLAS_ULONG) << std::endl;
-  std::cout << "LLAS_LLONG  = " << sizeof(LLAS_LLONG) << std::endl;
-  std::cout << "LLAS_ULLONG = " << sizeof(LLAS_ULLONG) << std::endl;
-  std::cout << "LLAS_FLOAT  = " << sizeof(LLAS_FLOAT) << std::endl;
-  std::cout << "LLAS_DOUBLE = " << sizeof(LLAS_DOUBLE) << std::endl;
-  std::cout << "LLAS_STRING = " << sizeof(LLAS_STRING) << std::endl;
+  _LLAS_logDebug("LLAS_CHAR   = " + std::to_string(sizeof(LLAS_CHAR)));
+  _LLAS_logDebug("LLAS_SCHAR  = " + std::to_string(sizeof(LLAS_SCHAR)));
+  _LLAS_logDebug("LLAS_UCHAR  = " + std::to_string(sizeof(LLAS_UCHAR)));
+  _LLAS_logDebug("LLAS_SHORT  = " + std::to_string(sizeof(LLAS_SHORT)));
+  _LLAS_logDebug("LLAS_USHORT = " + std::to_string(sizeof(LLAS_USHORT)));
+  _LLAS_logDebug("LLAS_LONG   = " + std::to_string(sizeof(LLAS_LONG)));
+  _LLAS_logDebug("LLAS_ULONG  = " + std::to_string(sizeof(LLAS_ULONG)));
+  _LLAS_logDebug("LLAS_LLONG  = " + std::to_string(sizeof(LLAS_LLONG)));
+  _LLAS_logDebug("LLAS_ULLONG = " + std::to_string(sizeof(LLAS_ULLONG)));
+  _LLAS_logDebug("LLAS_FLOAT  = " + std::to_string(sizeof(LLAS_FLOAT)));
+  _LLAS_logDebug("LLAS_DOUBLE = " + std::to_string(sizeof(LLAS_DOUBLE)));
+  _LLAS_logDebug("LLAS_STRING = " + std::to_string(sizeof(LLAS_STRING)));
 #endif
 
   bool isOK = true;
@@ -1301,7 +1344,7 @@ LasData_t read(const std::string& filePath,
   // ======================================================================================================================
   std::ifstream file = std::ifstream(filePath, std::ios::binary);
   if (!file) {
-    _logInfo("Failed to open file: " + filePath);
+    _LLAS_logError("Failed to open file: " + filePath);
     return nullptr;  // return nullptr
   }
 
@@ -1311,8 +1354,15 @@ LasData_t read(const std::string& filePath,
   const PublicHeader publicHeader = _readPublicHeader(file);
 
   const LLAS_UCHAR format = publicHeader.pointDataRecordFormat;
+  _LLAS_logInfo("format: " + std::to_string(format));
+
+  if (format < 0 || 10 < format) {
+    // NOTE: Format is defined from 0 to 10
+    _LLAS_logError("Invalid point data record format:  " + std::to_string(format));
+    return nullptr;  // return nullptr
+  }
+
   const bool isLegacyFormat = format < 6;
-  _logInfo("format: " + std::to_string(format));
 
   // ======================================================================================================================
   // Read 'Variable Length Records'
@@ -1322,7 +1372,7 @@ LasData_t read(const std::string& filePath,
   std::vector<VariableLengthRecord> variableLengthRecords;
 
   if (!pointDataOnly) {
-    _logInfo("nVariableLengthRecords: " + std::to_string(nVariableLengthRecords));
+    _LLAS_logInfo("nVariableLengthRecords: " + std::to_string(nVariableLengthRecords));
 
     variableLengthRecords.resize(nVariableLengthRecords);
 
@@ -1336,12 +1386,12 @@ LasData_t read(const std::string& filePath,
   // Read 'Point Data Records'
   // ======================================================================================================================
   const LLAS_ULLONG nPointRecords = isLegacyFormat ? publicHeader.legacyNumOfPointRecords : publicHeader.numOfPointRecords;
-  _logInfo("nPointRecords: " + std::to_string(nPointRecords));
+  _LLAS_logInfo("nPointRecords: " + std::to_string(nPointRecords));
 
   std::vector<PointDataRecord> pointDataRecords;
   pointDataRecords.resize(nPointRecords);
 
-  std::vector<char> buffer(1024);
+  std::vector<char> buffer(LLAS_BUFFER_SIZE);
 
   for (LLAS_ULLONG iRecord = 0; iRecord < nPointRecords; ++iRecord) {
     // Move to the starting point of Point Data Record
@@ -1361,7 +1411,7 @@ LasData_t read(const std::string& filePath,
   std::vector<ExtendedVariableLengthRecord> extendedVariableLengthRecords;
 
   if (!pointDataOnly) {
-    _logInfo("nExtendedVariableLengthRecords: " + std::to_string(nExtendedVariableLengthRecords));
+    _LLAS_logInfo("nExtendedVariableLengthRecords: " + std::to_string(nExtendedVariableLengthRecords));
 
     extendedVariableLengthRecords.resize(nExtendedVariableLengthRecords);
 
@@ -1370,6 +1420,8 @@ LasData_t read(const std::string& filePath,
       extendedVariableLengthRecords[iRecord] = extendedVariableLengthRecord;
     }
   }
+
+  file.close();
 
   // ======================================================================================================================
   // Create output object
@@ -1389,7 +1441,7 @@ LasData_t read(const std::string& filePath,
 
   const auto endTime = std::chrono::system_clock::now();
   const double elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-  _logInfo("Elapsed time: " + std::to_string(elapsedTime * 1e-6) + " [sec]");
+  _LLAS_logInfo("Elapsed time: " + std::to_string(elapsedTime * 1e-6) + " [sec]");
 
   return lasData;
 };

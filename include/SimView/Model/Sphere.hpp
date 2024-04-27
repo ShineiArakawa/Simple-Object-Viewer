@@ -16,7 +16,6 @@ class Sphere : public Primitive {
   glm::vec3 _color;
   int _nDivs;
 
-  int _indexBufferSize;
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;

@@ -23,10 +23,10 @@ class MaterialObject : public Primitive {
           enabledBumpTexture(false),
           materialGroup(nullptr){};
 
-    int indexBufferSize;
     GLuint vaoId;
     GLuint vertexBufferId;
     GLuint indexBufferId;
+    int indexBufferSize;
 
     GLuint ambientTextureId;
     GLuint diffuseTextureId;

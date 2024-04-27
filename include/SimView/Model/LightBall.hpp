@@ -12,7 +12,6 @@ class LightBall : public Primitive {
   inline static const int NUM_DIVISIONS = 20;
   inline static const glm::vec3 COLOR = glm::vec3(250.0f / 255.0f, 180.0f / 255.0f, 0.0f);
 
-  int _indexBufferSize;
   GLuint _vaoId;
   GLuint _vertexBufferId;
   GLuint _indexBufferId;

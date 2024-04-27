@@ -76,6 +76,8 @@ class Primitive {
   AxisAlignedBoundingBox_t _bbox = nullptr;
   WireFrame_t _wireFrame = nullptr;
 
+  int _indexBufferSize;
+
  public:
   // nothing
 
@@ -104,7 +106,8 @@ class Primitive {
         _position(0.0f),
         _vecocity(0.0f),
         _bbox(),
-        _wireFrame() {
+        _wireFrame(),
+        _indexBufferSize() {
   }
 
   virtual ~Primitive() = default;
