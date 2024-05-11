@@ -10,6 +10,7 @@
 #include <SimView/Util/Logging.hpp>
 #include <array>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>

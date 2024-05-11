@@ -48,6 +48,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -1083,9 +1084,9 @@ struct PointDataRecord {
         userData(),
         pointSourceID(),
         GPSTime(),
-        red(),
-        green(),
-        blue() {
+        red(std::numeric_limits<LLAS_USHORT>::max()),
+        green(std::numeric_limits<LLAS_USHORT>::max()),
+        blue(std::numeric_limits<LLAS_USHORT>::max()) {
   }
 
   // clang-format off
