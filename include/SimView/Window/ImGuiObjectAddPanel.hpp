@@ -15,6 +15,7 @@
 #include <SimView/Model/ViewerModel.hpp>
 #include <SimView/OpenGL.hpp>
 #include <SimView/Util/ObjectLoader.hpp>
+#include <SimView/Util/StreamExecutor.hpp>
 #include <SimView/Window/ImGuiSceneView.hpp>
 #include <map>
 #include <memory>
@@ -38,6 +39,14 @@ class ImGuiObjectAddPanel {
   std::string _message = "";
   std::string _errorMessage = "";
   std::string _readableExtensions;
+
+  std::shared_ptr<util::StreamExecutor> _streamExecutor;
+
+ public:
+  // Nothing
+
+ private:
+  void openFileDialog(char*, const nfdfilteritem_t*) const;
 
  public:
   ImGuiObjectAddPanel(model::ViewerModel_t);

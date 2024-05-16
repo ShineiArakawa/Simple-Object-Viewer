@@ -91,6 +91,9 @@ void ObjectLoader::readFromFile(const std::string &filePath,
 
       const float mag = 2.0f / modelScaleMax;
       ObjectLoader::scaleObject(vertices, mag);
+
+      ObjectLoader::moveToOrigin(vertices);
+      ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
     }
   }
 
@@ -228,9 +231,6 @@ void ObjectLoader::readObjFile(const std::string &filePath,
     }
   }
 #endif
-
-  ObjectLoader::moveToOrigin(vertices);
-  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
 
   LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
   LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
@@ -447,9 +447,6 @@ void ObjectLoader::readMshFile(const std::string &filePath,
       (*indices)[index2] = index2;
     }
   }
-
-  ObjectLoader::moveToOrigin(vertices);
-  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
 
   LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
   LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
@@ -726,9 +723,6 @@ void ObjectLoader::readPchFile(const std::string &filePath,
     }
   }
 
-  ObjectLoader::moveToOrigin(vertices);
-  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
-
   LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
   LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
 }
@@ -767,9 +761,6 @@ void ObjectLoader::readLasFile(const std::string &filePath,
       (*indices)[iPoint] = (uint32_t)iPoint;
     }
   }
-
-  ObjectLoader::moveToOrigin(vertices);
-  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
 
   LOG_INFO("Num of points : " + std::to_string(vertices->size()));
 }
@@ -940,9 +931,6 @@ void ObjectLoader::readVtkFile(const std::string &filePath,
     LOG_ERROR("Unstructured grid data is null!");
   }
 #endif
-
-  ObjectLoader::moveToOrigin(vertices);
-  ObjectLoader::translateObject(vertices, offsetX, offsetY, offsetZ);
 
   LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
   LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
@@ -1189,30 +1177,32 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   }
 #endif
 
-  // Scale and Translate
-  VertexArray_t allVertices = std::make_shared<std::vector<Vertex>>();
-  IndexArray_t allIndices = std::make_shared<std::vector<uint32_t>>();
-  for (const auto &materialGroup : *materialGroups) {
-    mergeVertices(materialGroup->vertices, materialGroup->indices, allVertices, allIndices);
-  }
+  {
+    //// Scale and Translate
+    // VertexArray_t allVertices = std::make_shared<std::vector<Vertex>>();
+    // IndexArray_t allIndices = std::make_shared<std::vector<uint32_t>>();
+    // for (const auto &materialGroup : *materialGroups) {
+    //   mergeVertices(materialGroup->vertices, materialGroup->indices, allVertices, allIndices);
+    // }
 
-  glm::vec3 minCoord, maxCoord;
-  std::tie(minCoord, maxCoord) = getCorners(allVertices);
-  glm::vec3 centerCoord = (minCoord + maxCoord) / 2.0f;
+    // glm::vec3 minCoord, maxCoord;
+    // std::tie(minCoord, maxCoord) = getCorners(allVertices);
+    // glm::vec3 centerCoord = (minCoord + maxCoord) / 2.0f;
 
-  // To origin
-  for (auto &materialGroup : *materialGroups) {
-    ObjectLoader::translateObject(materialGroup->vertices, -centerCoord);
-  }
+    //// To origin
+    // for (auto &materialGroup : *materialGroups) {
+    //   ObjectLoader::translateObject(materialGroup->vertices, -centerCoord);
+    // }
 
-  // Scale
-  for (auto &materialGroup : *materialGroups) {
-    ObjectLoader::scaleObject(materialGroup->vertices, scale);
-  }
+    //// Scale
+    // for (auto &materialGroup : *materialGroups) {
+    //   ObjectLoader::scaleObject(materialGroup->vertices, scale);
+    // }
 
-  // Translate
-  for (auto &materialGroup : *materialGroups) {
-    ObjectLoader::translateObject(materialGroup->vertices, offset);
+    //// Translate
+    // for (auto &materialGroup : *materialGroups) {
+    //   ObjectLoader::translateObject(materialGroup->vertices, offset);
+    // }
   }
 
   LOG_INFO("Num of vertices : " + std::to_string(nVertices));

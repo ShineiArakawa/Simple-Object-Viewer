@@ -3,78 +3,72 @@
 namespace simview {
 namespace util {
 
-StreamExecutor::StreamExecutor(const ui32& thread_count)
-    : thread_count_{thread_count ? thread_count : std::thread::hardware_concurrency()} {
-  threads.reset(new std::thread[thread_count_]);
+StreamExecutor::StreamExecutor(size_t num_threads) {
+  // Creating worker threads
+  for (size_t i = 0; i < num_threads; ++i) {
+    threads_.emplace_back([this] {
+      while (true) {
+        std::function<void()> task;
+        // The reason for putting the below code
+        // here is to unlock the queue before
+        // executing the task so that other
+        // threads can perform enqueue tasks
+        {
+          // Locking the queue so that data
+          // can be shared safely
+          std::unique_lock<std::mutex> lock(queue_mutex_);
 
-  for (ui32 i = 0; i < thread_count_; ++i) {
-    threads[i] = std::thread(&StreamExecutor::worker, this);
+          // Waiting until there is a task to
+          // execute or the pool is stopped
+          cv_.wait(lock, [this] {
+            return !tasks_.empty() || stop_;
+          });
+
+          // exit the thread in case the pool
+          // is stopped and there are no tasks
+          if (stop_ && tasks_.empty()) {
+            return;
+          }
+
+          // Get the next task from the queue
+          task = std::move(tasks_.front());
+          tasks_.pop();
+        }
+
+        task();
+      }
+    });
   }
 }
 
 StreamExecutor::~StreamExecutor() {
   {
-    // Lock task queue to prevent adding new task.
-    std::lock_guard<std::mutex> lock(tasks_mutex);
-    running = false;
+    // Lock the queue to update the stop flag safely
+    std::unique_lock<std::mutex> lock(queue_mutex_);
+    stop_ = true;
   }
 
-  // Wake up all threads so that they may exist
-  condition.notify_all();
+  // Notify all threads
+  cv_.notify_all();
 
-  for (ui32 i = 0; i < thread_count_; ++i) {
-    threads[i].join();
+  // Joining all worker threads to ensure they have
+  // completed their tasks
+  for (auto& thread : threads_) {
+    thread.join();
   }
 }
 
-#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
-template <typename F, typename... Args, typename R>
-#else
-template <typename F, typename... Args, typename R>
-#endif
-std::future<R> StreamExecutor::submit(F&& func, const Args&&... args) {
-  auto task = std::make_shared<std::packaged_task<R()>>([func, args...]() {
-    return func(args...);
-  });
-  auto future = task->get_future();
-
-  push_task([task]() { (*task)(); });
-  return future;
-}
-
-template <typename F>
-void StreamExecutor::push_task(const F& task) {
+void StreamExecutor::enqueue(std::function<void()> task) {
   {
-    const std::lock_guard<std::mutex> lock(tasks_mutex);
-
-    if (!running) {
-      throw std::runtime_error("Cannot schedule new task after shutdown.");
-    }
-
-    tasks.push(std::function<void()>(task));
+    std::unique_lock<std::mutex> lock(queue_mutex_);
+    tasks_.emplace(std::move(task));
   }
 
-  condition.notify_one();
+  cv_.notify_one();
 }
 
-void StreamExecutor::worker() {
-  for (;;) {
-    std::function<void()> task;
-
-    {
-      std::unique_lock<std::mutex> lock(tasks_mutex);
-      condition.wait(lock, [&] { return !tasks.empty() || !running; });
-
-      if (!running && tasks.empty()) {
-        return;
-      }
-
-      task = std::move(tasks.front());
-      tasks.pop();
-    }
-
-    task();
-  }
+size_t StreamExecutor::getNumThreads() const {
+  return threads_.size();
 }
 
 }  // namespace util

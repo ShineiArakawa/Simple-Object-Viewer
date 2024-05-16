@@ -10,7 +10,8 @@ ImGuiObjectAddPanel::ImGuiObjectAddPanel(ViewerModel_t model)
     : _model(model),
       _message(),
       _errorMessage(),
-      _readableExtensions() {
+      _readableExtensions(),
+      _streamExecutor(nullptr) {
   {
     // Update loadable primitive types
     _objectTypes = ""s;
@@ -35,9 +36,25 @@ ImGuiObjectAddPanel::ImGuiObjectAddPanel(ViewerModel_t model)
       }
     }
   }
+
+  // ====================================================================
+  // Initialize stream executor
+  // ====================================================================
+  _streamExecutor = std::make_shared<util::StreamExecutor>();
+  LOG_INFO("Use " + std::to_string(_streamExecutor->getNumThreads()) + " threads");
 }
 
 ImGuiObjectAddPanel::~ImGuiObjectAddPanel() {}
+
+void ImGuiObjectAddPanel::openFileDialog(char filePath[CHAR_BUFFER_SIZE], const nfdfilteritem_t* filterItems) const {
+  nfdchar_t* outPath;
+  const nfdresult_t result = NFD_OpenDialog(&outPath, filterItems, 1, FileUtil::cwd().c_str());
+
+  if (result == NFD_OKAY) {
+    strcpy(filePath, outPath);
+    NFD_FreePath(outPath);
+  }
+}
 
 void ImGuiObjectAddPanel::paint() {
   static int objectTypeID = 0;
@@ -49,7 +66,7 @@ void ImGuiObjectAddPanel::paint() {
   static float offsetXYZ[3] = {0.0f, 0.0f, 0.0f};
   static float scale = 1.0f;
   static float scaleXYZ[3] = {1.0f, 1.0f, 1.0f};
-  static bool autoScale = true;
+  static bool autoScale = false;
   static float color[3] = {1.0f, 1.0f, 1.0f};
   static int nDivs = 100;
   static float pointSize = 0.01f;
