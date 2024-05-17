@@ -21,6 +21,7 @@ add_library(
   "WireFrame.cpp"
   "TextBox.cpp"
   "LightBall.cpp"
+  "LineSet.cpp"
 )
 
 # =========================================================

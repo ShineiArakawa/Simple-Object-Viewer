@@ -75,7 +75,15 @@ void WireFrame::initVAO(const VertexArray_t& vertices) {
 
 void WireFrame::draw() const {
   glBindVertexArray(_vaoId);
+
+  glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_BLEND);
+
   glDrawElements(GL_LINES, _indexBufferSize, GL_UNSIGNED_INT, 0);
+
+  glDisable(GL_LINE_SMOOTH);
+  glDisable(GL_BLEND);
+
   glBindVertexArray(0);
 }
 
