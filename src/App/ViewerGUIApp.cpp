@@ -138,6 +138,7 @@ void ViewerGUIApp::addBackground(const model::Background_t& background) {
 
 void ViewerGUIApp::setRenderType(const model::Primitive::RenderType renderType) {
   _view->setRenderType(renderType);
+  _model->setRenderType(renderType);
 }
 
 void ViewerGUIApp::setSideBarVisibility(const bool& isVisible) {
