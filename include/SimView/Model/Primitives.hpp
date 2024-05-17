@@ -148,6 +148,12 @@ class Primitive {
     _position = position;
   };
 
+  void setPosition(const float& x, const float& y, const float& z) {
+    _position.x = x;
+    _position.y = y;
+    _position.z = z;
+  };
+
   void setVecocity(const glm::vec3& vecocity) {
     _vecocity = vecocity;
   };

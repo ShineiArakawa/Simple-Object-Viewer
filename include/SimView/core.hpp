@@ -12,22 +12,25 @@
 #include "App/ViewerGUIApp.hpp"
 
 // Model
-#include "Model/AxesCone.hpp"
-#include "Model/AxisAlignedBoundingBox.hpp"
-#include "Model/Background.hpp"
-#include "Model/Box.hpp"
-#include "Model/LightBall.hpp"
-#include "Model/MaterialObject.hpp"
-#include "Model/Model.hpp"
-#include "Model/Object.hpp"
-#include "Model/PointCloud.hpp"
-#include "Model/PointCloudPoly.hpp"
-#include "Model/PoneModel.hpp"
-#include "Model/Primitives.hpp"
-#include "Model/Sphere.hpp"
-#include "Model/Terrain.hpp"
-#include "Model/TextBox.hpp"
-#include "Model/ViewerModel.hpp"
+#include "Model/AxesCone.hpp";
+#include "Model/AxisAlignedBoundingBox.hpp";
+#include "Model/Background.hpp";
+#include "Model/Box.hpp";
+#include "Model/GridPlane.hpp";
+#include "Model/LightBall.hpp";
+#include "Model/MaterialObject.hpp";
+#include "Model/Model.hpp";
+#include "Model/Object.hpp";
+#include "Model/PointCloud.hpp";
+#include "Model/PointCloudPoly.hpp";
+#include "Model/PoneModel.hpp";
+#include "Model/Primitives.hpp";
+#include "Model/RenderingContext.hpp";
+#include "Model/Sphere.hpp";
+#include "Model/Terrain.hpp";
+#include "Model/TextBox.hpp";
+#include "Model/ViewerModel.hpp";
+#include "Model/WireFrame.hpp";
 
 // Renderer
 #include "Renderer/DepthRenderer.hpp"
@@ -47,12 +50,14 @@
 #include "Util/FileUtil.hpp"
 #include "Util/FontStorage.hpp"
 #include "Util/Geometry.hpp"
+#include "Util/llas.hpp"
 #include "Util/Logging.hpp"
 #include "Util/Math.hpp"
 #include "Util/ModelParser.hpp"
 #include "Util/ObjectLoader.hpp"
 #include "Util/StbAdapter.hpp"
 #include "Util/StreamExecutor.hpp"
+#include "Util/StringUtil.hpp"
 #include "Util/Texture.hpp"
 
 // Window

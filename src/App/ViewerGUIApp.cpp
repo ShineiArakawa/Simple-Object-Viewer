@@ -121,20 +121,8 @@ void ViewerGUIApp::launch() {
   // ====================================================================
   LOG_INFO("Start main loop.");
 
-  while (!glfwWindowShouldClose(_window) && _view->toMoveOn()) {
-    if (_view->shouldUpdate()) {  // NOTE: shouldUpdate() is needed for FPS control
-      // Update view #########################
-      _view->paint();
-      // #####################################
-
-      // Handle events #######################
-      _view->listenEvent();
-      // #####################################
-
-      // Swap to another buffer ##############
-      glfwSwapBuffers(_window);
-      // #####################################
-    }
+  while (shouldUpdateWindow()) {
+    paint();
   }
 
   LOG_INFO("Broke main loop.");
@@ -166,6 +154,26 @@ void ViewerGUIApp::setWindowSubTitle(const std::string& subTitle) {
 #endif
 
   glfwSetWindowTitle(_window, title);
+}
+
+bool ViewerGUIApp::shouldUpdateWindow() const {
+  return !glfwWindowShouldClose(_window) && _view->toMoveOn();
+}
+
+void ViewerGUIApp::paint() const {
+  if (_view->shouldUpdate()) {  // NOTE: shouldUpdate() is needed for FPS control
+    // Update view #########################
+    _view->paint();
+    // #####################################
+
+    // Handle events #######################
+    _view->listenEvent();
+    // #####################################
+
+    // Swap to another buffer ##############
+    glfwSwapBuffers(_window);
+    // #####################################
+  }
 }
 
 }  // namespace app

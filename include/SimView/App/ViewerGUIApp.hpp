@@ -34,6 +34,11 @@ class ViewerGUIApp {
   void setRenderType(const model::Primitive::RenderType renderType);
   void setSideBarVisibility(const bool& isVisible);
   void setWindowSubTitle(const std::string& subTitle);
+
+  // Manual update
+
+  bool shouldUpdateWindow() const;
+  void paint() const;
 };
 
 using ViewerGUIApp_t = std::shared_ptr<ViewerGUIApp>;
