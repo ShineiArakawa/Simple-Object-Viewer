@@ -63,6 +63,7 @@ if (SIMVIEW_BUILD_STATIC_LIBS)
       "Model/GridPlane.cpp"
       "Model/TextBox.cpp"
       "Model/LightBall.cpp"
+      "Model/LineSet.cpp"
       "Renderer/Renderer.cpp"
       "Renderer/DepthRenderer.cpp"
       "Renderer/FrameBuffer.cpp"
