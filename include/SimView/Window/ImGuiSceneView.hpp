@@ -86,6 +86,10 @@ class ImGuiSceneView {
   void wheelEvent(const bool& isMouseOnScene, const float& offset);
 
   void saveScreenShot(const std::string& filePath);
+
+  void setCameraPose(const glm::vec3& cameraPos,
+                     const glm::vec3& cameraLookAt,
+                     const glm::vec3& cameraUp);
 };
 
 using ImGuiSceneView_t = std::shared_ptr<ImGuiSceneView>;

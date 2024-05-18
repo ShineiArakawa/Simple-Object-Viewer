@@ -26,8 +26,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D SIMVIEW_ENABLE_LEAK_CHECK")
 
-# Enable assimp
-add_definitions(-DSIMVIEW_USE_ASSIMP)
+
 
 # NOTE: In some cases, failed to compile assimp with clang compiler with gcc 12 toolchain.
 # Thus, specify your path to the gcc "11" toolchain by the following option.
@@ -103,7 +102,14 @@ set(NFD_INCLUDE_DIR ${PROJECT_LIB_DIR}/nativefiledialog-extended/src/include)
 set(SPD_LOG_INCLUDE_DIR ${PROJECT_LIB_DIR}/spdlog/include)
 
 # #### assimp
-set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_DIR}/external/assimp/include)
+set(SIMVIEW_WITH_ASSIMP TRUE CACHE BOOL "Build with Assimp")
+
+if (SIMVIEW_WITH_ASSIMP)
+  add_definitions(-DSIMVIEW_WITH_ASSIMP)
+  set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_DIR}/external/assimp/include)
+  set(SIMVIEW_ASSIMP_LIBS assimp)
+endif()
+
 
 # #### VTK
 set(SIMVIEW_WITH_VTK TRUE CACHE BOOL "Build with VTK")
@@ -143,8 +149,8 @@ set(
   glad
   glfw
   nfd
-  assimp
   freetype
+  ${SIMVIEW_ASSIMP_LIBS}
   ${VTK_LIBRARIES}
 )
 

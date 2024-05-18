@@ -34,6 +34,9 @@ class ViewerGUIApp {
   void setRenderType(const model::Primitive::RenderType renderType);
   void setSideBarVisibility(const bool& isVisible);
   void setWindowSubTitle(const std::string& subTitle);
+  void setCameraPose(const glm::vec3& cameraPos,
+                     const glm::vec3& cameraLookAt,
+                     const glm::vec3& cameraUp);
 
   // Manual update
 

@@ -157,6 +157,14 @@ void ViewerGUIApp::setWindowSubTitle(const std::string& subTitle) {
   glfwSetWindowTitle(_window, title);
 }
 
+void ViewerGUIApp::setCameraPose(const glm::vec3& cameraPos,
+                                 const glm::vec3& cameraLookAt,
+                                 const glm::vec3& cameraUp) {
+  _view->getSceneView()->setCameraPose(cameraPos,
+                                       cameraLookAt,
+                                       cameraUp);
+}
+
 bool ViewerGUIApp::shouldUpdateWindow() const {
   return !glfwWindowShouldClose(_window) && _view->toMoveOn();
 }

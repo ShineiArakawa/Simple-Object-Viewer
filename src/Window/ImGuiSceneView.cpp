@@ -235,5 +235,14 @@ void ImGuiSceneView::saveScreenShot(const std::string& filePath) {
   }
 }
 
+void ImGuiSceneView::setCameraPose(const glm::vec3& cameraPos,
+                                   const glm::vec3& cameraLookAt,
+                                   const glm::vec3& cameraUp) {
+  if (_renderer != nullptr) {
+    _renderer->setViewMat(glm::lookAt(cameraPos, cameraLookAt, cameraUp));
+    _renderer->initModelMatrices();
+  }
+}
+
 }  // namespace window
 }  // namespace simview

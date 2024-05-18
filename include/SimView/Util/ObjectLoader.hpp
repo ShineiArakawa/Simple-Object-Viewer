@@ -17,7 +17,7 @@
 #include <vector>
 
 // Include assimp
-#if defined(SIMVIEW_USE_ASSIMP)
+#if defined(SIMVIEW_WITH_ASSIMP)
 #include <assimp/postprocess.h>  // Post processing flags
 #include <assimp/scene.h>        // Output data structure
 

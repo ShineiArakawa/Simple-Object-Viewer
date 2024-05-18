@@ -22,7 +22,7 @@ std::vector<std::string> ObjectLoader::getReadableExtensionList() {
   // Native support
   extensionList.push_back("las");
 
-#if defined(SIMVIEW_USE_ASSIMP)
+#if defined(SIMVIEW_WITH_ASSIMP)
   std::string strExtensions;
 
   {
@@ -109,7 +109,7 @@ void ObjectLoader::readObjFile(const std::string &filePath,
                                const float offsetX,
                                const float offsetY,
                                const float offsetZ) {
-#if defined(SIMVIEW_USE_ASSIMP)
+#if defined(SIMVIEW_WITH_ASSIMP)
   Assimp::Importer importer;
   unsigned int flag = 0;
   flag |= aiProcess_Triangulate;
@@ -944,7 +944,7 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
   unsigned int nFaces = 0;
   unsigned int nVertices = 0;
 
-#if defined(SIMVIEW_USE_ASSIMP)
+#if defined(SIMVIEW_WITH_ASSIMP)
   Assimp::Importer importer;
   unsigned int flag = 0;
   flag |= aiProcess_Triangulate;
