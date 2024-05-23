@@ -572,7 +572,7 @@ void ImGuiMainView::paint() {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
-  ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+  ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
   // ====================================================================
   // Add main frame components
