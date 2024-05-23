@@ -35,7 +35,7 @@ endif()
 # Lib =====================================================
 # =========================================================
 if (SIMVIEW_BUILD_STATIC_LIBS)
-    message("Add rule to build Simple Object Viewer as a static library.")
+    message(STATUS "Add rule to build Simple Object Viewer as a static library.")
 
     # Add build rule
     project(SimView_static CXX)
@@ -101,9 +101,11 @@ if (SIMVIEW_BUILD_STATIC_LIBS)
       ${CMAKE_DL_LIBS}
     )
 
-    install(
-        TARGETS ${PROJECT_NAME}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    )
+    if (SIMVIEW_INSTALL)
+        install(
+            TARGETS ${PROJECT_NAME}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        )
+    endif()
 endif()

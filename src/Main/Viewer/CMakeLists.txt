@@ -16,7 +16,6 @@ target_include_directories(
   ${EXTERNAL_INCLUDE_DIR}
 )
 
-
 target_link_libraries(
   ${PROJECT_NAME}
   ${EXTERNAL_LIBS}
