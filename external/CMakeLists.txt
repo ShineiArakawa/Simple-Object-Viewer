@@ -14,9 +14,11 @@ add_subdirectory(
     spdlog
 )
 
-add_subdirectory(
-    assimp
-)
+if (SIMVIEW_WITH_ASSIMP)
+    add_subdirectory(
+        assimp
+    )
+endif()
 
 add_subdirectory(
     freetype
