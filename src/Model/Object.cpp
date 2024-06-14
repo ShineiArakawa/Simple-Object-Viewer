@@ -89,10 +89,6 @@ void Object::initVAO(const std::shared_ptr<std::vector<vec3f_t>> positions,  // 
     indices->push_back(iVertex);
   }
 
-  ObjectLoader::moveToOrigin(vertices);
-  ObjectLoader::scaleObject(vertices, _scale);
-  ObjectLoader::translateObject(vertices, _offsetX, _offsetY, _offsetZ);
-
   LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));
   LOG_INFO("Num of triangles: " + std::to_string(vertices->size() / 3));
 

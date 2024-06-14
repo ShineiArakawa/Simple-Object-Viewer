@@ -249,7 +249,7 @@ void ImGuiObjectAddPanel::paint() {
     ImGui::SameLine();
     if (ImGui::Button("Browse Obj")) {
       nfdchar_t* outPath;
-      nfdfilteritem_t filterItem[1] = {{"Mesh", "obj,stl"}};
+      nfdfilteritem_t filterItem[1] = {{"Mesh", _readableExtensions.c_str()}};
       nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, FileUtil::cwd().c_str());
 
       if (result == NFD_OKAY) {
