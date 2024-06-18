@@ -217,10 +217,11 @@ void ImGuiMainView::paintSideBar() {
       ImGui::Combo("Wire frame", &_wireFrameMode, WIREFRAME_TYPE_ITEMS);
       _sceneModel->setWireFrameMode(static_cast<Primitive::WireFrameMode>(_wireFrameMode));
 
+      // NOTE: Legacy config
       // Wire frame width
-      float wireFrameWidth = _sceneModel->getWireFrameWidth();
-      ImGui::DragFloat("Wire frame width", &wireFrameWidth, 0.001f, 0.0f, 0.1f, FLOAT_FORMAT);
-      _sceneModel->setWireFrameWidth(wireFrameWidth);
+      // float wireFrameWidth = _sceneModel->getWireFrameWidth();
+      // ImGui::DragFloat("Wire frame width", &wireFrameWidth, 0.01f, 1.0f, 10.0f, FLOAT_FORMAT);
+      // _sceneModel->setWireFrameWidth(wireFrameWidth);
 
       // Wire frame color
       {

@@ -133,7 +133,6 @@ void GridPlane::paintGL(
         glm::vec3(0.0f),                                     // diffuseColor
         glm::vec3(0.0f),                                     // specularColor
         getRenderType(false, Primitive::RenderType::COLOR),  // renderType
-        getWireFrameMode(Primitive::WireFrameMode::OFF),     // wireFrameMode
         renderingCtx.wireFrameColor,                         // wireFrameColor
         renderingCtx.wireFrameWidth,                         // wireFrameWidth
         renderingCtx.depthTextureId,                         // depthTextureId

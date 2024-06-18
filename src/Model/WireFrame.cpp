@@ -5,33 +5,43 @@ namespace model {
 
 using namespace util;
 
-WireFrame::WireFrame(const VertexArray_t& vertices)
+WireFrame::WireFrame(const VertexArray_t& vertices, const IndexArray_t& indices)
     : _vaoId(),
       _vertexBufferId(),
       _indexBufferId(),
       _indexBufferSize() {
-  initVAO(vertices);
+  initVAO(vertices, indices);
 }
 
 WireFrame::~WireFrame() = default;
 
-void WireFrame::initVAO(const VertexArray_t& vertices) {
-  VertexArray_t lineVertices = std::make_shared<std::vector<Vertex>>();
+void WireFrame::initVAO(const VertexArray_t& vertices, const IndexArray_t& indices) {
+  auto lineVertices = std::make_shared<std::vector<LineVertex>>();
   IndexArray_t lineIndices = std::make_shared<std::vector<uint32_t>>();
   int idx = 0;
 
-  glm::vec3 normal(0.0f), bary(0.0f);
-  glm::vec2 uv(0.0f);
+  const size_t nTriangles = indices->size() / 3ULL;
+  for (size_t iTriangle = 0ULL; iTriangle < nTriangles; ++iTriangle) {
+    const size_t offset = 3ULL * iTriangle;
 
-  for (const auto& vertex : *vertices) {
-    Vertex lineVertex(vertex.position,
-                      COLOR,
-                      vertex.normal,
-                      vertex.bary,
-                      vertex.uv,
-                      vertex.id);
-    lineVertices->push_back(lineVertex);
-    lineIndices->push_back(idx++);
+    const LineVertex vertex0((*vertices)[(*indices)[offset + 0]].position);
+    const LineVertex vertex1((*vertices)[(*indices)[offset + 1]].position);
+    const LineVertex vertex2((*vertices)[(*indices)[offset + 2]].position);
+
+    lineVertices->push_back(vertex0);
+    lineVertices->push_back(vertex1);
+    lineVertices->push_back(vertex2);
+
+    lineIndices->push_back(idx + 0);
+    lineIndices->push_back(idx + 1);
+
+    lineIndices->push_back(idx + 1);
+    lineIndices->push_back(idx + 2);
+
+    lineIndices->push_back(idx + 2);
+    lineIndices->push_back(idx + 0);
+
+    idx += 3;
   }
 
   // Create VAO
@@ -41,26 +51,11 @@ void WireFrame::initVAO(const VertexArray_t& vertices) {
   // Create vertex buffer object
   glGenBuffers(1, &_vertexBufferId);
   glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferId);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * lineVertices->size(), lineVertices->data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(LineVertex) * lineVertices->size(), lineVertices->data(), GL_STATIC_DRAW);
 
   // Setup attributes for vertex buffer object
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bary));
-
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
-
-  glEnableVertexAttribArray(5);
-  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, id));
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(LineVertex), (void*)offsetof(LineVertex, position));
 
   // Create index buffer object
   glGenBuffers(1, &_indexBufferId);
@@ -73,11 +68,13 @@ void WireFrame::initVAO(const VertexArray_t& vertices) {
   glBindVertexArray(0);
 }
 
-void WireFrame::draw() const {
+void WireFrame::draw(const float& lineWidth) const {
   glBindVertexArray(_vaoId);
 
   glEnable(GL_LINE_SMOOTH);
   glEnable(GL_BLEND);
+
+  glLineWidth(lineWidth);
 
   glDrawElements(GL_LINES, _indexBufferSize, GL_UNSIGNED_INT, 0);
 

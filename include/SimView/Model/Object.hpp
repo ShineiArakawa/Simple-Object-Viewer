@@ -60,8 +60,7 @@ class Object : public Primitive {
                const std::shared_ptr<std::vector<vec3f_t>> normals = nullptr,
                const std::shared_ptr<std::vector<vec2f_t>> uvCoords = nullptr,
                const std::shared_ptr<std::vector<int>> ids = nullptr);
-  void paintGL(
-      const TransformationContext& transCtx,  // transCtx
+  void paintGL(const TransformationContext& transCtx,  // transCtx
       const LightingContext& lightingCtx,     // lightingCtx
       const RenderingContext& renderingCtx    // renderingCtx
       ) override;

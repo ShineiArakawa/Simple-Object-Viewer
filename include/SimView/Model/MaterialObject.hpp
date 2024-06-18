@@ -21,7 +21,8 @@ class MaterialObject : public Primitive {
           enabledDiffuseTexture(false),
           enabledSpecularTexture(false),
           enabledBumpTexture(false),
-          materialGroup(nullptr){};
+          materialGroup(nullptr),
+          wireFrame(nullptr){};
 
     GLuint vaoId;
     GLuint vertexBufferId;
@@ -39,6 +40,8 @@ class MaterialObject : public Primitive {
     bool enabledBumpTexture;
 
     MaterialGroup_t materialGroup;
+
+    WireFrame_t wireFrame;
   };
 
   using MaterialObjectBuffer_t = std::shared_ptr<MaterialObjectBuffer>;
@@ -64,7 +67,7 @@ class MaterialObject : public Primitive {
  public:
   MaterialObject(const std::string& filePath, const glm::vec3 offset, const glm::vec3 scale);
   ~MaterialObject();
-  void update() override{};
+  void update() override {};
   void initVAO() override;
   void paintGL(
       const TransformationContext& transCtx,  // transCtx
@@ -73,6 +76,10 @@ class MaterialObject : public Primitive {
       ) override;
   void drawGL(const int& index = 0) override;
   void drawAllGL(const glm::mat4& lightMvpMat) override;
+  void paintWireFrame(const MaterialObjectBuffer_t& object,
+                      const glm::mat4& mvpMat,
+                      const glm::vec3& color,
+                      const float& width) const;
 
   std::string getObjectType() override { return KEY_MODEL_MATERIAL_OBJECT; };
 };

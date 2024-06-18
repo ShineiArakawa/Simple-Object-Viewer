@@ -78,7 +78,6 @@ void LightBall::paintGL(
         glm::vec3(0.0f),                           // diffuseColor
         glm::vec3(0.0f),                           // specularColor
         getRenderType(false, RenderType::NORMAL),  // renderType
-        getWireFrameMode(WireFrameMode::OFF),      // wireFrameMode
         renderingCtx.wireFrameColor,               // wireFrameColor
         renderingCtx.wireFrameWidth,               // wireFrameWidth
         renderingCtx.depthTextureId,               // depthTextureId

@@ -86,6 +86,8 @@ void Box::initVAO() {
 
   // Temporarily disable VAO
   glBindVertexArray(0);
+
+  _wireFrame = std::make_shared<WireFrame>(vertices, indices);
 }
 
 void Box::paintGL(
@@ -99,37 +101,40 @@ void Box::paintGL(
     const glm::mat4& normMat = glm::transpose(glm::inverse(mvtMat));
     const glm::mat4& lightMvptMat = transCtx.lightMvpMat * glm::translate(_position);
 
-    bindShader(
-        mvtMat,                        // mvMat
-        mvptMat,                       // mvpMat
-        normMat,                       // normMat
-        transCtx.lightMat,             // lightMat
-        lightingCtx.lightPos,          // lightPos
-        lightingCtx.shininess,         // shininess
-        lightingCtx.ambientIntensity,  // ambientIntensity
-        glm::vec3(0.0f),               // ambientColor
-        glm::vec3(0.0f),               // diffuseColor
-        glm::vec3(0.0f),               // specularColor
-        getRenderType(),               // renderType
-        getWireFrameMode(),            // wireFrameMode
-        renderingCtx.wireFrameColor,   // wireFrameColor
-        renderingCtx.wireFrameWidth,   // wireFrameWidth
-        renderingCtx.depthTextureId,   // depthTextureId
-        lightMvptMat,                  // lightMvpMat
-        _isEnabledShadowMapping,       // isEnabledShadowMapping
-        false,                         // disableDepthTest
-        false                          // isEnabledNormalMap
-    );
+    paintWireFrame(mvptMat, renderingCtx.wireFrameColor, renderingCtx.wireFrameWidth);
 
-    _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE, _textureId);
-    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, true);
+    if (_wireFrameMode != WireFrameMode::ONLY) {
+      bindShader(
+          mvtMat,                        // mvMat
+          mvptMat,                       // mvpMat
+          normMat,                       // normMat
+          transCtx.lightMat,             // lightMat
+          lightingCtx.lightPos,          // lightPos
+          lightingCtx.shininess,         // shininess
+          lightingCtx.ambientIntensity,  // ambientIntensity
+          glm::vec3(0.0f),               // ambientColor
+          glm::vec3(0.0f),               // diffuseColor
+          glm::vec3(0.0f),               // specularColor
+          getRenderType(),               // renderType
+          renderingCtx.wireFrameColor,   // wireFrameColor
+          renderingCtx.wireFrameWidth,   // wireFrameWidth
+          renderingCtx.depthTextureId,   // depthTextureId
+          lightMvptMat,                  // lightMvpMat
+          _isEnabledShadowMapping,       // isEnabledShadowMapping
+          false,                         // disableDepthTest
+          false                          // isEnabledNormalMap
+      );
 
-    _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, _textureId);
-    _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, true);
+      _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE, _textureId);
+      _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, true);
 
-    drawGL();
+      _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, _textureId);
+      _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, true);
 
-    unbindShader();
+      drawGL();
+
+      unbindShader();
+    }
   }
 }
 

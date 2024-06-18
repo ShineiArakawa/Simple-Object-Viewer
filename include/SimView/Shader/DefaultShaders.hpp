@@ -18,9 +18,6 @@ class DefaultModelShader {
   inline static const char* UNIFORM_NAME_AMBIENT_COLOR              = "u_ambientColor";
   inline static const char* UNIFORM_NAME_DIFFUSE_COLOR              = "u_diffuseColor";
   inline static const char* UNIFORM_NAME_SPECULAR_COLOR             = "u_specularColor";
-  inline static const char* UNIFORM_NAME_WIRE_FRAME_MODE            = "u_wireFrameMode";
-  inline static const char* UNIFORM_NAME_WIRE_FRAME_COLOR           = "u_wireFrameColor";
-  inline static const char* UNIFORM_NAME_WIRE_FRAME_WIDTH           = "u_wireFrameWidth";
   inline static const char* UNIFORM_NAME_RENDER_TYPE                = "u_renderType";
   inline static const char* UNIFORM_NAME_BUMP_MAP                   = "u_bumpMap";
   inline static const char* UNIFORM_NAME_LIGHT_MVP_MAT              = "u_lightMvpMat";
@@ -96,9 +93,6 @@ class DefaultModelShader {
       "\n"
       "uniform float u_renderType;\n"
       "uniform float u_bumpMap;\n"
-      "uniform float u_wireFrameMode;\n"
-      "uniform vec3 u_wireFrameColor;\n"
-      "uniform float u_wireFrameWidth;\n"
       "uniform float u_ambientIntensity;\n"
       "uniform vec3 u_ambientColor;\n"
       "uniform vec3 u_diffuseColor;\n"
@@ -200,26 +194,6 @@ class DefaultModelShader {
       "}\n"
       "\n"
       "void main() {\n"
-      "    // ================================================================================================================================\n"
-      "    // Wire frame\n"
-      "    // ================================================================================================================================\n"
-      "    if(u_wireFrameMode > 0.5 && u_wireFrameMode < 1.5) {\n"
-      "        // Wire frame\n"
-      "        float wireFrameWidth = u_wireFrameWidth / 2.0;\n"
-      "        if(f_barycentric.x < wireFrameWidth || f_barycentric.y < wireFrameWidth  || f_barycentric.z < wireFrameWidth) {\n"
-      "            out_color = vec4(u_wireFrameColor, 1.0);\n"
-      "            return;\n"
-      "        }\n"
-      "    } else if(u_wireFrameMode > -1.5 && u_wireFrameMode < -0.5) {\n"
-      "        // Wire frame only\n"
-      "        if(f_barycentric.x < u_wireFrameWidth || f_barycentric.y < u_wireFrameWidth || f_barycentric.z < u_wireFrameWidth) {\n"
-      "            out_color = vec4(u_wireFrameColor, 1.0);\n"
-      "        } else {\n"
-      "            out_color = vec4(u_wireFrameColor, 0.0);\n"
-      "        }\n"
-      "        return;\n"
-      "    }\n"
-      "\n"
       "    // ================================================================================================================================\n"
       "    // Normal\n"
       "    // ================================================================================================================================\n"
@@ -328,7 +302,36 @@ class DefaultDepthQuadShader {
       "    float depthValue = texture(u_diffuseTexture, f_uv).r;\n"
       "    depthValue = 1.0 - (1.0 - depthValue) * 25.0;\n"
       "    out_color = vec4(depthValue);\n"
-      "    // out_color = vec4(vec3(depthValue), 1.0);\n"
+      "}\n";
+};
+
+class DefaultLineShader {
+ public:
+  // clang-format off
+  inline static const char* UNIFORM_NAME_MVP_MAT                    = "u_mvpMat";
+  inline static const char* UNIFORM_NAME_LINE_COLOER                = "u_lineColor";
+  // clang-format on
+
+  inline static const std::string VERT_SHADER =
+      "#version 460\n"
+      "\n"
+      "layout(location = 0) in vec3 in_position;\n"
+      "\n"
+      "uniform mat4 u_mvpMat;\n"
+      "\n"
+      "void main() {\n"
+      "    gl_Position = u_mvpMat * vec4(in_position, 1.0);\n"
+      "}\n";
+
+  inline static const std::string FRAG_SHADER =
+      "#version 460\n"
+      "\n"
+      "uniform vec3 u_lineColor;\n"
+      "\n"
+      "out vec4 out_color;\n"
+      "\n"
+      "void main() {\n"
+      "    out_color = vec4(u_lineColor, 1.0);\n"
       "}\n";
 };
 

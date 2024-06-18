@@ -204,9 +204,9 @@ class Primitive {
     _wireFrameMode = wireFrameMode;
   };
 
-  float getWireFrameMode() const {
-    return getWireFrameMode(_wireFrameMode);
-  };
+  WireFrameMode getWireFrameMode() {
+    return _wireFrameMode;
+  }
 
   inline static float getRenderType(const bool& maskMode,
                                     const RenderType& renderType) {
@@ -231,18 +231,6 @@ class Primitive {
     }
 
     return renderTypeValue;
-  };
-
-  inline static float getWireFrameMode(const WireFrameMode& wireFrameType) {
-    float wireFrameTypeValue = 0.0f;
-
-    if (wireFrameType == WireFrameMode::ON) {
-      wireFrameTypeValue = 1.0f;
-    } else if (wireFrameType == WireFrameMode::ONLY) {
-      wireFrameTypeValue = -1.0f;
-    }
-
-    return wireFrameTypeValue;
   };
 
   // ==================================================================================================
@@ -281,7 +269,6 @@ class Primitive {
       const glm::vec3& diffuseColor,       // diffuseColor
       const glm::vec3& specularColor,      // specularColor
       const float& renderType,             // renderType
-      const float& wireFrameMode,          // wireFrameMode
       const glm::vec3& wireFrameColor,     // wireFrameColor
       const float& wireFrameWidth,         // wireFrameWidth
       const GLuint& depthTextureId,        // depthTextureId
@@ -306,9 +293,6 @@ class Primitive {
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_AMBIENT_COLOR, ambientColor);          // ambientColor
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_DIFFUSE_COLOR, diffuseColor);          // diffuseColor
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_SPECULAR_COLOR, specularColor);        // specularColor
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_MODE, wireFrameMode);       // wireFrameMode
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_COLOR, wireFrameColor);     // wireFrameColor
-    _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_WIRE_FRAME_WIDTH, wireFrameWidth);     // wireFrameWidth
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, renderType);              // renderType
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_BUMP_MAP, isEnabledNormalMap);         // isEnabledNormalMap
     _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_LIGHT_MVP_MAT, lightMvpMat);           // lightMvpMat
@@ -340,19 +324,17 @@ class Primitive {
     }
   };
 
-  inline void paintWireFrame(const glm::mat4& mvMat,
-                             const glm::mat4& mvpMat,
-                             const glm::mat4& normMat) const {
+  inline void paintWireFrame(const glm::mat4& mvpMat,
+                             const glm::vec3& color,
+                             const float& width) const {
     if (_wireFrame != nullptr && (_wireFrameMode == WireFrameMode::ON || _wireFrameMode == WireFrameMode::ONLY)) {
-      _shader->bind();
-      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MV_MAT, mvMat);
-      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_MVP_MAT, mvpMat);
-      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_NORM_MAT, normMat);
-      _shader->setUniformVariable(shader::DefaultModelShader::UNIFORM_NAME_RENDER_TYPE, getRenderType(false, RenderType::COLOR));
+      _shader->getLineShader()->bind();
+      _shader->getLineShader()->setUniformVariable(shader::DefaultLineShader::UNIFORM_NAME_MVP_MAT, mvpMat);
+      _shader->getLineShader()->setUniformVariable(shader::DefaultLineShader::UNIFORM_NAME_LINE_COLOER, color);
 
-      _wireFrame->draw();
+      _wireFrame->draw(width);
 
-      _shader->unbind();
+      _shader->getLineShader()->unbind();
     }
   };
 

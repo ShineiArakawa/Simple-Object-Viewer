@@ -90,6 +90,8 @@ void MaterialObject::initVAO() {
       buffer->enabledBumpTexture = true;
     }
 
+    buffer->wireFrame = std::make_shared<WireFrame>(materialGroup->vertices, materialGroup->indices);
+
     _materialObjectBuffers->push_back(buffer);
   }
 }
@@ -108,47 +110,50 @@ void MaterialObject::paintGL(
     for (int iObject = 0; iObject < (int)_materialObjectBuffers->size(); ++iObject) {
       const MaterialObjectBuffer_t& object = (*_materialObjectBuffers)[iObject];
 
-      {
-        // Prepare
-        bindShader(
-            mvtMat,                                            // mvMat
-            mvptMat,                                           // mvpMat
-            normMat,                                           // normMat
-            transCtx.lightMat,                                 // lightMat
-            lightingCtx.lightPos,                              // lightPos
-            object->materialGroup->shininess,                  // shininess
-            lightingCtx.ambientIntensity,                      // ambientIntensity
-            object->materialGroup->ambientColor,               // ambientColor
-            object->materialGroup->diffuseColor,               // diffuseColor
-            object->materialGroup->specularColor,              // specularColor
-            getRenderType(),                                   // renderType
-            getWireFrameMode(),                                // wireFrameMode
-            renderingCtx.wireFrameColor,                       // wireFrameColor
-            renderingCtx.wireFrameWidth,                       // wireFrameWidth
-            renderingCtx.depthTextureId,                       // depthTextureId
-            lightMvptMat,                                      // lightMvpMat
-            _isEnabledShadowMapping,                           // isEnabledShadowMapping
-            false,                                             // disableDepthTest
-            _isEnabledNormalMap && object->enabledBumpTexture  // isEnabledNormalMap
-        );
+      paintWireFrame(object, mvptMat, renderingCtx.wireFrameColor, renderingCtx.wireFrameWidth);
 
-        _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE, object->ambientTextureId);
-        _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, object->enabledAmbientTexture);
+      if (_wireFrameMode != WireFrameMode::ONLY) {
+        {
+          // Prepare
+          bindShader(
+              mvtMat,                                            // mvMat
+              mvptMat,                                           // mvpMat
+              normMat,                                           // normMat
+              transCtx.lightMat,                                 // lightMat
+              lightingCtx.lightPos,                              // lightPos
+              object->materialGroup->shininess,                  // shininess
+              lightingCtx.ambientIntensity,                      // ambientIntensity
+              object->materialGroup->ambientColor,               // ambientColor
+              object->materialGroup->diffuseColor,               // diffuseColor
+              object->materialGroup->specularColor,              // specularColor
+              getRenderType(),                                   // renderType
+              renderingCtx.wireFrameColor,                       // wireFrameColor
+              renderingCtx.wireFrameWidth,                       // wireFrameWidth
+              renderingCtx.depthTextureId,                       // depthTextureId
+              lightMvptMat,                                      // lightMvpMat
+              _isEnabledShadowMapping,                           // isEnabledShadowMapping
+              false,                                             // disableDepthTest
+              _isEnabledNormalMap && object->enabledBumpTexture  // isEnabledNormalMap
+          );
 
-        _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, object->diffuseTextureId);
-        _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, object->enabledDiffuseTexture);
+          _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE, object->ambientTextureId);
+          _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_AMBIENT_TEXTURE_FLAG, object->enabledAmbientTexture);
 
-        _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_SPECULAR_TEXTURE, object->specularTextureId);
-        _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_SPECULAR_TEXTURE_FLAG, object->enabledSpecularTexture);
+          _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE, object->diffuseTextureId);
+          _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_DIFFUSE_TEXTURE_FLAG, object->enabledDiffuseTexture);
 
-        _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_NORMAL_MAP, object->bumpTextureId);
-      }
+          _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_SPECULAR_TEXTURE, object->specularTextureId);
+          _shader->setUniformVariable(DefaultModelShader::UNIFORM_NAME_SPECULAR_TEXTURE_FLAG, object->enabledSpecularTexture);
 
-      drawGL(iObject);
+          _shader->setUniformTexture(DefaultModelShader::UNIFORM_NAME_NORMAL_MAP, object->bumpTextureId);
+        }
 
-      {
-        // Post process
-        unbindShader();
+        drawGL(iObject);
+
+        {
+          // Post process
+          unbindShader();
+        }
       }
     }
   }
@@ -171,6 +176,21 @@ void MaterialObject::drawAllGL(const glm::mat4& lightMvpMat) {
     }
   }
 }
+
+void MaterialObject::paintWireFrame(const MaterialObjectBuffer_t& object,
+                                    const glm::mat4& mvpMat,
+                                    const glm::vec3& color,
+                                    const float& width) const {
+  if (object->wireFrame != nullptr && (_wireFrameMode == WireFrameMode::ON || _wireFrameMode == WireFrameMode::ONLY)) {
+    _shader->getLineShader()->bind();
+    _shader->getLineShader()->setUniformVariable(shader::DefaultLineShader::UNIFORM_NAME_MVP_MAT, mvpMat);
+    _shader->getLineShader()->setUniformVariable(shader::DefaultLineShader::UNIFORM_NAME_LINE_COLOER, color);
+
+    object->wireFrame->draw(width);
+
+    _shader->unbind();
+  }
+};
 
 }  // namespace model
 }  // namespace simview

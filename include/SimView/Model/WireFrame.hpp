@@ -17,24 +17,20 @@ class WireFrame {
   GLuint _indexBufferId;
   int _indexBufferSize;
 
-  inline static const glm::vec3 COLOR = glm::vec3(15.0f / 255.0f,
-                                                  230.0f / 255.0f,
-                                                  130.0f / 255.0f);
-
  protected:
   // nothing
  public:
   inline static const std::string KEY_MODEL_WIRE_FRAME = "Wire frame";
 
  private:
-  void initVAO(const VertexArray_t&);
+  void initVAO(const VertexArray_t&, const IndexArray_t&);
 
  protected:
   // nothing
  public:
-  WireFrame(const VertexArray_t&);
+  WireFrame(const VertexArray_t&, const IndexArray_t&);
   ~WireFrame();
-  void draw() const;
+  void draw(const float& lineWidth) const;
 };
 
 using WireFrame_t = std::shared_ptr<WireFrame>;

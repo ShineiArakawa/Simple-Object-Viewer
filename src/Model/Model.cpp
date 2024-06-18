@@ -22,7 +22,7 @@ Model::Model()
       _shininess(50.0f),
       _ambientIntensity(0.1f),
       _wireFrameColor(15.0f / 255.0f, 230.0f / 255.0f, 130.0f / 255.0f),
-      _wireFrameWidth(0.1f) {
+      _wireFrameWidth(1.0f) {
 }
 
 Model::~Model() {}

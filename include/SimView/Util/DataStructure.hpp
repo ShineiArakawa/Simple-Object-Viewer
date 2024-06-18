@@ -32,6 +32,14 @@ struct Vertex {
   float id;
 };
 
+struct LineVertex {
+  LineVertex() = default;
+  LineVertex(const glm::vec3& position_)
+      : position(position_){};
+
+  glm::vec3 position;
+};
+
 using VertexArray_t = std::shared_ptr<std::vector<Vertex>>;
 using IndexArray_t = std::shared_ptr<std::vector<uint32_t>>;
 

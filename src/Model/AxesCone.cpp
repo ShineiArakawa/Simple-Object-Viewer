@@ -193,7 +193,6 @@ void AxesCone::paintGL(
         glm::vec3(0.0f),                                     // diffuseColor
         glm::vec3(0.0f),                                     // specularColor
         getRenderType(false, Primitive::RenderType::SHADE),  // renderType
-        getWireFrameMode(),                                  // wireFrameMode
         renderingCtx.wireFrameColor,                         // wireFrameColor
         renderingCtx.wireFrameWidth,                         // wireFrameWidth
         renderingCtx.depthTextureId,                         // depthTextureId
