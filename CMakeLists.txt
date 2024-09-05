@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE on)
 
+include(InstallRequiredSystemLibraries)
+
 # Set default build type if not specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
@@ -41,8 +43,18 @@ endif()
 ############################################################################################################
 # #### Set environment variables in project
 set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+
 set(PROJECT_LIB_DIR "${PROJECT_SOURCE_DIR}/external")
+
 set(WIN_RESOURCE_FILE "${PROJECT_SOURCE_DIR}/assets/resource.rc")
+
+set(ORIGINAL_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
+string(TOLOWER ${ORIGINAL_SYSTEM_NAME} LOWERCASE_SYSTEM_NAME)
+
+set(ORIGINAL_SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
+string(TOLOWER ${ORIGINAL_SYSTEM_PROCESSOR} LOWERCASE_SYSTEM_PROCESSOR)
+
+set(PROJECT_ARCHITECTURE_NAME "${LOWERCASE_SYSTEM_PROCESSOR}-${LOWERCASE_SYSTEM_NAME}")
 
 ############################################################################################################
 # External Libraries
@@ -109,7 +121,6 @@ if (SIMVIEW_WITH_ASSIMP)
   set(SIMVIEW_ASSIMP_LIBS assimp)
 endif()
 
-
 # #### VTK
 set(SIMVIEW_WITH_VTK TRUE CACHE BOOL "Build with VTK")
 
@@ -167,8 +178,6 @@ set(
 
 set(SIMVIEW_BUILD_STATIC_LIBS TRUE CACHE BOOL "Build as static library")
 
-set(SIMVIEW_COPY_BINARY_TO_BIN_DIR TRUE CACHE BOOL "Copy built banaries to bin/ directory")
-
 set(SIMVIEW_BUILD_EXECUTABLES TRUE CACHE BOOL "Build executable files")
 
 ############################################################################################################
@@ -178,9 +187,9 @@ set(SIMVIEW_INSTALL TRUE CACHE BOOL "Install SimView library")
 
 if (SIMVIEW_INSTALL)
   install(
-  	DIRECTORY "${PROJECT_INCLUDE_DIR}/SimView"
-  	DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-	  FILES_MATCHING PATTERN "*.hpp"
+    DIRECTORY "${PROJECT_INCLUDE_DIR}/SimView"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    FILES_MATCHING PATTERN "*.hpp"
   )
 endif()
 
@@ -238,7 +247,6 @@ if (${SIMVIEW_SHOW_BUILD_CONF})
   message(STATUS "#    SIMVIEW_BUILD_EXECUTABLES            : ${SIMVIEW_BUILD_EXECUTABLES}")
   message(STATUS "#    SIMVIEW_BUILD_STATIC_LIBS            : ${SIMVIEW_BUILD_STATIC_LIBS}")
   message(STATUS "#    SIMVIEW_BUILD_AS_WIN32_APP           : ${SIMVIEW_BUILD_AS_WIN32_APP}")
-  message(STATUS "#    SIMVIEW_COPY_BINARY_TO_BIN_DIR       : ${SIMVIEW_COPY_BINARY_TO_BIN_DIR}")
   message(STATUS "#    SIMVIEW_WITH_VTK                     : ${SIMVIEW_WITH_VTK}")
   message(STATUS "# =======================================================================================================")
 endif()
