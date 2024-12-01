@@ -1,5 +1,7 @@
 #include <SimView/Window/ImGuiSceneView.hpp>
 
+constexpr double SQRT_2 = 1.41421356237;
+
 namespace simview {
 namespace window {
 
@@ -80,18 +82,9 @@ void ImGuiSceneView::resizeGL(const int& width, const int& height) {
 }
 
 glm::vec3 ImGuiSceneView::getVector(const double& x, const double& y) {
-  // const int shortSide = std::min(WIN_WIDTH, WIN_HEIGHT);
-  glm::vec3 pt(2.0f * x / (float)WIN_WIDTH - 1.0f,
-               -2.0f * y / (float)WIN_HEIGHT + 1.0f,
+  glm::vec3 pt(2.0f * x / static_cast<float>(WIN_WIDTH) - 1.0f,
+               -2.0f * y / static_cast<float>(WIN_HEIGHT) + 1.0f,
                0.0f);
-
-  const double xySquared = pt.x * pt.x + pt.y * pt.y;
-  if (xySquared <= 1.0) {
-    pt.z = (float)std::sqrt(1.0 - xySquared);
-  } else {
-    pt = glm::normalize(pt);
-  }
-
   return pt;
 }
 

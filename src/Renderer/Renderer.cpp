@@ -181,11 +181,25 @@ void Renderer::updateTranslate(const glm::vec4& newPosScreenSpace, const glm::ve
 }
 
 void Renderer::updateRotate(const glm::vec3& u, const glm::vec3& v) {
-  const double& angle = std::acos(std::max(-1.0f, std::min(glm::dot(u, v), 1.0f)));
-  const glm::vec3& rotAxis = glm::cross(u, v);
   const glm::mat4& c2wMat = glm::inverse(_viewMat);
-  const glm::vec3& rotAxisWorldSpace = glm::vec3(c2wMat * glm::vec4(rotAxis, 0.0f));
-  rotateModel((float)(1.0 * angle), rotAxisWorldSpace);
+
+  // Calculate the rotation angle in the horizontal direction (Y-axis rotation)
+  const float dx = v.x - u.x;
+  const glm::vec3 horizontalAxisInWorldSpace = glm::vec3(c2wMat[1]);  // Y-axis of the camera
+  const float horizontalAngle = 2.0 * dx * M_PI;                      // Scaling factor
+  const glm::quat horizontalQuat = glm::angleAxis(horizontalAngle, glm::normalize(horizontalAxisInWorldSpace));
+
+  // Calculate the rotation angle in the vertical direction (X-axis rotation)
+  const float dy = -(v.y - u.y);
+  const glm::vec3 verticalAxisInWorldSpace = glm::vec3(c2wMat[0]);  // X-axis of the camera
+  const float verticalAngle = 2.0 * dy * M_PI;                      // Scaling factor
+  const glm::quat verticalQuat = glm::angleAxis(verticalAngle, glm::normalize(verticalAxisInWorldSpace));
+
+  // Combine the horizontal and vertical rotations
+  const glm::mat4 rotMat = glm::toMat4(horizontalQuat * verticalQuat);
+
+  // Update the rotation matrix
+  _acRotMat = rotMat * _acRotMat;
 }
 
 void Renderer::rotateModel(const float angle, const glm::vec3& rotAxisWorldSpace) {

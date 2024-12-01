@@ -3,6 +3,19 @@ cmake_minimum_required(VERSION 3.24)
 project(SimpleObjectViewer C CXX)
 
 ############################################################################################################
+# Options
+############################################################################################################
+option(SIMVIEW_WITH_ASSIMP "Build with Assimp" TRUE)
+
+option(SIMVIEW_BUILD_AS_WIN32_APP "Build as WIN32 apps" TRUE)
+
+option(SIMVIEW_WITH_VTK "Build with VTK" TRUE)
+
+option(SIMVIEW_INSTALL "Install SimView library" TRUE)
+
+option(SIMVIEW_SHOW_BUILD_CONF "Show teh build configuration message" TRUE)
+
+############################################################################################################
 # Compile Options 
 ############################################################################################################
 set(CMAKE_CXX_STANDARD 17)
@@ -32,7 +45,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D SIMVIEW_ENABLE_LEAK_CHECK
 # Thus, specify your path to the gcc "11" toolchain by the following option.
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11")
 
-set(SIMVIEW_BUILD_AS_WIN32_APP TRUE CACHE BOOL "Build as WIN32 apps")
 if (SIMVIEW_BUILD_AS_WIN32_APP)
   message(STATUS "Build as a WIN32 app.")
   add_definitions(-DSIMVIEW_BUILD_AS_WIN32_APP)
@@ -55,6 +67,22 @@ set(ORIGINAL_SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
 string(TOLOWER ${ORIGINAL_SYSTEM_PROCESSOR} LOWERCASE_SYSTEM_PROCESSOR)
 
 set(PROJECT_ARCHITECTURE_NAME "${LOWERCASE_SYSTEM_PROCESSOR}-${LOWERCASE_SYSTEM_NAME}")
+
+if (NOT CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR "lib")
+endif()
+
+if (NOT CMAKE_INSTALL_DATADIR)
+set(CMAKE_INSTALL_DATADIR "share")
+endif()
+
+if (NOT CMAKE_INSTALL_INCLUDEDIR)
+  set(CMAKE_INSTALL_INCLUDEDIR "include")
+endif()
+
+if (NOT CMAKE_INSTALL_BINDIR)
+  set(CMAKE_INSTALL_BINDIR "bin")
+endif()
 
 ############################################################################################################
 # External Libraries
@@ -113,8 +141,6 @@ set(NFD_INCLUDE_DIR ${PROJECT_LIB_DIR}/nativefiledialog-extended/src/include)
 set(SPD_LOG_INCLUDE_DIR ${PROJECT_LIB_DIR}/spdlog/include)
 
 # #### assimp
-set(SIMVIEW_WITH_ASSIMP TRUE CACHE BOOL "Build with Assimp")
-
 if (SIMVIEW_WITH_ASSIMP)
   add_definitions(-DSIMVIEW_WITH_ASSIMP)
   set(ASSIMP_INCLUDE_DIR ${PROJECT_LIB_DIR}/assimp/include ${CMAKE_CURRENT_BINARY_DIR}/external/assimp/include)
@@ -122,8 +148,6 @@ if (SIMVIEW_WITH_ASSIMP)
 endif()
 
 # #### VTK
-set(SIMVIEW_WITH_VTK TRUE CACHE BOOL "Build with VTK")
-
 if (SIMVIEW_WITH_VTK)
   find_package(VTK QUIET)
 
@@ -183,8 +207,6 @@ set(SIMVIEW_BUILD_EXECUTABLES TRUE CACHE BOOL "Build executable files")
 ############################################################################################################
 # Set install include directory
 ############################################################################################################
-set(SIMVIEW_INSTALL TRUE CACHE BOOL "Install SimView library")
-
 if (SIMVIEW_INSTALL)
   install(
     DIRECTORY "${PROJECT_INCLUDE_DIR}/SimView"
@@ -204,8 +226,6 @@ add_subdirectory(external)
 ############################################################################################################
 # Message
 ############################################################################################################
-set(SIMVIEW_SHOW_BUILD_CONF TRUE CACHE BOOL "Show teh build configuration message")
-
 if (${SIMVIEW_SHOW_BUILD_CONF})
   message(STATUS "# =======================================================================================================")
   message(STATUS "#  '${PROJECT_NAME}' build configuration ")
