@@ -60,14 +60,24 @@ class Geometry {
     }
   }
 
-  static vecf_pt calcBaryCentricCoord(const veci_pt &triangles,
-                                      const vecf_pt &vertexCoords);
-  static std::pair<vec3f_t, vec3f_t> calcModelBounds(const vecf_pt &vertexCoords);
-  static veci_pt extractSurfaceTriangle(const int &nDivsBucket,
-                                        const veci_pt &originalTriangles,
-                                        const vecf_pt &vertexCoords);
+  template <class Indexing_t = uint32_t, class Coord_t = float>
+  static vec_pt<Coord_t> calcBaryCentricCoord(const vec_pt<Indexing_t> &triangles,
+                                              const vec_pt<Coord_t> &vertexCoords);
+
+  template <class Coord_t = float>
+  static std::pair<vec3_t<Coord_t>, vec3_t<Coord_t>> calcModelBounds(const vec_pt<Coord_t> &vertexCoords);
+
+  template <class Indexing_t = uint32_t, class Coord_t = float>
+  static vec_pt<Indexing_t> extractSurfaceTriangle(const int &nDivsBucket,
+                                                   const vec_pt<Indexing_t> &originalTriangles,
+                                                   const vec_pt<Coord_t> &vertexCoords);
+
+  
+
+  template <class Coord_t = float>
   static void calcVertexNormals(const int &nNodes,
-                                const veci_pt &triangles);
+                                const vec_pt<Coord_t> &triangles);
+
   static void removeDuplecatedVertices(
       const vecf_pt &srcVertices,
       const veci_pt &srcIndices,

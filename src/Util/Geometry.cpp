@@ -125,123 +125,121 @@ void TriangleBucket::addToBucket(const float &x,
   (*(*(*_bucket)[bucketIndexX])[bucketIndexY])[bucketIndexZ]->push_back(index);
 }
 
-vecf_pt Geometry::calcBaryCentricCoord(const veci_pt &triangles,
-                                       const vecf_pt &vertexCoords) {
-  const int nTriangles = triangles->size() / 3;
+template <class Indexing_t, class Coord_t>
+vec_pt<Coord_t> Geometry::calcBaryCentricCoord(const vec_pt<Indexing_t> &triangles,
+                                               const vec_pt<Coord_t> &vertexCoords) {
+  const Indexing_t nTriangles = static_cast<Indexing_t>(triangles->size()) / 3U;
 
-  vecf_pt baryCenterCoords = std::make_shared<std::vector<float>>();
-  baryCenterCoords->resize(3 * nTriangles);
+  vec_pt<Coord_t> baryCenterCoords = std::make_shared<std::vector<Coord_t>>();
+  baryCenterCoords->resize(3U * nTriangles);
 
-  for (int iTriangle = 0; iTriangle < nTriangles; ++iTriangle) {
-    const int offset = 3 * iTriangle;
+  for (Indexing_t iTriangle = 0U; iTriangle < nTriangles; ++iTriangle) {
+    const Indexing_t offset = 3U * iTriangle;
 
-    const int vertexIndex0 = (*triangles)[offset + 0];
-    const int vertexIndex1 = (*triangles)[offset + 1];
-    const int vertexIndex2 = (*triangles)[offset + 2];
+    const Indexing_t vertexIndex0 = (*triangles)[offset + 0U];
+    const Indexing_t vertexIndex1 = (*triangles)[offset + 1U];
+    const Indexing_t vertexIndex2 = (*triangles)[offset + 2U];
 
-    for (int axis = 0; axis < 3; ++axis) {
-      const float coord0 = (*vertexCoords)[vertexIndex0 + axis];
-      const float coord1 = (*vertexCoords)[vertexIndex1 + axis];
-      const float coord2 = (*vertexCoords)[vertexIndex2 + axis];
-
-      (*baryCenterCoords)[offset + axis] = (coord0 + coord1 + coord2) / 3.0f;
-    }
+    (*baryCenterCoords)[offset + 0U] = ((*vertexCoords)[vertexIndex0 + 0U] + (*vertexCoords)[vertexIndex1 + 0U] + (*vertexCoords)[vertexIndex2 + 0U]) / static_cast<Coord_t>(3.0);
+    (*baryCenterCoords)[offset + 1U] = ((*vertexCoords)[vertexIndex0 + 1U] + (*vertexCoords)[vertexIndex1 + 1U] + (*vertexCoords)[vertexIndex2 + 1U]) / static_cast<Coord_t>(3.0);
+    (*baryCenterCoords)[offset + 2U] = ((*vertexCoords)[vertexIndex0 + 2U] + (*vertexCoords)[vertexIndex1 + 2U] + (*vertexCoords)[vertexIndex2 + 2U]) / static_cast<Coord_t>(3.0);
   }
 
   return baryCenterCoords;
 }
 
-std::pair<vec3f_t, vec3f_t> Geometry::calcModelBounds(const vecf_pt &vertexCoords) {
-  const int nVertices = vertexCoords->size() / 3;
+template <class Coord_t>
+std::pair<vec3_t<Coord_t>, vec3_t<Coord_t>> Geometry::calcModelBounds(const vec_pt<Coord_t> &vertexCoords) {
+  const size_t nVertices = static_cast<size_t>(vertexCoords->size()) / 3ULL;
 
-  vec3f_t minCoords;
-  vec3f_t maxCoords;
+  vec3_t<Coord_t> minCoords;
+  vec3_t<Coord_t> maxCoords;
 
-  for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
-    const int offset = 3 * iVertex;
+  for (size_t iVertex = 0ULL; iVertex < nVertices; ++iVertex) {
+    const int offset = 3ULL * iVertex;
 
-    if (iVertex == 0) {
-      minCoords[0] = (*vertexCoords)[offset + 0];
-      minCoords[1] = (*vertexCoords)[offset + 1];
-      minCoords[2] = (*vertexCoords)[offset + 2];
-      maxCoords[0] = (*vertexCoords)[offset + 0];
-      maxCoords[1] = (*vertexCoords)[offset + 1];
-      maxCoords[2] = (*vertexCoords)[offset + 2];
+    if (iVertex == 0ULL) {
+      minCoords[0ULL] = (*vertexCoords)[offset + 0ULL];
+      minCoords[1ULL] = (*vertexCoords)[offset + 1ULL];
+      minCoords[2ULL] = (*vertexCoords)[offset + 2ULL];
+      maxCoords[0ULL] = (*vertexCoords)[offset + 0ULL];
+      maxCoords[1ULL] = (*vertexCoords)[offset + 1ULL];
+      maxCoords[2ULL] = (*vertexCoords)[offset + 2ULL];
     } else {
-      minCoords[0] = std::min(minCoords[0], (*vertexCoords)[offset + 0]);
-      minCoords[1] = std::min(minCoords[1], (*vertexCoords)[offset + 1]);
-      minCoords[2] = std::min(minCoords[2], (*vertexCoords)[offset + 2]);
-      maxCoords[0] = std::max(maxCoords[0], (*vertexCoords)[offset + 0]);
-      maxCoords[1] = std::max(maxCoords[1], (*vertexCoords)[offset + 1]);
-      maxCoords[2] = std::max(maxCoords[2], (*vertexCoords)[offset + 2]);
+      minCoords[0ULL] = std::min(minCoords[0ULL], (*vertexCoords)[offset + 0ULL]);
+      minCoords[1ULL] = std::min(minCoords[1ULL], (*vertexCoords)[offset + 1ULL]);
+      minCoords[2ULL] = std::min(minCoords[2ULL], (*vertexCoords)[offset + 2ULL]);
+      maxCoords[0ULL] = std::max(maxCoords[0ULL], (*vertexCoords)[offset + 0ULL]);
+      maxCoords[1ULL] = std::max(maxCoords[1ULL], (*vertexCoords)[offset + 1ULL]);
+      maxCoords[2ULL] = std::max(maxCoords[2ULL], (*vertexCoords)[offset + 2ULL]);
     }
   }
 
   return {std::move(minCoords), std::move(maxCoords)};
 }
 
-veci_pt Geometry::extractSurfaceTriangle(const int &nDivsBucket,
-                                         const veci_pt &originalTriangles,
-                                         const vecf_pt &vertexCoords) {
-  const int nTriangles = originalTriangles->size() / 3;
+template <class Indexing_t, class Coord_t>
+vec_pt<Indexing_t> Geometry::extractSurfaceTriangle(const int &nDivsBucket,
+                                                    const vec_pt<Indexing_t> &originalTriangles,
+                                                    const vec_pt<Coord_t> &vertexCoords) {
+  const Indexing_t nTriangles = static_cast<Indexing_t>(originalTriangles->size()) / 3U;
 
   // Calc bary centric coords of each triangle
-  const auto &baryCentricCoords = calcBaryCentricCoord(originalTriangles, vertexCoords);
+  const vec_pt<Coord_t> &baryCentricCoords = calcBaryCentricCoord(originalTriangles, vertexCoords);
 
   // Calc model scale
-  vec3f_t minCoords, maxCoords;
-  std::tie(minCoords, maxCoords) = calcModelBounds(vertexCoords);
+  const auto [minCoords, maxCoords] = calcModelBounds(vertexCoords);
 
   // Create bucket
   TriangleBucket bucket;
 
-  const float modelWidhtX = maxCoords[0] - minCoords[0];
-  const float modelWidhtY = maxCoords[1] - minCoords[1];
-  const float modelWidhtZ = maxCoords[2] - minCoords[2];
-  const float maxModelWidth = std::max(std::max(modelWidhtX, modelWidhtY), modelWidhtZ);
-  const float interval = maxModelWidth / (float)nDivsBucket;
+  const Coord_t modelWidhtX = maxCoords[0] - minCoords[0];
+  const Coord_t modelWidhtY = maxCoords[1] - minCoords[1];
+  const Coord_t modelWidhtZ = maxCoords[2] - minCoords[2];
+  const Coord_t maxModelWidth = std::max(std::max(modelWidhtX, modelWidhtY), modelWidhtZ);
+  const Coord_t interval = maxModelWidth / (Coord_t)nDivsBucket;
 
   bucket.initBucket(interval, minCoords, maxCoords);
 
   // Register to bucket
-  for (int iTriangle = 0; iTriangle < nTriangles; ++iTriangle) {
-    const int offset = 3 * iTriangle;
-    const float baryCenterX = (*baryCentricCoords)[offset + 0];
-    const float baryCenterY = (*baryCentricCoords)[offset + 1];
-    const float baryCenterZ = (*baryCentricCoords)[offset + 2];
+  for (Indexing_t iTriangle = 0U; iTriangle < nTriangles; ++iTriangle) {
+    const Indexing_t offset = 3U * iTriangle;
+    const Coord_t baryCenterX = (*baryCentricCoords)[offset + 0U];
+    const Coord_t baryCenterY = (*baryCentricCoords)[offset + 1U];
+    const Coord_t baryCenterZ = (*baryCentricCoords)[offset + 2U];
     bucket.addToBucket(baryCenterX, baryCenterY, baryCenterZ, iTriangle);
   }
 
   // Extract surface
-  veci_pt surfaceTriangles = std::make_shared<std::vector<int>>();
+  vec_pt<Indexing_t> surfaceTriangles = std::make_shared<std::vector<Indexing_t>>();
 
-  for (int iTriangle = 0; iTriangle < nTriangles; ++iTriangle) {
+  for (Indexing_t iTriangle = 0U; iTriangle < nTriangles; ++iTriangle) {
     bool isSurface = true;
 
-    const int iOffset = 3 * iTriangle;
-    int iIndex0 = (*originalTriangles)[iOffset + 0];
-    int iIndex1 = (*originalTriangles)[iOffset + 1];
-    int iIndex2 = (*originalTriangles)[iOffset + 2];
+    const Indexing_t iOffset = 3U * iTriangle;
+    Indexing_t iIndex0 = (*originalTriangles)[iOffset + 0U];
+    Indexing_t iIndex1 = (*originalTriangles)[iOffset + 1U];
+    Indexing_t iIndex2 = (*originalTriangles)[iOffset + 2U];
 
-    const auto &idsInBucket = bucket.getIdsInBucket((*baryCentricCoords)[iOffset + 0],
-                                                    (*baryCentricCoords)[iOffset + 1],
-                                                    (*baryCentricCoords)[iOffset + 2]);
-    const int nInBucket = idsInBucket->size();
+    const auto &idsInBucket = bucket.getIdsInBucket((*baryCentricCoords)[iOffset + 0U],
+                                                    (*baryCentricCoords)[iOffset + 1U],
+                                                    (*baryCentricCoords)[iOffset + 2U]);
+    const Indexing_t nInBucket = static_cast<Indexing_t>(idsInBucket->size());
 
     sort3Elems(iIndex0, iIndex1, iIndex2);
 
-    for (int jTriangle = 0; jTriangle < nInBucket; ++jTriangle) {
-      const int id = (*idsInBucket)[jTriangle];
+    for (Indexing_t jTriangle = 0U; jTriangle < nInBucket; ++jTriangle) {
+      const Indexing_t id = (*idsInBucket)[jTriangle];
 
       if (id == iTriangle) {
         continue;
       }
 
-      const int jOffset = 3 * id;
+      const Indexing_t jOffset = 3U * id;
 
-      int jIndex0 = (*originalTriangles)[jOffset + 0];
-      int jIndex1 = (*originalTriangles)[jOffset + 1];
-      int jIndex2 = (*originalTriangles)[jOffset + 2];
+      Indexing_t jIndex0 = (*originalTriangles)[jOffset + 0U];
+      Indexing_t jIndex1 = (*originalTriangles)[jOffset + 1U];
+      Indexing_t jIndex2 = (*originalTriangles)[jOffset + 2U];
       sort3Elems(jIndex0, jIndex1, jIndex2);
 
       if (iIndex0 == jIndex0 && iIndex1 == jIndex1 && iIndex2 == jIndex2) {
@@ -251,17 +249,18 @@ veci_pt Geometry::extractSurfaceTriangle(const int &nDivsBucket,
     }
 
     if (isSurface) {
-      surfaceTriangles->push_back((*originalTriangles)[iOffset + 0]);
-      surfaceTriangles->push_back((*originalTriangles)[iOffset + 1]);
-      surfaceTriangles->push_back((*originalTriangles)[iOffset + 2]);
+      surfaceTriangles->push_back((*originalTriangles)[iOffset + 0U]);
+      surfaceTriangles->push_back((*originalTriangles)[iOffset + 1U]);
+      surfaceTriangles->push_back((*originalTriangles)[iOffset + 2U]);
     }
   }
 
   return surfaceTriangles;
 }
 
+template <class Coord_t>
 void Geometry::calcVertexNormals(const int &nNodes,
-                                 const veci_pt &triangles) {
+                                 const vec_pt<Coord_t> &triangles) {
   // Count
   ReservedArrayi countNodes(nNodes);
   for (const auto &triangleId : *triangles) {

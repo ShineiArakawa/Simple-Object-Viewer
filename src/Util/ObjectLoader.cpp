@@ -5,6 +5,7 @@
 #include <tiny_obj_loader.h>
 #endif
 
+#include <SimView/Util/Geometry.hpp>
 #include <SimView/Util/llas.hpp>
 
 namespace simview {
@@ -252,18 +253,18 @@ void ObjectLoader::readMshFile(const std::string &filePath,
     // =========================================================================================
     // Read num elements
     std::getline(ifstream, buffer);
-    const int nElements = std::stoi(buffer);
+    const uint32_t nElements = std::stoul(buffer);
 
     // Read elements
-    veci_pt elements = std::make_shared<std::vector<int>>();
+    vec_pt<uint32_t> elements = std::make_shared<std::vector<uint32_t>>();
     int nNodesPerElement = -1;
-    std::vector<std::vector<int>> triangleIDs;
+    std::vector<std::vector<uint32_t>> triangleIDs;
 
-    for (int iElement = 0; iElement < nElements; ++iElement) {
+    for (uint32_t iElement = 0U; iElement < nElements; ++iElement) {
       std::getline(ifstream, buffer);
       std::vector<std::string> tokens = StringUtil::splitText(buffer, ' ');
 
-      if (iElement == 0) {
+      if (iElement == 0U) {
         nNodesPerElement = tokens.size();
 
         const auto iter = MSH_TRIANGLE_IDS.find(nNodesPerElement);
@@ -282,8 +283,8 @@ void ObjectLoader::readMshFile(const std::string &filePath,
       // Calc index offset
       const int offset = nNodesPerElement * iElement;
 
-      for (int iVertex = 0; iVertex < nNodesPerElement; ++iVertex) {
-        (*elements)[offset + iVertex] = std::stoi(tokens[iVertex]);
+      for (uint32_t iVertex = 0U; iVertex < nNodesPerElement; ++iVertex) {
+        (*elements)[offset + iVertex] = std::stoul(tokens[iVertex]);
       }
     }
     LOG_INFO("Reading elements done.");
@@ -293,54 +294,54 @@ void ObjectLoader::readMshFile(const std::string &filePath,
     // =========================================================================================
     // Read num vertices
     std::getline(ifstream, buffer);
-    const int nVertices = std::stoi(buffer);
+    const uint32_t nVertices = std::stoul(buffer);
 
     // Read vertices
-    vecf_pt vertexCoords = std::make_shared<std::vector<float>>();
-    vertexCoords->resize(3 * nVertices);
+    vec_pt<float> vertexCoords = std::make_shared<std::vector<float>>();
+    vertexCoords->resize(3U * nVertices);
 
-    for (int iVertex = 0; iVertex < nVertices; ++iVertex) {
+    for (uint32_t iVertex = 0U; iVertex < nVertices; ++iVertex) {
       std::getline(ifstream, buffer);
       std::vector<std::string> tokens = StringUtil::splitText(buffer, ' ');
 
-      const int offset = 3 * iVertex;
+      const uint32_t offset = 3U * iVertex;
 
-      (*vertexCoords)[offset + 0] = std::stof(tokens[0]);
-      (*vertexCoords)[offset + 1] = std::stof(tokens[1]);
-      (*vertexCoords)[offset + 2] = std::stof(tokens[2]);
+      (*vertexCoords)[offset + 0U] = std::stof(tokens[0]);
+      (*vertexCoords)[offset + 1U] = std::stof(tokens[1]);
+      (*vertexCoords)[offset + 2U] = std::stof(tokens[2]);
     }
     LOG_INFO("Reading vertex coords done.");
 
     // =========================================================================================
     // Triangulate
     // =========================================================================================
-    veci_pt triangles = std::make_shared<std::vector<int>>();
-    const int nTrianglesPerElement = triangleIDs.size();
-    triangles->resize(3 * nTrianglesPerElement * nElements);
+    vec_pt<uint32_t> triangles = std::make_shared<std::vector<uint32_t>>();
+    const uint32_t nTrianglesPerElement = static_cast<uint32_t>(triangleIDs.size());
+    triangles->resize(3U * nTrianglesPerElement * nElements);
 
-    for (int iElement = 0; iElement < nElements; ++iElement) {
-      const int offsetElem = 3 * nTrianglesPerElement * iElement;
-      const int offset = nNodesPerElement * iElement;
+    for (uint32_t iElement = 0U; iElement < nElements; ++iElement) {
+      const uint32_t offsetElem = 3U * nTrianglesPerElement * iElement;
+      const uint32_t offset = nNodesPerElement * iElement;
 
-      for (int iTriangle = 0; iTriangle < nTrianglesPerElement; ++iTriangle) {
-        const int offsetTriangle = offsetElem + 3 * iTriangle;
+      for (uint32_t iTriangle = 0U; iTriangle < nTrianglesPerElement; ++iTriangle) {
+        const uint32_t offsetTriangle = offsetElem + 3U * iTriangle;
 
-        (*triangles)[offsetTriangle + 0] = (*elements)[offset + triangleIDs[iTriangle][0]];
-        (*triangles)[offsetTriangle + 1] = (*elements)[offset + triangleIDs[iTriangle][1]];
-        (*triangles)[offsetTriangle + 2] = (*elements)[offset + triangleIDs[iTriangle][2]];
+        (*triangles)[offsetTriangle + 0U] = (*elements)[offset + triangleIDs[iTriangle][0]];
+        (*triangles)[offsetTriangle + 1U] = (*elements)[offset + triangleIDs[iTriangle][1]];
+        (*triangles)[offsetTriangle + 2U] = (*elements)[offset + triangleIDs[iTriangle][2]];
       }
     }
 
-    const int nTriangles = triangles->size() / 3;
+    const uint32_t nTriangles = static_cast<uint32_t>(triangles->size()) / 3U;
     LOG_INFO("nTriangles: " + std::to_string(nTriangles));
     LOG_INFO("Triangulation done.");
 
     // =========================================================================================
     // Extract surface
     // =========================================================================================
-    const veci_pt &surfaceTriangles = Geometry::extractSurfaceTriangle(300, triangles, vertexCoords);
+    const vec_pt<uint32_t> &surfaceTriangles = Geometry::extractSurfaceTriangle(300, triangles, vertexCoords);
 
-    const int nSurfaceTriangles = surfaceTriangles->size() / 3;
+    const uint32_t nSurfaceTriangles = static_cast<uint32_t>(surfaceTriangles->size()) / 3U;
     LOG_INFO("nSurfaceTriangles: " + std::to_string(nSurfaceTriangles));
     LOG_INFO("Surface extraction done.");
 
@@ -348,22 +349,22 @@ void ObjectLoader::readMshFile(const std::string &filePath,
     // Calc face normals
     // =========================================================================================
     vecf_pt faceNormal = std::make_shared<std::vector<float>>();
-    faceNormal->resize(3 * nSurfaceTriangles);
+    faceNormal->resize(3U * nSurfaceTriangles);
 
-    for (int iSurfaceTriangle = 0; iSurfaceTriangle < nSurfaceTriangles; ++iSurfaceTriangle) {
-      const int offset = 3 * iSurfaceTriangle;
+    for (uint32_t iSurfaceTriangle = 0U; iSurfaceTriangle < nSurfaceTriangles; ++iSurfaceTriangle) {
+      const uint32_t offset = 3U * iSurfaceTriangle;
 
-      const int nodeIdOffset0 = 3 * (*surfaceTriangles)[offset + 0];
-      const int nodeIdOffset1 = 3 * (*surfaceTriangles)[offset + 1];
-      const int nodeIdOffset2 = 3 * (*surfaceTriangles)[offset + 2];
+      const uint32_t nodeIdOffset0 = 3U * (*surfaceTriangles)[offset + 0U];
+      const uint32_t nodeIdOffset1 = 3U * (*surfaceTriangles)[offset + 1U];
+      const uint32_t nodeIdOffset2 = 3U * (*surfaceTriangles)[offset + 2U];
 
-      const float relVec0X = (*vertexCoords)[nodeIdOffset1 + 0] - (*vertexCoords)[nodeIdOffset0 + 0];
-      const float relVec0Y = (*vertexCoords)[nodeIdOffset1 + 1] - (*vertexCoords)[nodeIdOffset0 + 1];
-      const float relVec0Z = (*vertexCoords)[nodeIdOffset1 + 2] - (*vertexCoords)[nodeIdOffset0 + 2];
+      const float relVec0X = (*vertexCoords)[nodeIdOffset1 + 0U] - (*vertexCoords)[nodeIdOffset0 + 0U];
+      const float relVec0Y = (*vertexCoords)[nodeIdOffset1 + 1U] - (*vertexCoords)[nodeIdOffset0 + 1U];
+      const float relVec0Z = (*vertexCoords)[nodeIdOffset1 + 2U] - (*vertexCoords)[nodeIdOffset0 + 2U];
 
-      const float relVec1X = (*vertexCoords)[nodeIdOffset2 + 0] - (*vertexCoords)[nodeIdOffset0 + 0];
-      const float relVec1Y = (*vertexCoords)[nodeIdOffset2 + 1] - (*vertexCoords)[nodeIdOffset0 + 1];
-      const float relVec1Z = (*vertexCoords)[nodeIdOffset2 + 2] - (*vertexCoords)[nodeIdOffset0 + 2];
+      const float relVec1X = (*vertexCoords)[nodeIdOffset2 + 0U] - (*vertexCoords)[nodeIdOffset0 + 0U];
+      const float relVec1Y = (*vertexCoords)[nodeIdOffset2 + 1U] - (*vertexCoords)[nodeIdOffset0 + 1U];
+      const float relVec1Z = (*vertexCoords)[nodeIdOffset2 + 2U] - (*vertexCoords)[nodeIdOffset0 + 2U];
 
       // Calc outer product
       // 0:   x y z x
@@ -377,43 +378,43 @@ void ObjectLoader::readMshFile(const std::string &filePath,
       math::normalize(normalX, normalY, normalZ);
 
       // Set
-      (*faceNormal)[offset + 0] = normalX;
-      (*faceNormal)[offset + 1] = normalY;
-      (*faceNormal)[offset + 2] = normalZ;
+      (*faceNormal)[offset + 0U] = normalX;
+      (*faceNormal)[offset + 1U] = normalY;
+      (*faceNormal)[offset + 2U] = normalZ;
     }
 
     // =========================================================================================
     // Convert data to program compat format
     // =========================================================================================
-    vertices->resize(nSurfaceTriangles * 3);
-    indices->resize(nSurfaceTriangles * 3);
+    vertices->resize(nSurfaceTriangles * 3U);
+    indices->resize(nSurfaceTriangles * 3U);
 
-    for (int iTriangle = 0; iTriangle < nSurfaceTriangles; ++iTriangle) {
-      const int offset = 3 * iTriangle;
+    for (uint32_t iTriangle = 0U; iTriangle < nSurfaceTriangles; ++iTriangle) {
+      const uint32_t offset = 3U * iTriangle;
 
-      const int vertexIdOffset0 = 3 * (*surfaceTriangles)[offset + 0];
-      const int vertexIdOffset1 = 3 * (*surfaceTriangles)[offset + 1];
-      const int vertexIdOffset2 = 3 * (*surfaceTriangles)[offset + 2];
+      const uint32_t vertexIdOffset0 = 3U * (*surfaceTriangles)[offset + 0U];
+      const uint32_t vertexIdOffset1 = 3U * (*surfaceTriangles)[offset + 1U];
+      const uint32_t vertexIdOffset2 = 3U * (*surfaceTriangles)[offset + 2U];
 
-      const glm::vec3 vertexCoord0 = glm::vec3((*vertexCoords)[vertexIdOffset0 + 0],
-                                               (*vertexCoords)[vertexIdOffset0 + 1],
-                                               (*vertexCoords)[vertexIdOffset0 + 2]);
-      const glm::vec3 vertexCoord1 = glm::vec3((*vertexCoords)[vertexIdOffset1 + 0],
-                                               (*vertexCoords)[vertexIdOffset1 + 1],
-                                               (*vertexCoords)[vertexIdOffset1 + 2]);
-      const glm::vec3 vertexCoord2 = glm::vec3((*vertexCoords)[vertexIdOffset2 + 0],
-                                               (*vertexCoords)[vertexIdOffset2 + 1],
-                                               (*vertexCoords)[vertexIdOffset2 + 2]);
+      const glm::vec3 vertexCoord0 = glm::vec3((*vertexCoords)[vertexIdOffset0 + 0U],
+                                               (*vertexCoords)[vertexIdOffset0 + 1U],
+                                               (*vertexCoords)[vertexIdOffset0 + 2U]);
+      const glm::vec3 vertexCoord1 = glm::vec3((*vertexCoords)[vertexIdOffset1 + 0U],
+                                               (*vertexCoords)[vertexIdOffset1 + 1U],
+                                               (*vertexCoords)[vertexIdOffset1 + 2U]);
+      const glm::vec3 vertexCoord2 = glm::vec3((*vertexCoords)[vertexIdOffset2 + 0U],
+                                               (*vertexCoords)[vertexIdOffset2 + 1U],
+                                               (*vertexCoords)[vertexIdOffset2 + 2U]);
 
-      const glm::vec3 vertexNormal0 = glm::vec3((*faceNormal)[offset + 0],
-                                                (*faceNormal)[offset + 1],
-                                                (*faceNormal)[offset + 2]);
-      const glm::vec3 vertexNormal1 = glm::vec3((*faceNormal)[offset + 0],
-                                                (*faceNormal)[offset + 1],
-                                                (*faceNormal)[offset + 2]);
-      const glm::vec3 vertexNormal2 = glm::vec3((*faceNormal)[offset + 0],
-                                                (*faceNormal)[offset + 1],
-                                                (*faceNormal)[offset + 2]);
+      const glm::vec3 vertexNormal0 = glm::vec3((*faceNormal)[offset + 0U],
+                                                (*faceNormal)[offset + 1U],
+                                                (*faceNormal)[offset + 2U]);
+      const glm::vec3 vertexNormal1 = glm::vec3((*faceNormal)[offset + 0U],
+                                                (*faceNormal)[offset + 1U],
+                                                (*faceNormal)[offset + 2U]);
+      const glm::vec3 vertexNormal2 = glm::vec3((*faceNormal)[offset + 0U],
+                                                (*faceNormal)[offset + 1U],
+                                                (*faceNormal)[offset + 2U]);
 
       const Vertex vertex0(vertexCoord0,
                            glm::vec3(1.0f),
@@ -434,9 +435,9 @@ void ObjectLoader::readMshFile(const std::string &filePath,
                            glm::vec2(0.0f),
                            0.0f);
 
-      const int index0 = offset + 0;
-      const int index1 = offset + 1;
-      const int index2 = offset + 2;
+      const uint32_t index0 = offset + 0U;
+      const uint32_t index1 = offset + 1U;
+      const uint32_t index2 = offset + 2U;
 
       (*vertices)[index0] = vertex0;
       (*vertices)[index1] = vertex1;
@@ -446,6 +447,8 @@ void ObjectLoader::readMshFile(const std::string &filePath,
       (*indices)[index1] = index1;
       (*indices)[index2] = index2;
     }
+
+    ifstream.close();
   }
 
   LOG_INFO("Num of vertices : " + std::to_string(vertices->size()));

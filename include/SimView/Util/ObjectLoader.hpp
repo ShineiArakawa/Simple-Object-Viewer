@@ -4,7 +4,6 @@
 #include <SimView/Util/Colors.hpp>
 #include <SimView/Util/DataStructure.hpp>
 #include <SimView/Util/FileUtil.hpp>
-#include <SimView/Util/Geometry.hpp>
 #include <SimView/Util/Logging.hpp>
 #include <SimView/Util/Math.hpp>
 #include <SimView/Util/StringUtil.hpp>
@@ -78,17 +77,17 @@ class ObjectLoader {
                                                                                      {{4, 2, 5}}}};
 
 #endif
-  inline static const int MSH_NUM_TRIANGLES_TETRA = 4;
-  inline static const int MSH_NUM_TRIANGLES_QUAD_TETRA = 10;
-  inline static const int MSH_NUM_TRIANGLES_HEXA = 8;
+  inline static const uint32_t MSH_NUM_TRIANGLES_TETRA = 4;
+  inline static const uint32_t MSH_NUM_TRIANGLES_QUAD_TETRA = 10;
+  inline static const uint32_t MSH_NUM_TRIANGLES_HEXA = 8;
 
-  inline static const std::vector<std::vector<int>> MSH_TRIANGLE_IDS_TETRA = {
+  inline static const std::vector<std::vector<uint32_t>> MSH_TRIANGLE_IDS_TETRA = {
       {0, 2, 1},
       {0, 1, 3},
       {0, 3, 2},
       {1, 2, 3}};
 
-  inline static const std::vector<std::vector<int>> MSH_TRIANGLE_IDS_QUAD_TETRA = {
+  inline static const std::vector<std::vector<uint32_t>> MSH_TRIANGLE_IDS_QUAD_TETRA = {
       {0, 6, 5},
       {6, 3, 8},
       {8, 5, 6},
@@ -106,7 +105,7 @@ class ObjectLoader {
       {8, 9, 7},
       {9, 8, 3}};
 
-  inline static const std::vector<std::vector<int>> MSH_TRIANGLE_IDS_HEXA = {
+  inline static const std::vector<std::vector<uint32_t>> MSH_TRIANGLE_IDS_HEXA = {
       {0, 1, 5},
       {5, 4, 0},
       {1, 2, 6},
@@ -120,7 +119,7 @@ class ObjectLoader {
       {1, 0, 3},
       {3, 2, 1}};
 
-  inline static const std::map<int, std::vector<std::vector<int>>> MSH_TRIANGLE_IDS = {
+  inline static const std::map<uint32_t, std::vector<std::vector<uint32_t>>> MSH_TRIANGLE_IDS = {
       {MSH_NUM_TRIANGLES_TETRA, MSH_TRIANGLE_IDS_TETRA},
       {MSH_NUM_TRIANGLES_QUAD_TETRA, MSH_TRIANGLE_IDS_QUAD_TETRA},
       {MSH_NUM_TRIANGLES_HEXA, MSH_TRIANGLE_IDS_HEXA}};
