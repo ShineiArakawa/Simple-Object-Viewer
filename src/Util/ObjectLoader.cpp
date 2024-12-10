@@ -5,7 +5,6 @@
 #include <tiny_obj_loader.h>
 #endif
 
-#include <SimView/Util/Geometry.hpp>
 #include <SimView/Util/llas.hpp>
 
 namespace simview {
@@ -1125,7 +1124,7 @@ void ObjectLoader::readObjFileWithMaterialGroup(const std::string &filePath,
 
   // Load Object
   for (const auto &shape : shapes) {
-    size_t indexOffset = 0;  // インデントのオフセット
+    size_t indexOffset = 0;
 
     for (size_t iFace = 0; iFace < shape.mesh.num_face_vertices.size(); ++iFace) {
       nFaces++;

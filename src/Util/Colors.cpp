@@ -45,7 +45,7 @@ vec3f_t hsvToRgb(vec3f_t hsv) {
   float hh, p, q, t, ff;
   int i;
 
-  if (hsv[1] <= 0.0f) {  // 彩度が0の場合はグレースケール
+  if (hsv[1] <= 0.0f) {
     rgb[0] = hsv[2];
     rgb[1] = hsv[2];
     rgb[2] = hsv[2];

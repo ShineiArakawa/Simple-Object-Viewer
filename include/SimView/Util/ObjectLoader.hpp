@@ -4,6 +4,7 @@
 #include <SimView/Util/Colors.hpp>
 #include <SimView/Util/DataStructure.hpp>
 #include <SimView/Util/FileUtil.hpp>
+#include <SimView/Util/Geometry.hpp>
 #include <SimView/Util/Logging.hpp>
 #include <SimView/Util/Math.hpp>
 #include <SimView/Util/StringUtil.hpp>

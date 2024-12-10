@@ -72,8 +72,6 @@ class Geometry {
                                                    const vec_pt<Indexing_t> &originalTriangles,
                                                    const vec_pt<Coord_t> &vertexCoords);
 
-  
-
   template <class Coord_t = float>
   static void calcVertexNormals(const int &nNodes,
                                 const vec_pt<Coord_t> &triangles);
@@ -85,6 +83,11 @@ class Geometry {
       veci_pt &distIndices,
       const float &threshold);
 };
+
+// Type specialization
+template vec_pt<uint32_t> Geometry::extractSurfaceTriangle<uint32_t, float>(const int &,
+                                                                            const vec_pt<uint32_t> &,
+                                                                            const vec_pt<float> &);
 
 }  // namespace util
 }  // namespace simview
