@@ -85,9 +85,10 @@ class Geometry {
 };
 
 // Type specialization
-template vec_pt<uint32_t> Geometry::extractSurfaceTriangle<uint32_t, float>(const int &,
-                                                                            const vec_pt<uint32_t> &,
-                                                                            const vec_pt<float> &);
+template <>
+vec_pt<uint32_t> Geometry::extractSurfaceTriangle<uint32_t, float>(const int &,
+                                                                   const vec_pt<uint32_t> &,
+                                                                   const vec_pt<float> &);
 
 }  // namespace util
 }  // namespace simview

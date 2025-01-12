@@ -258,6 +258,86 @@ vec_pt<Indexing_t> Geometry::extractSurfaceTriangle(const int &nDivsBucket,
   return surfaceTriangles;
 }
 
+template <>
+vec_pt<uint32_t> Geometry::extractSurfaceTriangle<uint32_t, float>(const int &nDivsBucket,
+                                                                   const vec_pt<uint32_t> &originalTriangles,
+                                                                   const vec_pt<float> &vertexCoords) {
+  const uint32_t nTriangles = static_cast<uint32_t>(originalTriangles->size()) / 3U;
+
+  // Calc bary centric coords of each triangle
+  const vec_pt<float> &baryCentricCoords = calcBaryCentricCoord(originalTriangles, vertexCoords);
+
+  // Calc model scale
+  const auto [minCoords, maxCoords] = calcModelBounds(vertexCoords);
+
+  // Create bucket
+  TriangleBucket bucket;
+
+  const float modelWidhtX = maxCoords[0] - minCoords[0];
+  const float modelWidhtY = maxCoords[1] - minCoords[1];
+  const float modelWidhtZ = maxCoords[2] - minCoords[2];
+  const float maxModelWidth = std::max(std::max(modelWidhtX, modelWidhtY), modelWidhtZ);
+  const float interval = maxModelWidth / (float)nDivsBucket;
+
+  bucket.initBucket(interval, minCoords, maxCoords);
+
+  // Register to bucket
+  for (uint32_t iTriangle = 0U; iTriangle < nTriangles; ++iTriangle) {
+    const uint32_t offset = 3U * iTriangle;
+    const float baryCenterX = (*baryCentricCoords)[offset + 0U];
+    const float baryCenterY = (*baryCentricCoords)[offset + 1U];
+    const float baryCenterZ = (*baryCentricCoords)[offset + 2U];
+    bucket.addToBucket(baryCenterX, baryCenterY, baryCenterZ, iTriangle);
+  }
+
+  // Extract surface
+  vec_pt<uint32_t> surfaceTriangles = std::make_shared<std::vector<uint32_t>>();
+
+  for (uint32_t iTriangle = 0U; iTriangle < nTriangles; ++iTriangle) {
+    bool isSurface = true;
+
+    const uint32_t iOffset = 3U * iTriangle;
+    uint32_t iIndex0 = (*originalTriangles)[iOffset + 0U];
+    uint32_t iIndex1 = (*originalTriangles)[iOffset + 1U];
+    uint32_t iIndex2 = (*originalTriangles)[iOffset + 2U];
+
+    const auto &idsInBucket = bucket.getIdsInBucket((*baryCentricCoords)[iOffset + 0U],
+                                                    (*baryCentricCoords)[iOffset + 1U],
+                                                    (*baryCentricCoords)[iOffset + 2U]);
+    const uint32_t nInBucket = static_cast<uint32_t>(idsInBucket->size());
+
+    sort3Elems(iIndex0, iIndex1, iIndex2);
+
+    for (uint32_t jTriangle = 0U; jTriangle < nInBucket; ++jTriangle) {
+      const uint32_t id = (*idsInBucket)[jTriangle];
+
+      if (id == iTriangle) {
+        continue;
+      }
+
+      const uint32_t jOffset = 3U * id;
+
+      uint32_t jIndex0 = (*originalTriangles)[jOffset + 0U];
+      uint32_t jIndex1 = (*originalTriangles)[jOffset + 1U];
+      uint32_t jIndex2 = (*originalTriangles)[jOffset + 2U];
+      sort3Elems(jIndex0, jIndex1, jIndex2);
+
+      if (iIndex0 == jIndex0 && iIndex1 == jIndex1 && iIndex2 == jIndex2) {
+        isSurface = false;
+        break;
+      }
+    }
+
+    if (isSurface) {
+      surfaceTriangles->push_back((*originalTriangles)[iOffset + 0U]);
+      surfaceTriangles->push_back((*originalTriangles)[iOffset + 1U]);
+      surfaceTriangles->push_back((*originalTriangles)[iOffset + 2U]);
+    }
+  }
+
+  return surfaceTriangles;
+}
+
 template <class Coord_t>
 void Geometry::calcVertexNormals(const int &nNodes,
                                  const vec_pt<Coord_t> &triangles) {

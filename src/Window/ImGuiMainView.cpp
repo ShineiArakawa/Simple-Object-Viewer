@@ -479,11 +479,11 @@ void ImGuiMainView::paintSceneWindow() {
 
   // Attach render buffer data as texture image
   ImGui::GetWindowDrawList()->AddImage(
-      reinterpret_cast<void*>(_sceneView->getFrameBuffer()->getFrameTexture()),  // Texture ID
-      _sceneAreaMin,                                                             // Min coords of area
-      _sceneAreaMax,                                                             // Max coords of area
-      ImVec2(0, 1),                                                              // Min uv coords
-      ImVec2(1, 0)                                                               // Max uv coords
+      static_cast<ImTextureID>(_sceneView->getFrameBuffer()->getFrameTexture()),  // Texture ID
+      _sceneAreaMin,                                                              // Min coords of area
+      _sceneAreaMax,                                                              // Max coords of area
+      ImVec2(0, 1),                                                               // Min uv coords
+      ImVec2(1, 0)                                                                // Max uv coords
   );
 
   ImGui::End();
@@ -527,11 +527,11 @@ void ImGuiMainView::paintDepthSceneWindow() {
     }
 
     ImGui::GetWindowDrawList()->AddImage(
-        reinterpret_cast<void*>(_depthSceneView->getFrameBuffer()->getFrameTexture()),  // Texture ID
-        sceneAreaMin,                                                                   // Min coords of area
-        sceneAreaMax,                                                                   // Max coords of area
-        ImVec2(0, 1),                                                                   // Min uv coords
-        ImVec2(1, 0)                                                                    // Max uv coords
+        static_cast<ImTextureID>(_depthSceneView->getFrameBuffer()->getFrameTexture()),  // Texture ID
+        sceneAreaMin,                                                                    // Min coords of area
+        sceneAreaMax,                                                                    // Max coords of area
+        ImVec2(0, 1),                                                                    // Min uv coords
+        ImVec2(1, 0)                                                                     // Max uv coords
     );
 
     ImGui::End();
