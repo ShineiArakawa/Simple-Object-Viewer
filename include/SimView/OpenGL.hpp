@@ -23,6 +23,16 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#if defined(__APPLE__)
+#define SIMVIEW_SHADER_VERSION "#version 410"
+#define SIMVIEW_OPENGL_VERSION_MAJOR 4
+#define SIMVIEW_OPENGL_VERSION_MINOR 1
+#else
+#define SIMVIEW_SHADER_VERSION "#version 460"
+#define SIMVIEW_OPENGL_VERSION_MAJOR 4
+#define SIMVIEW_OPENGL_VERSION_MINOR 6
+#endif
+
 #define _INCLUDE_GL_
 #endif
 // clang-format on

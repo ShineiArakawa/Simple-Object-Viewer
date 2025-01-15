@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SimView/OpenGL.hpp>
 #include <string>
 
 namespace simview {
@@ -34,7 +35,7 @@ class DefaultModelShader {
   // clang-format on
 
   inline static const std::string VERT_SHADER =
-      "#version 460\n"
+      SIMVIEW_SHADER_VERSION
       "\n"
       "layout(location = 0) in vec3 in_position;\n"
       "layout(location = 1) in vec3 in_color;\n"
@@ -78,7 +79,7 @@ class DefaultModelShader {
       "}\n";
 
   inline static const std::string FRAG_SHADER =
-      "#version 460\n"
+      SIMVIEW_SHADER_VERSION
       "\n"
       "in vec2 f_uv;\n"
       "in vec3 f_worldPos;\n"
@@ -244,7 +245,7 @@ class DefaultDepthShader {
   inline static const char* UNIFORM_NAME_LIGHT_MVP_MAT = "u_lightMvpMat";
 
   inline static const std::string VERT_SHADER =
-      "#version 460\n"
+      SIMVIEW_SHADER_VERSION
       "\n"
       "layout(location = 0) in vec3 in_position;\n"
       "layout(location = 1) in vec3 in_color;\n"
@@ -261,7 +262,7 @@ class DefaultDepthShader {
       "}\n";
 
   inline static const std::string FRAG_SHADER =
-      "#version 460\n"
+      SIMVIEW_SHADER_VERSION
       "\n"
       "layout(location = 0) out float fragmentdepth;\n"
       "\n"
@@ -273,7 +274,7 @@ class DefaultDepthShader {
 class DefaultDepthQuadShader {
  public:
   inline static const std::string VERT_SHADER =
-      "#version 460\n"
+      SIMVIEW_SHADER_VERSION
       "\n"
       "layout(location = 0) in vec3 in_position;\n"
       "layout(location = 1) in vec3 in_color;\n"
@@ -290,7 +291,7 @@ class DefaultDepthQuadShader {
       "}\n";
 
   inline static const std::string FRAG_SHADER =
-      "#version 460\n"
+      SIMVIEW_SHADER_VERSION
       "\n"
       "in vec2 f_uv;\n"
       "\n"
@@ -313,7 +314,7 @@ class DefaultLineShader {
   // clang-format on
 
   inline static const std::string VERT_SHADER =
-      "#version 460\n"
+      SIMVIEW_SHADER_VERSION
       "\n"
       "layout(location = 0) in vec3 in_position;\n"
       "\n"
@@ -324,7 +325,7 @@ class DefaultLineShader {
       "}\n";
 
   inline static const std::string FRAG_SHADER =
-      "#version 460\n"
+      SIMVIEW_SHADER_VERSION
       "\n"
       "uniform vec3 u_lineColor;\n"
       "\n"

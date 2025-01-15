@@ -78,7 +78,7 @@ ImGuiMainView::ImGuiMainView(GLFWwindow* mainWindow, ViewerModel_t sceneModel)
   ImGui::StyleColorsDark();
 
   ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
-  ImGui_ImplOpenGL3_Init("#version 460");
+  ImGui_ImplOpenGL3_Init(SIMVIEW_SHADER_VERSION);
 
   // ====================================================================
   // Initialize native file dialog
