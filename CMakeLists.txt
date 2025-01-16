@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(SimpleObjectViewer C CXX)
+list(APPEND PROJECT_LANGUAGES C CXX)
+if (APPLE)
+  list(APPEND PROJECT_LANGUAGES OBJC OBJCXX)
+endif()
+
+project(SimpleObjectViewer LANGUAGES ${PROJECT_LANGUAGES})
 
 ############################################################################################################
 # Options
