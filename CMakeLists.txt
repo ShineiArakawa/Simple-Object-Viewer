@@ -55,6 +55,8 @@ if (SIMVIEW_BUILD_AS_WIN32_APP)
   add_definitions(-DSIMVIEW_BUILD_AS_WIN32_APP)
 endif()
 
+set(CMAKE_MACOSX_BUNDLE TRUE)
+
 ############################################################################################################
 # Envirionment Variables
 ############################################################################################################
@@ -64,6 +66,8 @@ set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 set(PROJECT_LIB_DIR "${PROJECT_SOURCE_DIR}/external")
 
 set(WIN_RESOURCE_FILE "${PROJECT_SOURCE_DIR}/assets/resource.rc")
+
+set(MACOS_ICON_FILE "${PROJECT_SOURCE_DIR}/assets/main.icns")
 
 set(ORIGINAL_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
 string(TOLOWER ${ORIGINAL_SYSTEM_NAME} LOWERCASE_SYSTEM_NAME)

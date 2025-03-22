@@ -19,6 +19,24 @@ elseif (APPLE)
     MACOSX_BUNDLE
     ${VIEWER_GUI_SOURCES}
   )
+
+  # ${MACOS_ICON_FILE} is exist?
+  if(EXISTS ${MACOS_ICON_FILE})
+    # Add icon file to the bundle
+    set_source_files_properties(
+      ${MACOS_ICON_FILE}
+      PROPERTIES
+      MACOSX_PACKAGE_LOCATION "Resources"
+    )
+
+    target_sources(
+      ${PROJECT_NAME}
+      PRIVATE
+      ${MACOS_ICON_FILE}
+    )
+  else()
+    message(WARNING "Icon file not found: ${MACOS_ICON_FILE}. The built application will not have an icon. If you need an icon, run 'make_icon_set.sh' in the 'assets' directory beforehand.")
+  endif()
 else ()
   add_executable(
     ${PROJECT_NAME}
